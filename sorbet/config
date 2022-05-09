@@ -1,0 +1,4 @@
+--dir
+.
+--ignore=/spec
+--enable-experimental-requires-ancestor
