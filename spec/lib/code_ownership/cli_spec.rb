@@ -26,4 +26,29 @@ RSpec.describe CodeOwnership::Cli do
     end
 
   end
+
+  describe 'for_file' do
+    before do
+      write_file('config/code_ownership.yml', <<~YML)
+        owned_globs:
+          - 'app/**/*.rb'
+      YML
+
+      write_file('app/services/my_file.rb')
+    end
+
+    # context 'when run with no flags' do
+    #   context 'when run with one file' do
+        
+    #   end
+    # end
+
+    context 'when run with --json' do
+      let(:argv) { ['for_file', '--json', 'app/services/my_file.rb'] }
+
+      context 'when run with one file' do
+        it 'outputs JSONified information to the console'
+      end
+    end
+  end
 end
