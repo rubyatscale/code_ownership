@@ -1,0 +1,2 @@
+owned_globs:
+  - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'

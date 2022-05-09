@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+# typed: strict
+
+require 'code_ownership'
+CodeOwnership::Cli.run!(ARGV)
