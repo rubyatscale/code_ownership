@@ -5,6 +5,8 @@ Check out `lib/code_ownership.rb` to see the public API.
 
 Check out `code_ownership_spec.rb` to see examples of how code ownership is used.
 
+There is also a [companion VSCode Extension]([url](https://github.com/bigrails/code-ownership-vscode)) for this gem. Just search `Gusto.code-ownership-vscode` in the VSCode Extension Marketplace.
+
 ## Usage: Declaring Ownership
 There are three ways to declare code ownership using this gem.
 ### Package-Based Ownership
