@@ -103,4 +103,30 @@ RSpec.describe CodeOwnership::Cli do
       end
     end
   end
+
+  describe 'using unknown command' do
+    let(:argv) { ['some_command'] }
+
+    it 'outputs help text' do
+      expect(CodeOwnership::Cli).to receive(:puts).with("'some_command' is not a code_ownership command. See `bin/codeownership help`.")
+      subject
+    end
+  end
+
+  describe 'passing in no command' do
+    let(:argv) { [] }
+
+    it 'outputs help text' do
+      expected = <<~EXPECTED
+      Usage: bin/codeownership <subcommand>
+
+      Subcommands:
+        validate - run all validations
+        for_file - find code ownership for a single file
+        help  - display help information about code_ownership
+      EXPECTED
+      expect(CodeOwnership::Cli).to receive(:puts).with(expected)
+      subject
+    end
+  end
 end

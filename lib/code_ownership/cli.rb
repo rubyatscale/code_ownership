@@ -11,7 +11,19 @@ module CodeOwnership
         validate!(argv)
       elsif command == 'for_file'
         for_file(argv)
+      elsif [nil, "help"].include?(command)
+        puts <<~USAGE
+          Usage: bin/codeownership <subcommand>
+
+          Subcommands:
+            validate - run all validations
+            for_file - find code ownership for a single file
+            help  - display help information about code_ownership
+        USAGE
+      else
+        puts "'#{command}' is not a code_ownership command. See `bin/codeownership help`."
       end
+
     end
 
     def self.validate!(argv)
