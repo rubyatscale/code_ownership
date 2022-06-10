@@ -76,11 +76,11 @@ module CodeOwnership
 
               if actual_contents == ""
                 errors << <<~CODEOWNERS_ERROR
-                  CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
                 CODEOWNERS_ERROR
               else
                 errors << <<~CODEOWNERS_ERROR
-                  CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                   #{diff_text.chomp}
                 CODEOWNERS_ERROR

@@ -313,7 +313,7 @@ RSpec.describe CodeOwnership do
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
               puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
-                CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 See https://github.com/bigrails/code_ownership#README.md for more details
               EXPECTED
@@ -332,7 +332,7 @@ RSpec.describe CodeOwnership do
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
               puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
-                CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 See https://github.com/bigrails/code_ownership#README.md for more details
               EXPECTED
@@ -357,7 +357,7 @@ RSpec.describe CodeOwnership do
                 expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
                 puts e.message
                 expect(e.message).to eq <<~EXPECTED.chomp
-                  CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                   See https://github.com/bigrails/code_ownership#README.md for more details
                 EXPECTED
@@ -386,7 +386,7 @@ RSpec.describe CodeOwnership do
                 expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
                 puts e.message
                 expect(e.message).to eq <<~EXPECTED.chomp
-                  CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                   See https://github.com/bigrails/code_ownership#README.md for more details
                 EXPECTED
@@ -430,7 +430,7 @@ RSpec.describe CodeOwnership do
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
               puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
-                CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 CODEOWNERS should contain the following lines, but does not:
                 - ""
@@ -488,7 +488,7 @@ RSpec.describe CodeOwnership do
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
               puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
-                CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 CODEOWNERS should not contain the following lines, but it does:
                 - "/frontend/some/extra/line/that/should/not/exist @MyOrg/bar-team"
@@ -532,7 +532,7 @@ RSpec.describe CodeOwnership do
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
               puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
-                CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
+                CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 CODEOWNERS should contain the following lines, but does not:
                 - ""
