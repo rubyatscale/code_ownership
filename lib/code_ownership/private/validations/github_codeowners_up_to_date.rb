@@ -48,6 +48,32 @@ module CodeOwnership
               end
             else
               # If there is no current file or its empty, display a shorter message.
+              missing_lines = expected_content_lines - actual_content_lines
+              extra_lines = actual_content_lines - expected_content_lines
+              missing_lines_text = if missing_lines.any?
+                <<~COMMENT
+                  CODEOWNERS should contain the following lines, but does not:
+                  #{(expected_content_lines - actual_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
+                COMMENT
+              end
+
+              extra_lines_text = if extra_lines.any?
+                <<~COMMENT
+                  CODEOWNERS should not contain the following lines, but it does:
+                  #{(actual_content_lines - expected_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
+                COMMENT
+              end
+
+              diff_text = if missing_lines_text && extra_lines_text
+                 "#{missing_lines_text}\n#{extra_lines_text}".chomp
+              elsif missing_lines_text
+                missing_lines_text
+              elsif extra_lines_text
+                extra_lines_text
+              else
+                ""
+              end
+
               if actual_contents == ""
                 errors << <<~CODEOWNERS_ERROR
                   CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
@@ -56,11 +82,7 @@ module CodeOwnership
                 errors << <<~CODEOWNERS_ERROR
                   CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file
 
-                  CODEOWNERS should contain the following lines, but does not:
-                  #{(expected_content_lines - actual_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
-
-                  CODEOWNERS should not contain the following lines, but it does:
-                  #{(actual_content_lines - expected_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
+                  #{diff_text.chomp}
                 CODEOWNERS_ERROR
               end
             end
