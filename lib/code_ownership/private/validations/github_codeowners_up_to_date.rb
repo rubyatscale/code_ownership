@@ -25,24 +25,66 @@ module CodeOwnership
             # https://help.github.com/en/articles/about-code-owners
           HEADER
 
-          contents = [
-            header,
+          expected_content_lines = [
+            *header.split("\n"),
+            nil, # For line between header and codeowners_file_lines
             *codeowners_file_lines,
             nil, # For end-of-file newline
-          ].join("\n")
+          ]
+          
+          expected_contents = expected_content_lines.join("\n")
+          actual_contents = codeowners_filepath.exist? ? codeowners_filepath.read : ""
+          actual_content_lines = actual_contents.split("\n")
 
-          codeowners_up_to_date = codeowners_filepath.exist? && codeowners_filepath.read == contents
+          codeowners_up_to_date = actual_contents == expected_contents
 
           errors = T.let([], T::Array[String])
 
           if !codeowners_up_to_date
             if autocorrect
-              codeowners_filepath.write(contents)
+              codeowners_filepath.write(expected_contents)
               if stage_changes
                 `git add #{codeowners_filepath}`
               end
             else
-              errors << "CODEOWNERS out of date. Ensure pre-commit hook is set up correctly and used. You can also run bin/codeownership validate to update the CODEOWNERS file\n"
+              # If there is no current file or its empty, display a shorter message.
+              missing_lines = expected_content_lines - actual_content_lines
+              extra_lines = actual_content_lines - expected_content_lines
+              missing_lines_text = if missing_lines.any?
+                <<~COMMENT
+                  CODEOWNERS should contain the following lines, but does not:
+                  #{(expected_content_lines - actual_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
+                COMMENT
+              end
+
+              extra_lines_text = if extra_lines.any?
+                <<~COMMENT
+                  CODEOWNERS should not contain the following lines, but it does:
+                  #{(actual_content_lines - expected_content_lines).map { |line| "- \"#{line}\""}.join("\n")}
+                COMMENT
+              end
+
+              diff_text = if missing_lines_text && extra_lines_text
+                 "#{missing_lines_text}\n#{extra_lines_text}".chomp
+              elsif missing_lines_text
+                missing_lines_text
+              elsif extra_lines_text
+                extra_lines_text
+              else
+                ""
+              end
+
+              if actual_contents == ""
+                errors << <<~CODEOWNERS_ERROR
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
+                CODEOWNERS_ERROR
+              else
+                errors << <<~CODEOWNERS_ERROR
+                  CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
+
+                  #{diff_text.chomp}
+                CODEOWNERS_ERROR
+              end
             end
           end
 
