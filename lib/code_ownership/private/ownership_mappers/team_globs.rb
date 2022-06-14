@@ -9,20 +9,20 @@ module CodeOwnership
         extend T::Sig
         include Interface
 
-        @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, T.nilable(::Teams::Team)])) # rubocop:disable Style/ClassVars
+        @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
-        @@codeowners_lines_to_owners = T.let(@codeowners_lines_to_owners, T.nilable(T::Hash[String, T.nilable(::Teams::Team)])) # rubocop:disable Style/ClassVars
+        @@codeowners_lines_to_owners = T.let(@codeowners_lines_to_owners, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
         @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
           override.
             params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::Teams::Team)])
+            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
 
-          @@map_files_to_owners = Teams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+          @@map_files_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
               Dir.glob(glob).each do |filename|
                 map[filename] = team
@@ -33,19 +33,19 @@ module CodeOwnership
 
         sig do
           override.params(file: String).
-            returns(T.nilable(::Teams::Team))
+            returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           map_files_to_owners([file])[file]
         end
 
         sig do
-          override.returns(T::Hash[String, T.nilable(::Teams::Team)])
+          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def codeowners_lines_to_owners
           return @@codeowners_lines_to_owners if @@codeowners_lines_to_owners&.keys && @@codeowners_lines_to_owners.keys.count > 0
 
-          @@codeowners_lines_to_owners = Teams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+          @@codeowners_lines_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             TeamPlugins::Ownership.for(team).owned_globs.each do |owned_glob|
               map[owned_glob] = team
             end

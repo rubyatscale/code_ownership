@@ -92,11 +92,11 @@ module CodeOwnership
       @tracked_files ||= Dir.glob(configuration.owned_globs)
     end
 
-    sig { params(team_name: String, location_of_reference: String).returns(Teams::Team) }
+    sig { params(team_name: String, location_of_reference: String).returns(CodeTeams::Team) }
     def self.find_team!(team_name, location_of_reference)
-      found_team = Teams.find(team_name)
+      found_team = CodeTeams.find(team_name)
       if found_team.nil?
-        raise StandardError, "Could not find team with name: `#{team_name}` in #{location_of_reference}. Make sure the team is one of `#{Teams.all.map(&:name).sort}`"
+        raise StandardError, "Could not find team with name: `#{team_name}` in #{location_of_reference}. Make sure the team is one of `#{CodeTeams.all.map(&:name).sort}`"
       else
         found_team
       end

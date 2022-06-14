@@ -3,7 +3,7 @@
 module CodeOwnership
   module Private
     module TeamPlugins
-      class Ownership < Teams::Plugin
+      class Ownership < CodeTeams::Plugin
         extend T::Sig
         extend T::Helpers
 

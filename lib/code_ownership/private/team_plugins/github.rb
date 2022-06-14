@@ -3,7 +3,7 @@
 module CodeOwnership
   module Private
     module TeamPlugins
-      class Github < Teams::Plugin
+      class Github < CodeTeams::Plugin
         extend T::Sig
         extend T::Helpers
 

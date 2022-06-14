@@ -640,27 +640,27 @@ RSpec.describe CodeOwnership do
     before { create_non_empty_application }
 
     it 'can find the owner of a ruby file with file annotations' do
-      expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
     end
 
     it 'can find the owner of a javascript file with file annotations' do
-      expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx')).to eq CodeTeams.find('Bar')
     end
 
     it 'can find the owner of ruby files in owned_globs' do
-      expect(CodeOwnership.for_file('app/services/bar_stuff/thing.rb')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('app/services/bar_stuff/thing.rb')).to eq CodeTeams.find('Bar')
     end
 
     it 'can find the owner of javascript files in owned_globs' do
-      expect(CodeOwnership.for_file('frontend/javascripts/bar_stuff/thing.jsx')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('frontend/javascripts/bar_stuff/thing.jsx')).to eq CodeTeams.find('Bar')
     end
 
     it 'can find the owner of files in team-owned packwerk packages' do
-      expect(CodeOwnership.for_file('packs/my_other_package/my_file.rb')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('packs/my_other_package/my_file.rb')).to eq CodeTeams.find('Bar')
     end
 
     it 'can find the owner of files in team-owned javascript packages' do
-      expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq Teams.find('Bar')
+      expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
     end
 
     describe 'path formatting expectations' do
@@ -693,7 +693,7 @@ RSpec.describe CodeOwnership do
           MyFile.raise_error
           prevent_false_positive!
         rescue StandardError => ex
-          expect(CodeOwnership.for_backtrace(ex.backtrace)).to eq Teams.find('Bar')
+          expect(CodeOwnership.for_backtrace(ex.backtrace)).to eq CodeTeams.find('Bar')
         end
       end
     end
@@ -704,8 +704,8 @@ RSpec.describe CodeOwnership do
           MyFile.raise_error
           prevent_false_positive!
         rescue StandardError => ex
-          team_to_exclude = Teams.find('Bar')
-          expect(CodeOwnership.for_backtrace(ex.backtrace, excluded_teams: [team_to_exclude])).to eq Teams.find('Foo')
+          team_to_exclude = CodeTeams.find('Bar')
+          expect(CodeOwnership.for_backtrace(ex.backtrace, excluded_teams: [team_to_exclude])).to eq CodeTeams.find('Foo')
         end
       end
     end
@@ -715,14 +715,14 @@ RSpec.describe CodeOwnership do
     before { create_files_with_defined_classe }
 
     it 'can find the right owner for a class' do
-      expect(CodeOwnership.for_class(MyFile)).to eq Teams.find('Foo')
+      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
     end
 
     it 'memoizes the values' do
-      expect(CodeOwnership.for_class(MyFile)).to eq Teams.find('Foo')
+      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
       allow(CodeOwnership).to receive(:for_file)
       allow(Object).to receive(:const_source_location)
-      expect(CodeOwnership.for_class(MyFile)).to eq Teams.find('Foo')
+      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
 
       # Memoization should avoid these calls
       expect(CodeOwnership).to_not have_received(:for_file)

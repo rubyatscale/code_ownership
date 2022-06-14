@@ -1,7 +1,7 @@
 require 'bundler/setup'
 require 'pry'
 require 'code_ownership'
-require 'teams'
+require 'code_teams'
 
 require_relative 'support/application_fixtures'
 
@@ -30,8 +30,8 @@ RSpec.configure do |config|
 
   config.before do
     CodeOwnership.bust_caches!
-    Teams.bust_caches!
-    allow(Teams::Plugin).to receive(:registry).and_return({})
+    CodeTeams.bust_caches!
+    allow(CodeTeams::Plugin).to receive(:registry).and_return({})
   end
 end
 
