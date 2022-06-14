@@ -1,14 +1,17 @@
 # CodeOwnership
-This gem helps engineering teams declare ownership of code.
 
-Check out `lib/code_ownership.rb` to see the public API.
+This gem helps engineering teams declare ownership of code. This gem works best in large, usually monolithic code bases where many teams work together.
 
-Check out `code_ownership_spec.rb` to see examples of how code ownership is used.
+Check out [`lib/code_ownership.rb`](https://github.com/rubyatscale/code_ownership/blob/main/lib/code_ownership.rb) to see the public API.
+
+Check out [`code_ownership_spec.rb`](https://github.com/rubyatscale/code_ownership/blob/main/spec/lib/code_ownership_spec.rb) to see examples of how code ownership is used.
 
 There is also a [companion VSCode Extension]([url](https://github.com/rubyatscale/code-ownership-vscode)) for this gem. Just search `Gusto.code-ownership-vscode` in the VSCode Extension Marketplace.
 
 ## Usage: Declaring Ownership
+
 There are three ways to declare code ownership using this gem.
+
 ### Package-Based Ownership
 Package based ownership integrates [`packwerk`](https://github.com/Shopify/packwerk) and has ownership defined per package. To define that all files within a package are owned by one team, configure your `package.yml` like this:
 ```yml
@@ -71,7 +74,9 @@ See `code_ownership_spec.rb` for an example.
 A `CODEOWNERS` file defines who owns specific files or paths in a repository. When you run `bin/codeownership validate`, a `.github/CODEOWNERS` file will automatically be generated and updated.
 
 ## Proper Configuration & Validation
+
 CodeOwnership comes with a validation function to ensure the following things are true:
+
 1) Only one mechanism is defining file ownership. That is -- you can't have a file annotation on a file owned via package-based or glob-based ownership. This helps make ownership behavior more clear by avoiding concerns about precedence.
 2) All teams referenced as an owner for any file or package is a valid team (i.e. it's in the list of `Teams.all`).
 3) All files have ownership. You can specify in `unowned_globs` to represent a TODO list of files to add ownership to.
