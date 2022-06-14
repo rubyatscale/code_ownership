@@ -18,13 +18,13 @@ module CodeOwnership
         extend T::Sig
         include Interface
 
-        @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, T.nilable(::Teams::Team)])) # rubocop:disable Style/ClassVars
+        @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
 
         TEAM_PATTERN = T.let(/\A(?:#|\/\/) @team (?<team>.*)\Z/.freeze, Regexp)
 
         sig do
           override.params(file: String).
-            returns(T.nilable(::Teams::Team))
+            returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           file_annotation_based_owner(file)
@@ -33,7 +33,7 @@ module CodeOwnership
         sig do
           override.
             params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::Teams::Team)])
+            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def map_files_to_owners(files)
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
@@ -46,7 +46,7 @@ module CodeOwnership
           end
         end
 
-        sig { params(filename: String).returns(T.nilable(Teams::Team)) }
+        sig { params(filename: String).returns(T.nilable(CodeTeams::Team)) }
         def file_annotation_based_owner(filename)
           # If for a directory is named with an ownable extension, we need to skip
           # so File.foreach doesn't blow up below. This was needed because Cypress
@@ -97,7 +97,7 @@ module CodeOwnership
         end
 
         sig do
-          override.returns(T::Hash[String, T.nilable(::Teams::Team)])
+          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def codeowners_lines_to_owners
           @@map_files_to_owners = nil # rubocop:disable Style/ClassVars

@@ -13,7 +13,7 @@ module CodeOwnership
 
         sig do
           override.params(file: String).
-            returns(T.nilable(::Teams::Team))
+            returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           package = map_file_to_relevant_package(file)
@@ -26,7 +26,7 @@ module CodeOwnership
         sig do
           override.
             params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::Teams::Team)])
+            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
           ParseJsPackages.all.each_with_object({}) do |package, res|
@@ -49,7 +49,7 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.returns(T::Hash[String, T.nilable(::Teams::Team)])
+          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def codeowners_lines_to_owners
           ParseJsPackages.all.each_with_object({}) do |package, res|
@@ -65,7 +65,7 @@ module CodeOwnership
           'Owner metadata key in package.json'
         end
 
-        sig { params(package: ParseJsPackages::Package).returns(T.nilable(Teams::Team)) }
+        sig { params(package: ParseJsPackages::Package).returns(T.nilable(CodeTeams::Team)) }
         def owner_for_package(package)
           raw_owner_value = package.metadata['owner']
           return nil if !raw_owner_value

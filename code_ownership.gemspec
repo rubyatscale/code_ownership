@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "code_ownership"
-  spec.version       = '1.27.1'
+  spec.version       = '1.28.0'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir['README.md', 'sorbet/**/*', 'lib/**/*', 'bin/**/*']
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'bigrails-teams'
+  spec.add_dependency 'code_teams', '~> 1.0'
   spec.add_dependency 'parse_packwerk'
   spec.add_dependency 'sorbet-runtime'
 

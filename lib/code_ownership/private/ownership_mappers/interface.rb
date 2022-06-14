@@ -16,7 +16,7 @@ module CodeOwnership
         #
         sig do
           abstract.params(file: String).
-            returns(T.nilable(::Teams::Team))
+            returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
         end
@@ -26,13 +26,13 @@ module CodeOwnership
         #
         sig do
           abstract.params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::Teams::Team)])
+            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def map_files_to_owners(files)
         end
 
         sig do
-          abstract.returns(T::Hash[String, T.nilable(::Teams::Team)])
+          abstract.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def codeowners_lines_to_owners
         end

@@ -3,7 +3,7 @@
 # typed: strict
 
 require 'set'
-require 'teams'
+require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
 require 'parse_packwerk'
@@ -17,15 +17,15 @@ module CodeOwnership
 
   requires_ancestor { Kernel }
 
-  sig { params(file: String).returns(T.nilable(Teams::Team)) }
+  sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)
-    @for_file ||= T.let(@for_file, T.nilable(T::Hash[String, T.nilable(Teams::Team)]))
+    @for_file ||= T.let(@for_file, T.nilable(T::Hash[String, T.nilable(CodeTeams::Team)]))
     @for_file ||= {}
 
     return nil if file.start_with?('./')
     return @for_file[file] if @for_file.key?(file)
 
-    owner = T.let(nil, T.nilable(Teams::Team))
+    owner = T.let(nil, T.nilable(CodeTeams::Team))
 
     Private.mappers.each do |mapper|
       owner = mapper.map_file_to_owner(file)
@@ -61,7 +61,7 @@ module CodeOwnership
 
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first line that corresponds to a file with assigned ownership
-  sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::Teams::Team]).returns(T.nilable(::Teams::Team)) }
+  sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
   def for_backtrace(backtrace, excluded_teams: [])
     return unless backtrace
 
@@ -93,9 +93,9 @@ module CodeOwnership
     nil
   end
 
-  sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::Teams::Team)) }
+  sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
-    @memoized_values ||= T.let(@memoized_values, T.nilable(T::Hash[String, T.nilable(::Teams::Team)]))
+    @memoized_values ||= T.let(@memoized_values, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)]))
     @memoized_values ||= {}
     # We use key because the memoized value could be `nil`
     if !@memoized_values.key?(klass.to_s)
@@ -110,7 +110,7 @@ module CodeOwnership
     end
   end
 
-  sig { params(package: ParsePackwerk::Package).returns(T.nilable(::Teams::Team)) }
+  sig { params(package: ParsePackwerk::Package).returns(T.nilable(::CodeTeams::Team)) }
   def for_package(package)
     Private::OwnershipMappers::PackageOwnership.new.owner_for_package(package)
   end

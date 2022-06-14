@@ -98,7 +98,7 @@ module CodeOwnership
         # https://help.github.com/articles/about-codeowners/
         sig { returns(T::Array[String]) }
         def codeowners_file_lines
-          github_team_map = Teams.all.each_with_object({}) do |team, map|
+          github_team_map = CodeTeams.all.each_with_object({}) do |team, map|
             team_github = TeamPlugins::Github.for(team).github
             next if team_github.do_not_add_to_codeowners_file
 
