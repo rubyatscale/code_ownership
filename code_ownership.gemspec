@@ -1,17 +1,17 @@
 Gem::Specification.new do |spec|
   spec.name          = "code_ownership"
-  spec.version       = '1.27.0'
+  spec.version       = '1.27.1'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
   spec.description   = 'A gem to help engineering teams declare ownership of code'
-  spec.homepage      = 'https://github.com/bigrails/code_ownership'
+  spec.homepage      = 'https://github.com/rubyatscale/code_ownership'
   spec.license       = 'MIT'
 
   if spec.respond_to?(:metadata)
     spec.metadata['homepage_uri'] = spec.homepage
-    spec.metadata['source_code_uri'] = 'https://github.com/bigrails/code_ownership'
-    spec.metadata['changelog_uri'] = 'https://github.com/bigrails/code_ownership/releases'
+    spec.metadata['source_code_uri'] = 'https://github.com/rubyatscale/code_ownership'
+    spec.metadata['changelog_uri'] = 'https://github.com/rubyatscale/code_ownership/releases'
     spec.metadata['allowed_push_host'] = 'https://rubygems.org'
   else
     raise 'RubyGems 2.0 or newer is required to protect against ' \

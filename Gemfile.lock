@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.27.0)
+    code_ownership (1.27.1)
       bigrails-teams
       parse_packwerk
       sorbet-runtime
