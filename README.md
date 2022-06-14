@@ -19,7 +19,7 @@ metadata:
 ```
 
 ### Glob-Based Ownership
-In your team's configured YML (see [`bigrails-teams`](https://github.com/rubyatscale/bigrails-teams)), you can set `owned_globs` to be a glob of files your team owns. For example, in `my_team.yml`:
+In your team's configured YML (see [`code_teams`](https://github.com/rubyatscale/code_teams)), you can set `owned_globs` to be a glob of files your team owns. For example, in `my_team.yml`:
 ```yml
 name: My Team
 owned_globs:
