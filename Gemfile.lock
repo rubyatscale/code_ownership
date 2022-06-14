@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     code_ownership (1.28.0)
-      code_teams
+      code_teams (~> 1.0)
       parse_packwerk
       sorbet-runtime
 
