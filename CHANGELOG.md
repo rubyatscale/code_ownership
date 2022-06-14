@@ -1,1 +1,1 @@
-See https://github.com/bigrails/code_ownership/releases
+See https://github.com/rubyatscale/code_ownership/releases

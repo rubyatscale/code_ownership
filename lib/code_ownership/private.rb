@@ -50,7 +50,7 @@ module CodeOwnership
       end
 
       if errors.any?
-        errors << 'See https://github.com/bigrails/code_ownership#README.md for more details'
+        errors << 'See https://github.com/rubyatscale/code_ownership#README.md for more details'
         raise InvalidCodeOwnershipConfigurationError.new(errors.join("\n")) # rubocop:disable Style/RaiseArgs
       end
     end

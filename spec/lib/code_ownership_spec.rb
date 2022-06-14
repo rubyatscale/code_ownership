@@ -36,7 +36,7 @@ RSpec.describe CodeOwnership do
 
                 - app/missing_ownership.rb
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
           end
@@ -117,7 +117,7 @@ RSpec.describe CodeOwnership do
               - frontend/javascripts/packages/my_package/owned_file.jsx (Annotations at the top of file, Owner metadata key in package.json)
               - packs/my_pack/owned_file.rb (Annotations at the top of file, Owner metadata key in package.yml)
 
-              See https://github.com/bigrails/code_ownership#README.md for more details
+              See https://github.com/rubyatscale/code_ownership#README.md for more details
             EXPECTED
           end
         end
@@ -315,7 +315,7 @@ RSpec.describe CodeOwnership do
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
             expect(Pathname.new('.github/CODEOWNERS')).to_not exist
@@ -334,7 +334,7 @@ RSpec.describe CodeOwnership do
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
             expect(Pathname.new('.github/CODEOWNERS')).to_not exist
@@ -359,7 +359,7 @@ RSpec.describe CodeOwnership do
                 expect(e.message).to eq <<~EXPECTED.chomp
                   CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
-                  See https://github.com/bigrails/code_ownership#README.md for more details
+                  See https://github.com/rubyatscale/code_ownership#README.md for more details
                 EXPECTED
               end
               expect(Pathname.new('.github/CODEOWNERS')).to_not exist
@@ -388,7 +388,7 @@ RSpec.describe CodeOwnership do
                 expect(e.message).to eq <<~EXPECTED.chomp
                   CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
-                  See https://github.com/bigrails/code_ownership#README.md for more details
+                  See https://github.com/rubyatscale/code_ownership#README.md for more details
                 EXPECTED
               end
               expect(Pathname.new('.github/CODEOWNERS')).to_not exist
@@ -443,7 +443,7 @@ RSpec.describe CodeOwnership do
                 - "/frontend/some/extra/line/that/should/not/exist @MyOrg/bar-team"
                 - "# Some extra comment that should not be here"
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
           end
@@ -494,7 +494,7 @@ RSpec.describe CodeOwnership do
                 - "/frontend/some/extra/line/that/should/not/exist @MyOrg/bar-team"
                 - "# Some extra comment that should not be here"
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
           end
@@ -541,7 +541,7 @@ RSpec.describe CodeOwnership do
                 - "/packs/my_other_package/**/** @MyOrg/bar-team"
                 - ""
 
-                See https://github.com/bigrails/code_ownership#README.md for more details
+                See https://github.com/rubyatscale/code_ownership#README.md for more details
               EXPECTED
             end
           end

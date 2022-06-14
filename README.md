@@ -5,7 +5,7 @@ Check out `lib/code_ownership.rb` to see the public API.
 
 Check out `code_ownership_spec.rb` to see examples of how code ownership is used.
 
-There is also a [companion VSCode Extension]([url](https://github.com/bigrails/code-ownership-vscode)) for this gem. Just search `Gusto.code-ownership-vscode` in the VSCode Extension Marketplace.
+There is also a [companion VSCode Extension]([url](https://github.com/rubyatscale/code-ownership-vscode)) for this gem. Just search `Gusto.code-ownership-vscode` in the VSCode Extension Marketplace.
 
 ## Usage: Declaring Ownership
 There are three ways to declare code ownership using this gem.
@@ -19,7 +19,7 @@ metadata:
 ```
 
 ### Glob-Based Ownership
-In your team's configured YML (see [`bigrails-teams`](https://github.com/bigrails/bigrails-teams)), you can set `owned_globs` to be a glob of files your team owns. For example, in `my_team.yml`:
+In your team's configured YML (see [`bigrails-teams`](https://github.com/rubyatscale/bigrails-teams)), you can set `owned_globs` to be a glob of files your team owns. For example, in `my_team.yml`:
 ```yml
 name: My Team
 owned_globs:
