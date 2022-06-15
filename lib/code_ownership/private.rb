@@ -92,6 +92,12 @@ module CodeOwnership
       @tracked_files ||= Dir.glob(configuration.owned_globs)
     end
 
+    def self.tracked_file?(file)
+      configuration.owned_globs.any? do |glob|
+        File.fnmatch(glob, file)
+      end
+    end
+
     sig { params(team_name: String, location_of_reference: String).returns(CodeTeams::Team) }
     def self.find_team!(team_name, location_of_reference)
       found_team = CodeTeams.find(team_name)
