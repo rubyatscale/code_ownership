@@ -43,6 +43,8 @@ module CodeOwnership
     Private.file_annotations_mapper.remove_file_annotation!(filename)
   end
 
+  VALIDATE_ALL_OBJECTS = Object.new.freeze
+
   sig do
     params(
       files: T::Array[String],
@@ -51,11 +53,17 @@ module CodeOwnership
     ).void
   end
   def validate!(
-    files: Private.tracked_files,
+    files: VALIDATE_ALL_OBJECTS,
     autocorrect: true,
     stage_changes: true
   )
-    tracked_file_subset = Private.tracked_files & files
+    tracked_file_subset = if files == VALIDATE_ALL_OBJECTS
+      Private.tracked_files
+    else
+      files.select do |file|
+        Private.tracked_file?(file)
+      end
+    end
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
   end
 

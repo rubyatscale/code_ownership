@@ -106,6 +106,7 @@ module CodeOwnership
           end
 
           Private.mappers.flat_map do |mapper|
+            # FIXME this triggers tracked_file glob
             codeowners_lines = mapper.codeowners_lines_to_owners.filter_map do |line, team|
               team_mapping = github_team_map[team&.name]
               next unless team_mapping
