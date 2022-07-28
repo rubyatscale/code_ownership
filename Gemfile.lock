@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.28.0)
+    code_ownership (1.28.1)
       code_teams (~> 1.0)
       parse_packwerk
       sorbet-runtime
@@ -15,7 +15,7 @@ GEM
     coderay (1.1.3)
     diff-lcs (1.4.4)
     method_source (1.0.0)
-    parse_packwerk (0.10.1)
+    parse_packwerk (0.11.0)
       sorbet-runtime
     parser (3.1.2.0)
       ast (~> 2.4.1)
