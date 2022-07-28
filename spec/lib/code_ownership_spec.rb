@@ -652,6 +652,13 @@ RSpec.describe CodeOwnership do
         expect { CodeOwnership.validate! }.to raise_error do |e|
           expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
           expect(e.message).to eq <<~EXPECTED
+            #<JSON::ParserError: 783: unexpected token at '{ syntax error!!!
+              "metadata": {
+                "owner": "Foo"
+              }
+            }
+            '>
+
             frontend/javascripts/my_package/package.json has invalid JSON, so code ownership cannot be determined.
 
             Please either make the JSON in that file valid or specify `js_package_paths` in config/code_ownership.yml.

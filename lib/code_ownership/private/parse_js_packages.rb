@@ -32,8 +32,10 @@ module CodeOwnership
             name: package_name,
             metadata: package_loaded_json[METADATA] || {}
           )
-        rescue JSON::ParserError
+        rescue JSON::ParserError => e
           error_message = <<~MESSAGE
+            #{e.inspect}
+
             #{pathname} has invalid JSON, so code ownership cannot be determined.
 
             Please either make the JSON in that file valid or specify `js_package_paths` in config/code_ownership.yml.
