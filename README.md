@@ -34,6 +34,29 @@ File annotations are a last resort if there is no clear home for your code. File
 ```ruby
 # @team MyTeam
 ```
+
+### Javascript Package Ownership
+Javascript package based ownership allows you to specify an owenrship key in a `package.json`. To use this, configure your `package.json` like this:
+
+```json
+{
+  // other keys
+  "metadata": {
+    "owner": "My Team"
+  }
+  // other keys
+}
+```
+
+You can also tell `code_ownership` where to find JS packages in the configuration, like this:
+```yml
+js_package_paths:
+  - frontend/javascripts/packages/*
+  - frontend/other_location_for_packages/*
+```
+
+This defaults `**/`, which makes it look for `package.json` files across your application.
+
 ## Usage: Reading CodeOwnership
 ### `for_file`
 `CodeOwnership.for_file`, given a relative path to a file returns a `CodeTeams::Team` if there is a team that owns the file, `nil` otherwise.
