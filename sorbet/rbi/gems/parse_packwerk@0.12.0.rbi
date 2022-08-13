@@ -6,11 +6,17 @@
 
 module ParsePackwerk
   class << self
-    sig { params(package_yml_pathnames: T.nilable(T::Array[::Pathname])).returns(T::Array[::ParsePackwerk::Package]) }
-    def all(package_yml_pathnames: T.unsafe(nil)); end
+    sig { returns(T::Array[::ParsePackwerk::Package]) }
+    def all; end
+
+    sig { void }
+    def bust_cache!; end
 
     sig { params(name: ::String).returns(T.nilable(::ParsePackwerk::Package)) }
     def find(name); end
+
+    sig { params(file_path: T.any(::Pathname, ::String)).returns(T.nilable(::ParsePackwerk::Package)) }
+    def package_from_path(file_path); end
 
     sig { params(package: ::ParsePackwerk::Package).void }
     def write_package_yml!(package); end
@@ -27,12 +33,24 @@ end
 
 class ParsePackwerk::Configuration < ::T::Struct
   const :exclude, T::Array[::String]
+  const :package_paths, T::Array[::String]
 
   class << self
+    sig { params(config_hash: T::Hash[T.untyped, T.untyped]).returns(T::Array[::String]) }
+    def excludes(config_hash); end
+
+    sig { returns(::ParsePackwerk::Configuration) }
+    def fetch; end
+
     def inherited(s); end
+
+    sig { params(config_hash: T::Hash[T.untyped, T.untyped]).returns(T::Array[::String]) }
+    def package_paths(config_hash); end
   end
 end
 
+ParsePackwerk::DEFAULT_EXCLUDE_GLOBS = T.let(T.unsafe(nil), Array)
+ParsePackwerk::DEFAULT_PACKAGE_PATHS = T.let(T.unsafe(nil), Array)
 ParsePackwerk::DEPENDENCIES = T.let(T.unsafe(nil), String)
 ParsePackwerk::DEPRECATED_REFERENCES_YML_NAME = T.let(T.unsafe(nil), String)
 
@@ -88,6 +106,23 @@ class ParsePackwerk::Package < ::T::Struct
     def from(pathname); end
 
     def inherited(s); end
+  end
+end
+
+class ParsePackwerk::PackageSet
+  class << self
+    sig do
+      params(
+        package_pathspec: T::Array[::String],
+        exclude_pathspec: T::Array[::String]
+      ).returns(T::Array[::ParsePackwerk::Package])
+    end
+    def from(package_pathspec:, exclude_pathspec:); end
+
+    private
+
+    sig { params(globs: T::Array[::String], path: ::Pathname).returns(T::Boolean) }
+    def exclude_path?(globs, path); end
   end
 end
 
