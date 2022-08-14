@@ -31,6 +31,7 @@ RSpec.configure do |config|
   config.before do
     CodeOwnership.bust_caches!
     CodeTeams.bust_caches!
+    ParsePackwerk.bust_cache!
     allow(CodeTeams::Plugin).to receive(:registry).and_return({})
   end
 end
