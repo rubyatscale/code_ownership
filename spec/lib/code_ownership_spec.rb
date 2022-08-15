@@ -103,6 +103,11 @@ RSpec.describe CodeOwnership do
             metadata:
               owner: Bar
           CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
         end
 
         it 'lets the user know that each file can only have ownership defined in one way' do
@@ -757,7 +762,7 @@ RSpec.describe CodeOwnership do
     before { create_non_empty_application }
 
     it 'returns the right team' do
-      team = CodeOwnership.for_package(ParsePackwerk.all.last)
+      team = CodeOwnership.for_package(ParsePackwerk.find('packs/my_other_package'))
       expect(team.name).to eq 'Bar'
     end
   end
@@ -802,6 +807,11 @@ RSpec.describe CodeOwnership do
 
           # Some content
         CONTENTS
+
+        write_file('package.yml', <<~CONTENTS)
+          enforce_dependency: true
+          enforce_privacy: true
+        CONTENTS
       end
 
       it 'removes the annotation' do
@@ -833,6 +843,11 @@ RSpec.describe CodeOwnership do
           // @team Foo
 
           // Some content
+        CONTENTS
+
+        write_file('package.yml', <<~CONTENTS)
+          enforce_dependency: true
+          enforce_privacy: true
         CONTENTS
       end
 
