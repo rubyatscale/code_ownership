@@ -42,6 +42,11 @@ RSpec.shared_context 'application fixtures' do
         owner: Bar
     CONTENTS
 
+    write_file('package.yml', <<~CONTENTS)
+      enforce_dependency: true
+      enforce_privacy: true
+    CONTENTS
+
     write_file('packs/my_other_package/my_file.rb')
   end
 

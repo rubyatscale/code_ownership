@@ -16,7 +16,7 @@ module CodeOwnership
             returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
-          package = map_file_to_relevant_package(file)
+          package = ParsePackwerk.package_from_path(file)
 
           return nil if package.nil?
 
@@ -79,41 +79,6 @@ module CodeOwnership
         sig { override.void }
         def bust_caches!
           @@package_yml_cache = {} # rubocop:disable Style/ClassVars
-        end
-
-        private
-
-        # takes a file and finds the relevant `package.yml` file by walking up the directory
-        # structure. Example, given `packs/a/b/c.rb`, this looks for `packs/a/b/package.yml`, `packs/a/package.yml`,
-        # `packs/package.yml`, and `package.yml` in that order, stopping at the first file to actually exist.
-        # We do additional caching so that we don't have to check for file existence every time
-        sig { params(file: String).returns(T.nilable(ParsePackwerk::Package)) }
-        def map_file_to_relevant_package(file)
-          file_path = Pathname.new(file)
-          path_components = file_path.each_filename.to_a.map { |path| Pathname.new(path) }
-
-          (path_components.length - 1).downto(0).each do |i|
-            potential_relative_path_name = T.must(path_components[0...i]).reduce(Pathname.new('')) { |built_path, path| built_path.join(path) }
-            potential_package_yml_path = potential_relative_path_name.
-              join(ParsePackwerk::PACKAGE_YML_NAME)
-
-            potential_package_yml_string = potential_package_yml_path.to_s
-
-            package = nil
-            if @@package_yml_cache.key?(potential_package_yml_string)
-              package = @@package_yml_cache[potential_package_yml_string]
-            elsif potential_package_yml_path.exist?
-              package = ParsePackwerk::Package.from(potential_package_yml_path)
-
-              @@package_yml_cache[potential_package_yml_string] = package
-            else
-              @@package_yml_cache[potential_package_yml_string] = nil
-            end
-
-            return package unless package.nil?
-          end
-
-          nil
         end
       end
     end
