@@ -53,6 +53,43 @@ RSpec.describe CodeOwnership::Cli do
           MSG
           subject
         end
+
+        context 'when file is annotated' do
+          let(:argv) { ['for_file', 'app/services/my_service.rb'] }
+
+          before do
+            write_file('app/services/my_service.rb', <<~RUBY)
+            # @team My Other Team
+            RUBY
+            write_file('config/teams/my_other_team.yml', <<~YML)
+              name: My Other Team
+            YML
+          end
+
+          it 'outputs the team info in human readable format' do
+            expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
+              Team: My Other Team
+              Team YML: config/teams/my_other_team.yml
+            MSG
+            subject
+          end
+
+          context 'when annotation is not on the first line' do
+            before do
+              write_file('app/services/my_service.rb', <<~RUBY)
+              # frozen_string_literal: true
+              # @team My Other Team
+              RUBY
+            end
+            it 'outputs the team info in human readable format' do
+              expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
+                Team: My Other Team
+                Team YML: config/teams/my_other_team.yml
+              MSG
+              subject
+            end
+          end
+        end
       end
 
       context 'when run with no files' do

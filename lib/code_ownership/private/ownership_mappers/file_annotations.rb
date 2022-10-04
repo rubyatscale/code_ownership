@@ -55,22 +55,28 @@ module CodeOwnership
           return unless File.file?(filename)
 
           # The annotation should be on line 1 but as of this comment
-          # there's no linter installed to enforce that. We therefore check the
-          # first line (the Ruby VM makes a single `read(1)` call for 8KB),
-          # and if the annotation isn't in the first two lines we assume it
-          # doesn't exist.
+          # there's no linter installed to enforce that.
+          # We therefore read each line of the file until the line does not start
+          # with a '#'. We then attempt to parse out the team name from those lines.
+          team = nil
+          comment_lines = []
 
-          line_1 = File.foreach(filename).first
+          File.foreach(filename) do |line|
+            break unless line.start_with?('#')
+            comment_lines << line
+          end
 
-          return if !line_1
+          return unless comment_lines.any?
 
-          begin
-            team = line_1[TEAM_PATTERN, :team]
-          rescue ArgumentError => ex
-            if ex.message.include?('invalid byte sequence')
-              team = nil
-            else
-              raise
+          comment_lines.each do |line|
+            begin
+              team = line[TEAM_PATTERN, :team]
+            rescue ArgumentError => ex
+              if ex.message.include?('invalid byte sequence')
+                team = nil
+              else
+                raise
+              end
             end
           end
 
