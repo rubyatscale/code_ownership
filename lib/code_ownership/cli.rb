@@ -11,6 +11,8 @@ module CodeOwnership
         validate!(argv)
       elsif command == 'for_file'
         for_file(argv)
+      elsif command == 'for_team'
+        for_team(argv)
       elsif [nil, "help"].include?(command)
         puts <<~USAGE
           Usage: bin/codeownership <subcommand>
@@ -18,6 +20,7 @@ module CodeOwnership
           Subcommands:
             validate - run all validations
             for_file - find code ownership for a single file
+            for_team - find code ownership information for a team
             help  - display help information about code_ownership
         USAGE
       else
@@ -114,6 +117,28 @@ module CodeOwnership
           Team YML: #{team_yml}
         MSG
       end
+    end
+
+    def self.for_team(argv)
+      options = {}
+
+      parser = OptionParser.new do |opts|
+        opts.banner = 'Usage: bin/codeownership for_team \'Team Name\''
+
+        opts.on('--help', 'Shows this prompt') do
+          puts opts
+          exit
+        end
+      end
+      teams = argv.select { |arg| !arg.start_with?('--') }
+      args = parser.order!(argv) {}
+      parser.parse!(args)
+
+      if teams.count != 1
+        raise "Please pass in one team. Use `bin/codeownership for_team --help` for more info"
+      end
+      
+      puts CodeOwnership.for_team(teams.first)
     end
 
     private_class_method :validate!

@@ -35,6 +35,36 @@ module CodeOwnership
     @for_file[file] = owner
   end
 
+  sig { params(team: T.any(CodeTeams::Team, String)).returns(String) }
+  def for_team(team)
+    team = T.must(CodeTeams.find(team)) if team.is_a?(String)
+    ownership_information = T.let([], T::Array[String])
+
+    ownership_information << "# Code Ownership Report for `#{team.name}` Team"
+    Private.mappers.each do |mapper|
+      ownership_information << "## #{mapper.description}"
+      codeowners_lines = mapper.codeowners_lines_to_owners
+      ownership_for_mapper = []
+      codeowners_lines.each do |line, team_for_line|
+        next if team_for_line.nil?
+        if team_for_line.name == team.name
+          ownership_for_mapper << "- #{line}"
+        end
+      end
+
+      if ownership_for_mapper.empty?
+        ownership_information << 'This team owns nothing in this category.'
+      else
+        ownership_information += ownership_for_mapper
+      end
+
+      
+      ownership_information << ""
+    end
+
+    ownership_information.join("\n")
+  end
+
   class InvalidCodeOwnershipConfigurationError < StandardError
   end
 

@@ -92,6 +92,17 @@ Under the hood, this finds the file where the class is defined and returns the o
 
 See `code_ownership_spec.rb` for an example.
 
+### `for_team`
+`CodeOwnership.for_team` can be used to generate an ownership report for a team.
+```ruby
+CodeOwnership.for_team('My Team')
+```
+
+You can shovel this into a markdown file for easy viewing using the CLI:
+```
+bin/codeownership for_team 'My Team' > tmp/ownership_report.md
+```
+
 ## Usage: Generating a `CODEOWNERS` file
 
 A `CODEOWNERS` file defines who owns specific files or paths in a repository. When you run `bin/codeownership validate`, a `.github/CODEOWNERS` file will automatically be generated and updated.

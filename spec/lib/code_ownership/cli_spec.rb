@@ -123,6 +123,7 @@ RSpec.describe CodeOwnership::Cli do
       Subcommands:
         validate - run all validations
         for_file - find code ownership for a single file
+        for_team - find code ownership information for a team
         help  - display help information about code_ownership
       EXPECTED
       expect(CodeOwnership::Cli).to receive(:puts).with(expected)
