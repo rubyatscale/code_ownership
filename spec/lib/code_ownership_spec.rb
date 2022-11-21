@@ -911,4 +911,57 @@ RSpec.describe CodeOwnership do
       end
     end
   end
+
+  describe '.for_team' do
+    before { create_non_empty_application }
+
+    it 'prints out ownership information for the given team' do
+      expect(CodeOwnership.for_team('Bar')).to eq <<~OWNERSHIP
+        # Code Ownership Report for `Bar` Team
+        ## Annotations at the top of file
+        - frontend/javascripts/packages/my_package/owned_file.jsx
+        - packs/my_pack/owned_file.rb
+
+        ## Team-specific owned globs
+        - app/services/bar_stuff/**
+        - frontend/javascripts/bar_stuff/**
+
+        ## Owner metadata key in package.yml
+        - packs/my_other_package/**/**
+
+        ## Owner metadata key in package.json
+        - frontend/javascripts/packages/my_other_package/**/**
+      OWNERSHIP
+    end
+
+    context 'team does not own any packs or files using annotations' do
+      before do
+        write_file('config/teams/foo.yml', <<~CONTENTS)
+          name: Foo
+          github:
+            team: '@MyOrg/foo-team'
+          owned_globs:
+            - app/services/foo_stuff/**
+        CONTENTS
+      end
+
+   it 'prints out ownership information for the given team' do
+      expect(CodeOwnership.for_team('Foo')).to eq <<~OWNERSHIP
+        # Code Ownership Report for `Foo` Team
+        ## Annotations at the top of file
+        This team owns nothing in this category.
+
+        ## Team-specific owned globs
+        - app/services/foo_stuff/**
+
+        ## Owner metadata key in package.yml
+        This team owns nothing in this category.
+
+        ## Owner metadata key in package.json
+        This team owns nothing in this category.
+      OWNERSHIP
+    end
+    end
+  end
+
 end
