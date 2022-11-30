@@ -2,6 +2,7 @@
 
 require 'optparse'
 require 'pathname'
+require 'fileutils'
 
 module CodeOwnership
   class Cli
