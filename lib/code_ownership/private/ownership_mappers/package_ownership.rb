@@ -9,14 +9,14 @@ module CodeOwnership
         extend T::Sig
         include Interface
 
-        @@package_yml_cache = T.let({}, T::Hash[String, T.nilable(ParsePackwerk::Package)]) # rubocop:disable Style/ClassVars
+        @@package_yml_cache = T.let({}, T::Hash[String, T.nilable(Packs::Pack)]) # rubocop:disable Style/ClassVars
 
         sig do
           override.params(file: String).
             returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
-          package = ParsePackwerk.package_from_path(file)
+          package = Packs.for_file(file)
 
           return nil if package.nil?
 
@@ -29,11 +29,11 @@ module CodeOwnership
             returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
-          ParsePackwerk.all.each_with_object({}) do |package, res|
+          Packs.all.each_with_object({}) do |package, res|
             owner = owner_for_package(package)
             next if owner.nil?
 
-            glob = package.directory.join('**/**').to_s
+            glob = package.relative_path.join('**/**').to_s
             Dir.glob(glob).each do |path|
               res[path] = owner
             end
@@ -52,11 +52,11 @@ module CodeOwnership
           override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
         end
         def codeowners_lines_to_owners
-          ParsePackwerk.all.each_with_object({}) do |package, res|
+          Packs.all.each_with_object({}) do |package, res|
             owner = owner_for_package(package)
             next if owner.nil?
 
-            res[package.directory.join('**/**').to_s] = owner
+            res[package.relative_path.join('**/**').to_s] = owner
           end
         end
 
@@ -65,7 +65,7 @@ module CodeOwnership
           'Owner metadata key in package.yml'
         end
 
-        sig { params(package: ParsePackwerk::Package).returns(T.nilable(CodeTeams::Team)) }
+        sig { params(package: Packs::Pack).returns(T.nilable(CodeTeams::Team)) }
         def owner_for_package(package)
           raw_owner_value = package.metadata['owner']
           return nil if !raw_owner_value
