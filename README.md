@@ -36,7 +36,7 @@ File annotations are a last resort if there is no clear home for your code. File
 ```
 
 ### Javascript Package Ownership
-Javascript package based ownership allows you to specify an owenrship key in a `package.json`. To use this, configure your `package.json` like this:
+Javascript package based ownership allows you to specify an ownership key in a `package.json`. To use this, configure your `package.json` like this:
 
 ```json
 {
