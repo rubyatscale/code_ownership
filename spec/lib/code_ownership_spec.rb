@@ -762,7 +762,7 @@ RSpec.describe CodeOwnership do
     before { create_non_empty_application }
 
     it 'returns the right team' do
-      team = CodeOwnership.for_package(ParsePackwerk.find('packs/my_other_package'))
+      team = CodeOwnership.for_package(Packs.find('packs/my_other_package'))
       expect(team.name).to eq 'Bar'
     end
   end

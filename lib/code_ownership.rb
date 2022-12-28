@@ -6,7 +6,7 @@ require 'set'
 require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
-require 'parse_packwerk'
+require 'packs'
 require 'code_ownership/cli'
 require 'code_ownership/private'
 
@@ -140,7 +140,7 @@ module CodeOwnership
     end
   end
 
-  sig { params(package: ParsePackwerk::Package).returns(T.nilable(::CodeTeams::Team)) }
+  sig { params(package: Packs::Pack).returns(T.nilable(::CodeTeams::Team)) }
   def for_package(package)
     Private::OwnershipMappers::PackageOwnership.new.owner_for_package(package)
   end
