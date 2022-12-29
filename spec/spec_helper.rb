@@ -2,7 +2,7 @@ require 'bundler/setup'
 require 'pry'
 require 'code_ownership'
 require 'code_teams'
-
+require 'packs/rspec/support'
 require_relative 'support/application_fixtures'
 
 RSpec.configure do |config|
@@ -16,28 +16,11 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.around do |example|
-    prefix = [File.basename($0), Process.pid].join('-') # rubocop:disable Style/SpecialGlobalVars
-    tmpdir = Dir.mktmpdir(prefix)
-    Dir.chdir(tmpdir) do
-      example.run
-    end
-  ensure
-    FileUtils.rm_rf(tmpdir)
-  end
-
   config.include_context 'application fixtures'
 
   config.before do
     CodeOwnership.bust_caches!
     CodeTeams.bust_caches!
-    Packs.bust_cache!
     allow(CodeTeams::Plugin).to receive(:registry).and_return({})
   end
-end
-
-def write_file(path, content = '')
-  pathname = Pathname.new(path)
-  FileUtils.mkdir_p(pathname.dirname)
-  pathname.write(content)
 end
