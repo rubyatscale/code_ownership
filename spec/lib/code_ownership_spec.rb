@@ -749,6 +749,14 @@ RSpec.describe CodeOwnership do
         end
       end
     end
+
+    context 'when nothing is owned' do
+      it 'returns nil' do
+        expect { raise 'opsy' }.to raise_error do |ex|
+          expect(CodeOwnership.first_owned_file_for_backtrace(ex.backtrace)).to be_nil
+        end
+      end
+    end
   end
 
   describe '.for_class' do
