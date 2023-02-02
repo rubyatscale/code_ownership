@@ -58,7 +58,6 @@ module CodeOwnership
         ownership_information += ownership_for_mapper
       end
 
-      
       ownership_information << ""
     end
 
@@ -93,11 +92,14 @@ module CodeOwnership
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
   def for_backtrace(backtrace, excluded_teams: [])
-    return unless backtrace
+    first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)&.first
+  end
 
+  sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
+  def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
     backtrace_with_ownership(backtrace).find do |(team, _file)|
       team && !excluded_teams.include?(team)
-    end&.first
+    end
   end
 
   sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Array[[T.nilable(::CodeTeams::Team), String]]) }
@@ -129,6 +131,7 @@ module CodeOwnership
       ]
     end
   end
+  private_class_method(:backtrace_with_ownership)
 
   sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)

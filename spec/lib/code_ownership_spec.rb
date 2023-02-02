@@ -727,19 +727,25 @@ RSpec.describe CodeOwnership do
     end
   end
 
-  describe '.backtrace_with_ownership' do
+  describe '.first_owned_file_for_backtrace' do
     before do
       create_files_with_defined_classe
+    end
+
+
+    context 'excluded_teams is not passed in as an input parameter' do
+      it 'finds the right team' do
+        expect { MyFile.raise_error }.to raise_error do |ex|
+          expect(CodeOwnership.first_owned_file_for_backtrace(ex.backtrace)).to eq [CodeTeams.find('Bar'), 'app/my_error.rb']
+        end
+      end
     end
 
     context 'excluded_teams is not passed in as an input parameter' do
       it 'finds the right team' do
         expect { MyFile.raise_error }.to raise_error do |ex|
-          expect(CodeOwnership.backtrace_with_ownership(ex.backtrace).first(3)).to match([
-            [CodeTeams.find('Bar'), 'app/my_error.rb'],
-            [CodeTeams.find('Foo'), 'app/my_file.rb'],
-            [nil, include('lib/code_ownership_spec.rb')]
-          ])
+          team_to_exclude = CodeTeams.find('Bar')
+          expect(CodeOwnership.first_owned_file_for_backtrace(ex.backtrace, excluded_teams: [team_to_exclude])).to eq [CodeTeams.find('Foo'), 'app/my_file.rb']
         end
       end
     end
