@@ -705,22 +705,13 @@ RSpec.describe CodeOwnership do
   end
 
   describe '.for_backtrace' do
-    def prevent_false_positive!
-      # The above code should raise, and we should never arrive at this next expectation.
-      # This is just to protect against a case where we have a false-postive test because the above does not raise.
-      expect(true).to eq false # rubocop:disable RSpec/ExpectActual
-    end
-
     before do
       create_files_with_defined_classe
     end
 
     context 'excluded_teams is not passed in as an input parameter' do
       it 'finds the right team' do
-        begin # rubocop:disable Style/RedundantBegin
-          MyFile.raise_error
-          prevent_false_positive!
-        rescue StandardError => ex
+        expect { MyFile.raise_error }.to raise_error do |ex|
           expect(CodeOwnership.for_backtrace(ex.backtrace)).to eq CodeTeams.find('Bar')
         end
       end
@@ -728,10 +719,7 @@ RSpec.describe CodeOwnership do
 
     context 'excluded_teams is passed in as an input parameter' do
       it 'ignores the first part of the stack trace and finds the next viable owner' do
-        begin # rubocop:disable Style/RedundantBegin
-          MyFile.raise_error
-          prevent_false_positive!
-        rescue StandardError => ex
+        expect { MyFile.raise_error }.to raise_error do |ex|
           team_to_exclude = CodeTeams.find('Bar')
           expect(CodeOwnership.for_backtrace(ex.backtrace, excluded_teams: [team_to_exclude])).to eq CodeTeams.find('Foo')
         end
