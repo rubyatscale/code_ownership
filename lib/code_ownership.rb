@@ -58,7 +58,6 @@ module CodeOwnership
         ownership_information += ownership_for_mapper
       end
 
-      
       ownership_information << ""
     end
 
@@ -93,7 +92,25 @@ module CodeOwnership
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
   def for_backtrace(backtrace, excluded_teams: [])
-    return unless backtrace
+    first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)&.first
+  end
+
+  # Given a backtrace from either `Exception#backtrace` or `caller`, find the
+  # first owned file in it, useful for figuring out which file is being blamed.
+  sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
+  def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
+    backtrace_with_ownership(backtrace).each do |(team, file)|
+      if team && !excluded_teams.include?(team)
+        return [team, file]
+      end
+    end
+
+    nil
+  end
+
+  sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Enumerable[[T.nilable(::CodeTeams::Team), String]]) }
+  def backtrace_with_ownership(backtrace)
+    return [] unless backtrace
 
     # The pattern for a backtrace hasn't changed in forever and is considered
     # stable: https://github.com/ruby/ruby/blob/trunk/vm_backtrace.c#L303-L317
@@ -110,18 +127,19 @@ module CodeOwnership
         `(?<function>.*)' # Matches "`block (3 levels) in create'"
       \z}x
 
-    backtrace.each do |line|
+    backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)
+      next unless match
 
-      if match
-        team = CodeOwnership.for_file(T.must(match[:file]))
-        if team && !excluded_teams.include?(team)
-          return team
-        end
-      end
+      file = T.must(match[:file])
+
+      [
+        CodeOwnership.for_file(file),
+        file,
+      ]
     end
-    nil
   end
+  private_class_method(:backtrace_with_ownership)
 
   sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
