@@ -108,7 +108,7 @@ module CodeOwnership
     nil
   end
 
-  sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Array[[T.nilable(::CodeTeams::Team), String]]) }
+  sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Enumerable[[T.nilable(::CodeTeams::Team), String]]) }
   def backtrace_with_ownership(backtrace)
     return [] unless backtrace
 
@@ -127,7 +127,7 @@ module CodeOwnership
         `(?<function>.*)' # Matches "`block (3 levels) in create'"
       \z}x
 
-    backtrace.filter_map do |line|
+    backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)
       next unless match
 
