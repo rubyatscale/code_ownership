@@ -95,11 +95,17 @@ module CodeOwnership
     first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)&.first
   end
 
+  # Given a backtrace from either `Exception#backtrace` or `caller`, find the
+  # first owned file in it, useful for figuring out which file is being blamed.
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
   def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
-    backtrace_with_ownership(backtrace).find do |(team, _file)|
-      team && !excluded_teams.include?(team)
+    backtrace_with_ownership(backtrace).each do |(team, file)|
+      if team && !excluded_teams.include?(team)
+        return [team, file]
+      end
     end
+
+    nil
   end
 
   sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Array[[T.nilable(::CodeTeams::Team), String]]) }
@@ -125,9 +131,11 @@ module CodeOwnership
       match = line.match(backtrace_line)
       next unless match
 
+      file = T.must(match[:file])
+
       [
-        CodeOwnership.for_file(T.must(match[:file])),
-        match[:file],
+        CodeOwnership.for_file(file),
+        file,
       ]
     end
   end
