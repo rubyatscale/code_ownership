@@ -16,6 +16,7 @@ require 'code_ownership/private/ownership_mappers/file_annotations'
 require 'code_ownership/private/ownership_mappers/team_globs'
 require 'code_ownership/private/ownership_mappers/package_ownership'
 require 'code_ownership/private/ownership_mappers/js_package_ownership'
+require 'code_ownership/private/ownership_mappers/team_yml_ownership'
 
 module CodeOwnership
   module Private
@@ -64,6 +65,7 @@ module CodeOwnership
         Private::OwnershipMappers::TeamGlobs.new,
         Private::OwnershipMappers::PackageOwnership.new,
         Private::OwnershipMappers::JsPackageOwnership.new,
+        Private::OwnershipMappers::TeamYmlOwnership.new,
       ]
     end
 
