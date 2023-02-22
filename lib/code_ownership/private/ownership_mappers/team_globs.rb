@@ -43,7 +43,9 @@ module CodeOwnership
 
           sig { returns(String) }
           def description
-            description_args = mapping_contexts.map do |context|
+            # These are sorted only to prevent non-determinism in output between local and CI environments.
+            sorted_contexts = mapping_contexts.sort_by{|context| context.team.config_yml.to_s }
+            description_args = sorted_contexts.map do |context|
               "`#{context.glob}` (from `#{context.team.config_yml}`)"
             end
 

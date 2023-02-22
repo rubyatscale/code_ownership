@@ -697,8 +697,8 @@ RSpec.describe CodeOwnership do
             expect(e.message).to eq <<~EXPECTED.chomp
               `owned_globs` cannot overlap between teams. The following globs overlap:
 
-              - `packs/**/**` (from `config/teams/foo.yml`), `packs/**/**` (from `config/teams/bar.yml`)
-              - `frontend/javascripts/blah/**/**` (from `config/teams/foo.yml`), `frontend/javascripts/blah/subdir/my_file.rb` (from `config/teams/bar.yml`)
+              - `packs/**/**` (from `config/teams/bar.yml`), `packs/**/**` (from `config/teams/foo.yml`)
+              - `frontend/javascripts/blah/subdir/my_file.rb` (from `config/teams/bar.yml`), `frontend/javascripts/blah/**/**` (from `config/teams/foo.yml`)
 
               See https://github.com/rubyatscale/code_ownership#README.md for more details
             EXPECTED
