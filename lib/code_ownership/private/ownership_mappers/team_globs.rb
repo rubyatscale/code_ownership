@@ -31,6 +31,58 @@ module CodeOwnership
           end
         end
 
+        class MappingContext < T::Struct
+          const :glob, String
+          const :team, CodeTeams::Team
+        end
+
+        class GlobOverlap < T::Struct
+          extend T::Sig
+
+          const :mapping_contexts, T::Array[MappingContext]
+
+          sig { returns(String) }
+          def description
+            # These are sorted only to prevent non-determinism in output between local and CI environments.
+            sorted_contexts = mapping_contexts.sort_by{|context| context.team.config_yml.to_s }
+            description_args = sorted_contexts.map do |context|
+              "`#{context.glob}` (from `#{context.team.config_yml}`)"
+            end
+
+            description_args.join(', ')
+          end
+        end
+
+        sig do
+          returns(T::Array[GlobOverlap])
+        end
+        def find_overlapping_globs
+          mapped_files = T.let({}, T::Hash[String, T::Array[MappingContext]])
+          CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+            TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
+              Dir.glob(glob).each do |filename|
+                mapped_files[filename] ||= []
+                T.must(mapped_files[filename]) << MappingContext.new(glob: glob, team: team)
+              end
+            end
+          end
+
+          overlaps = T.let([], T::Array[GlobOverlap])
+          mapped_files.each do |filename, mapping_contexts|
+            if mapping_contexts.count > 1
+              overlaps << GlobOverlap.new(mapping_contexts: mapping_contexts)
+            end
+          end
+
+          deduplicated_overlaps = overlaps.uniq do |glob_overlap|
+            glob_overlap.mapping_contexts.map do |context|
+              [context.glob, context.team.name]
+            end
+          end
+
+          deduplicated_overlaps
+        end
+
         sig do
           override.params(file: String).
             returns(T.nilable(::CodeTeams::Team))
