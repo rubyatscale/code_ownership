@@ -10,6 +10,7 @@ require 'code_ownership/private/validations/interface'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
 require 'code_ownership/private/validations/files_have_unique_owners'
+require 'code_ownership/private/validations/no_overlapping_globs'
 require 'code_ownership/private/ownership_mappers/interface'
 require 'code_ownership/private/ownership_mappers/file_annotations'
 require 'code_ownership/private/ownership_mappers/team_globs'
@@ -39,6 +40,7 @@ module CodeOwnership
         Validations::FilesHaveOwners.new,
         Validations::FilesHaveUniqueOwners.new,
         Validations::GithubCodeownersUpToDate.new,
+        Validations::NoOverlappingGlobs.new,
       ]
 
       errors = validators.flat_map do |validator|
