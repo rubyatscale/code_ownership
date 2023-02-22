@@ -189,6 +189,9 @@ RSpec.describe CodeOwnership do
 
               # Owner metadata key in package.json
               /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
+
+              # Team YML ownership
+              /config/teams/bar.yml @MyOrg/bar-team
             EXPECTED
           end
 
@@ -220,6 +223,9 @@ RSpec.describe CodeOwnership do
 
                 # Owner metadata key in package.json
                 /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
+
+                # Team YML ownership
+                /config/teams/bar.yml @MyOrg/bar-team
               EXPECTED
             end
           end
@@ -428,6 +434,9 @@ RSpec.describe CodeOwnership do
 
               # Owner metadata key in package.json
               /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
+
+              # Team YML ownership
+              /config/teams/bar.yml @MyOrg/bar-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
@@ -486,6 +495,8 @@ RSpec.describe CodeOwnership do
               # Owner metadata key in package.json
               /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
 
+              # Team YML ownership
+              /config/teams/bar.yml @MyOrg/bar-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
@@ -530,6 +541,8 @@ RSpec.describe CodeOwnership do
               # Owner metadata key in package.json
               /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
 
+              # Team YML ownership
+              /config/teams/bar.yml @MyOrg/bar-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
@@ -734,6 +747,10 @@ RSpec.describe CodeOwnership do
 
     it 'can find the owner of files in team-owned javascript packages' do
       expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
+    end
+
+    it 'maps a team YML to be owned by the team itself' do
+      expect(CodeOwnership.for_file('config/teams/bar.yml')).to eq CodeTeams.find('Bar')
     end
 
     describe 'path formatting expectations' do
@@ -996,6 +1013,9 @@ RSpec.describe CodeOwnership do
 
         ## Owner metadata key in package.json
         - frontend/javascripts/packages/my_other_package/**/**
+
+        ## Team YML ownership
+        - config/teams/bar.yml
       OWNERSHIP
     end
 
@@ -1024,6 +1044,9 @@ RSpec.describe CodeOwnership do
 
         ## Owner metadata key in package.json
         This team owns nothing in this category.
+
+        ## Team YML ownership
+        - config/teams/foo.yml
       OWNERSHIP
     end
     end
