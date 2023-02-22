@@ -736,6 +736,10 @@ RSpec.describe CodeOwnership do
       expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
     end
 
+    it 'maps a team YML to be owned by the team itself' do
+      expect(CodeOwnership.for_file('config/teams/bar.yml')).to eq CodeTeams.find('Bar')
+    end
+
     describe 'path formatting expectations' do
       # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
       it 'will not find the ownership of a file that is not a cleanpath' do
