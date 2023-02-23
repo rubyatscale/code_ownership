@@ -20,7 +20,7 @@ module CodeOwnership
 
         @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
 
-        TEAM_PATTERN = T.let(/\A(?:#|\/\/) @team (?<team>.*)\Z/.freeze, Regexp)
+        TEAM_PATTERN = T.let(/\A(?:#|\/\/|<%#) @team (?<team>.*?)(?: %>)?\Z/.freeze, Regexp)
 
         sig do
           override.params(file: String).

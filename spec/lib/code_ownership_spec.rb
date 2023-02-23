@@ -178,6 +178,7 @@ RSpec.describe CodeOwnership do
 
               # Annotations at the top of file
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+              /packs/my_pack/owned_erb.erb @MyOrg/bar-team
               /packs/my_pack/owned_file.rb @MyOrg/bar-team
 
               # Team-specific owned globs
@@ -212,6 +213,7 @@ RSpec.describe CodeOwnership do
 
                 # Annotations at the top of file
                 /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+                /packs/my_pack/owned_erb.erb @MyOrg/bar-team
                 /packs/my_pack/owned_file.rb @MyOrg/bar-team
 
                 # Team-specific owned globs
@@ -425,6 +427,7 @@ RSpec.describe CodeOwnership do
               # Annotations at the top of file
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
               /frontend/some/extra/line/that/should/not/exist @MyOrg/bar-team
+              /packs/my_pack/owned_erb.erb @MyOrg/bar-team
 
               # Team-specific owned globs
               /app/services/bar_stuff/** @MyOrg/bar-team
@@ -482,6 +485,7 @@ RSpec.describe CodeOwnership do
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
               /packs/my_pack/owned_file.rb @MyOrg/bar-team
               /frontend/some/extra/line/that/should/not/exist @MyOrg/bar-team
+              /packs/my_pack/owned_erb.erb @MyOrg/bar-team
 
               # Team-specific owned globs
               /app/services/bar_stuff/** @MyOrg/bar-team
@@ -533,6 +537,7 @@ RSpec.describe CodeOwnership do
 
               # Annotations at the top of file
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+              /packs/my_pack/owned_erb.erb @MyOrg/bar-team
 
               # Team-specific owned globs
               /app/services/bar_stuff/** @MyOrg/bar-team
@@ -1007,6 +1012,7 @@ RSpec.describe CodeOwnership do
         ## Annotations at the top of file
         - frontend/javascripts/packages/my_package/owned_file.jsx
         - packs/my_pack/owned_file.rb
+        - packs/my_pack/owned_erb.erb
 
         ## Team-specific owned globs
         - app/services/bar_stuff/**
