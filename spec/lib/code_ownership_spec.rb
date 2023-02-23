@@ -753,6 +753,10 @@ RSpec.describe CodeOwnership do
       expect(CodeOwnership.for_file('config/teams/bar.yml')).to eq CodeTeams.find('Bar')
     end
 
+    it 'can find the owner of an ERB file with team annotations' do
+      expect(CodeOwnership.for_file('packs/my_pack/owned_erb.erb')).to eq CodeTeams.find('Bar')
+    end
+
     describe 'path formatting expectations' do
       # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
       it 'will not find the ownership of a file that is not a cleanpath' do

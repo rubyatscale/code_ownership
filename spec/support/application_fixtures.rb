@@ -9,6 +9,10 @@ RSpec.shared_context 'application fixtures' do
       # @team Bar
     CONTENTS
 
+    write_file('packs/my_pack/owned_erb.erb', <<~CONTENTS)
+      <%# @team Unknown %>
+    CONTENTS
+
     write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
       // @team Bar
     CONTENTS
