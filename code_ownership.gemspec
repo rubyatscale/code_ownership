@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "code_ownership"
-  spec.version       = '1.31.0'
+  spec.version       = '1.31.1'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.executables = ['codeownership']
 
   # Specify which files should be added to the gem when it is released.
-  spec.files = Dir['README.md', 'sorbet/**/*', 'lib/**/*', 'bin/**/*']
+  spec.files = Dir['README.md', 'lib/**/*', 'bin/**/*']
   spec.require_paths = ['lib']
 
   spec.add_dependency 'code_teams', '~> 1.0'
