@@ -223,25 +223,25 @@ RSpec.describe CodeOwnership do
         CONTENTS
       end
 
-   it 'prints out ownership information for the given team' do
-      expect(CodeOwnership.for_team('Foo')).to eq <<~OWNERSHIP
-        # Code Ownership Report for `Foo` Team
-        ## Annotations at the top of file
-        This team owns nothing in this category.
+      it 'prints out ownership information for the given team' do
+        expect(CodeOwnership.for_team('Foo')).to eq <<~OWNERSHIP
+          # Code Ownership Report for `Foo` Team
+          ## Annotations at the top of file
+          This team owns nothing in this category.
 
-        ## Team-specific owned globs
-        - app/services/foo_stuff/**
+          ## Team-specific owned globs
+          - app/services/foo_stuff/**
 
-        ## Owner metadata key in package.yml
-        This team owns nothing in this category.
+          ## Owner metadata key in package.yml
+          This team owns nothing in this category.
 
-        ## Owner metadata key in package.json
-        This team owns nothing in this category.
+          ## Owner metadata key in package.json
+          This team owns nothing in this category.
 
-        ## Team YML ownership
-        - config/teams/foo.yml
-      OWNERSHIP
-    end
+          ## Team YML ownership
+          - config/teams/foo.yml
+        OWNERSHIP
+      end
     end
   end
 end
