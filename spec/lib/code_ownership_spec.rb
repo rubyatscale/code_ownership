@@ -187,15 +187,6 @@ RSpec.describe CodeOwnership do
     end
   end
 
-  describe '.for_package' do
-    before { create_non_empty_application }
-
-    it 'returns the right team' do
-      team = CodeOwnership.for_package(Packs.find('packs/my_other_package'))
-      expect(team.name).to eq 'Bar'
-    end
-  end
-
   describe '.remove_file_annotation!' do
     subject(:remove_file_annotation) do
       CodeOwnership.remove_file_annotation!(filename)
