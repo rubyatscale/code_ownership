@@ -105,7 +105,7 @@ module CodeOwnership
             map[team.name] = team_github.team
           end
 
-          Private.mappers.flat_map do |mapper|
+          Private::OwnershipMappers::Interface.all.flat_map do |mapper|
             codeowners_lines = mapper.codeowners_lines_to_owners.filter_map do |line, team|
               team_mapping = github_team_map[team&.name]
               next unless team_mapping

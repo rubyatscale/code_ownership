@@ -27,7 +27,7 @@ module CodeOwnership
 
     owner = T.let(nil, T.nilable(CodeTeams::Team))
 
-    Private.mappers.each do |mapper|
+    Private::OwnershipMappers::Interface.all.each do |mapper|
       owner = mapper.map_file_to_owner(file)
       break if owner
     end
@@ -41,7 +41,7 @@ module CodeOwnership
     ownership_information = T.let([], T::Array[String])
 
     ownership_information << "# Code Ownership Report for `#{team.name}` Team"
-    Private.mappers.each do |mapper|
+    Private::OwnershipMappers::Interface.all.each do |mapper|
       ownership_information << "## #{mapper.description}"
       codeowners_lines = mapper.codeowners_lines_to_owners
       ownership_for_mapper = []
@@ -69,7 +69,7 @@ module CodeOwnership
 
   sig { params(filename: String).void }
   def self.remove_file_annotation!(filename)
-    Private.file_annotations_mapper.remove_file_annotation!(filename)
+    Private::OwnershipMappers::FileAnnotations.new.remove_file_annotation!(filename)
   end
 
   sig do
@@ -172,6 +172,6 @@ module CodeOwnership
     @for_file = nil
     @memoized_values = nil
     Private.bust_caches!
-    Private.mappers.each(&:bust_caches!)
+    Private::OwnershipMappers::Interface.all.each(&:bust_caches!)
   end
 end
