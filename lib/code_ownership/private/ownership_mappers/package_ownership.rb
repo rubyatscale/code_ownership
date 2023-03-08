@@ -7,7 +7,7 @@ module CodeOwnership
     module OwnershipMappers
       class PackageOwnership
         extend T::Sig
-        include Interface
+        include Mapper
 
         @@package_yml_cache = T.let({}, T::Hash[String, T.nilable(Packs::Pack)]) # rubocop:disable Style/ClassVars
 

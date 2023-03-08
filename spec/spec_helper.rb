@@ -18,9 +18,11 @@ RSpec.configure do |config|
 
   config.include_context 'application fixtures'
 
-  config.before do
-    CodeOwnership.bust_caches!
-    CodeTeams.bust_caches!
-    allow(CodeTeams::Plugin).to receive(:registry).and_return({})
+  config.before do |c|
+    unless c.metadata[:do_not_bust_cache]
+      CodeOwnership.bust_caches!
+      CodeTeams.bust_caches!
+      allow(CodeTeams::Plugin).to receive(:registry).and_return({})
+    end
   end
 end

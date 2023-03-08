@@ -80,6 +80,7 @@ module CodeOwnership
         write_file('config/teams/foo.yml', <<~CONTENTS)
           name: Foo
         CONTENTS
+        create_minimal_configuration
       end
 
       context 'ruby file has no annotation' do

@@ -7,7 +7,7 @@ module CodeOwnership
     module OwnershipMappers
       class JsPackageOwnership
         extend T::Sig
-        include Interface
+        include Mapper
 
         @@package_json_cache = T.let({}, T::Hash[String, T.nilable(ParseJsPackages::Package)]) # rubocop:disable Style/ClassVars
 
