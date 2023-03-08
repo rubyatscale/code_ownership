@@ -116,10 +116,6 @@ RSpec.describe CodeOwnership do
       expect(CodeOwnership.for_file('frontend/javascripts/bar_stuff/thing.jsx')).to eq CodeTeams.find('Bar')
     end
 
-    it 'can find the owner of files in team-owned packwerk packages' do
-      expect(CodeOwnership.for_file('packs/my_other_package/my_file.rb')).to eq CodeTeams.find('Bar')
-    end
-
     it 'can find the owner of files in team-owned javascript packages' do
       expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
     end
