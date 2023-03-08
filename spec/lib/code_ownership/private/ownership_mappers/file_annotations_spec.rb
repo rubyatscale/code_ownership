@@ -34,25 +34,37 @@ module CodeOwnership
     end
 
     describe '.for_file' do
-      before do
-        create_configuration
-        write_file('config/teams/bar.yml', <<~CONTENTS)
-          name: Bar
-        CONTENTS
+      context 'ruby owned file' do
+        before do
+          create_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
 
-        write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
-          # @team Bar
-        CONTENTS
+          write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
+            # @team Bar
+          CONTENTS
+        end
+
+        it 'can find the owner of a ruby file with file annotations' do
+          expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
+        end
       end
 
-      it 'can find the owner of a ruby file with file annotations' do
-        expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
-      end
+      context 'javascript owned file' do
+        before do
+          create_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
 
-      describe 'path formatting expectations' do
-        # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
-        it 'will not find the ownership of a file that is not a cleanpath' do
-          expect(CodeOwnership.for_file('./packs/my_pack/owned_file.rb')).to eq nil
+          write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
+            // @team Bar
+          CONTENTS
+        end
+
+        it 'can find the owner of a javascript file with file annotations' do
+          expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx')).to eq CodeTeams.find('Bar')
         end
       end
     end
