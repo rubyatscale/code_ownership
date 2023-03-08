@@ -722,12 +722,16 @@ RSpec.describe CodeOwnership do
 
   end
 
+  # See tests for individual ownership_mappers to understand behavior for each mapper
   describe '.for_file' do
-    before { create_non_empty_application }
-
-    it 'can find the owner of a ruby file with file annotations' do
-      expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
+    describe 'path formatting expectations' do
+      # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
+      it 'will not find the ownership of a file that is not a cleanpath' do
+        expect(CodeOwnership.for_file('./packs/my_pack/owned_file.rb')).to eq nil
+      end
     end
+
+    before { create_non_empty_application }
 
     it 'can find the owner of a javascript file with file annotations' do
       expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx')).to eq CodeTeams.find('Bar')
@@ -1002,7 +1006,6 @@ RSpec.describe CodeOwnership do
         # Code Ownership Report for `Bar` Team
         ## Annotations at the top of file
         - frontend/javascripts/packages/my_package/owned_file.jsx
-        - packs/my_pack/owned_file.rb
 
         ## Team-specific owned globs
         - app/services/bar_stuff/**

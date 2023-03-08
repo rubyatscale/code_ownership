@@ -1,13 +1,13 @@
 RSpec.shared_context 'application fixtures' do
-  let(:create_non_empty_application) do
+  let(:create_configuration) do
     write_file('config/code_ownership.yml', <<~YML)
       owned_globs:
         - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'
     YML
+  end
 
-    write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
-      # @team Bar
-    CONTENTS
+  let(:create_non_empty_application) do
+    create_configuration
 
     write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
       // @team Bar
