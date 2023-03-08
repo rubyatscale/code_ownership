@@ -1,17 +1,29 @@
 RSpec.shared_context 'application fixtures' do
-  let(:create_non_empty_application) do
+  let(:create_configuration) do
     write_file('config/code_ownership.yml', <<~YML)
       owned_globs:
         - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'
     YML
+  end
+
+  let(:create_minimal_configuration) do
+    write_file('config/code_ownership.yml', <<~YML)
+      owned_globs:
+        - app/**/*.rb
+    YML
+  end
+
+  let(:create_non_empty_application) do
+    create_configuration
+
+    write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
+      // @team Bar
+    CONTENTS
 
     write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
       # @team Bar
     CONTENTS
 
-    write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
-      // @team Bar
-    CONTENTS
 
     write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
       {
@@ -50,12 +62,6 @@ RSpec.shared_context 'application fixtures' do
     write_file('packs/my_other_package/my_file.rb')
   end
 
-  let(:create_minimal_configuration) do
-    write_file('config/code_ownership.yml', <<~YML)
-      owned_globs:
-        - app/**/*.rb
-    YML
-  end
 
   let(:create_files_with_defined_classe) do
     write_file('app/my_file.rb', <<~CONTENTS)
