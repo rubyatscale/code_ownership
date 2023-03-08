@@ -24,5 +24,28 @@ module CodeOwnership
         end
       end
     end
+
+    describe 'CodeOwnershp.for_file' do
+      before do
+        create_configuration
+
+        write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
+          {
+            "name": "@gusto/my_package",
+            "metadata": {
+              "owner": "Bar"
+            }
+          }
+        CONTENTS
+        write_file('frontend/javascripts/packages/my_other_package/my_file.jsx')
+        write_file('config/teams/bar.yml', <<~CONTENTS)
+          name: Bar
+        CONTENTS
+      end
+
+      it 'can find the owner of files in team-owned javascript packages' do
+        expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx').name).to eq 'Bar'
+      end
+    end
   end
 end

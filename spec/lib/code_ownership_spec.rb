@@ -83,9 +83,6 @@ RSpec.describe CodeOwnership do
 
     before { create_non_empty_application }
 
-    it 'can find the owner of files in team-owned javascript packages' do
-      expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
-    end
   end
 
   describe '.for_backtrace' do
