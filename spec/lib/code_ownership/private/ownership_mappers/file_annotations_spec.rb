@@ -68,5 +68,151 @@ module CodeOwnership
         end
       end
     end
+
+    describe '.remove_file_annotation!' do
+      subject(:remove_file_annotation) do
+        CodeOwnership.remove_file_annotation!(filename)
+        # Getting the owner gets stored in the cache, so after we remove the file annotation we want to bust the cache
+        CodeOwnership.bust_caches!
+      end
+
+      before do
+        write_file('config/teams/foo.yml', <<~CONTENTS)
+          name: Foo
+        CONTENTS
+      end
+
+      context 'ruby file has no annotation' do
+        let(:filename) { 'app/my_file.rb' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            # Empty file
+          CONTENTS
+        end
+
+        it 'has no effect' do
+          expect(File.read(filename)).to eq "# Empty file\n"
+
+          remove_file_annotation
+
+          expect(File.read(filename)).to eq "# Empty file\n"
+        end
+      end
+
+      context 'ruby file has annotation' do
+        let(:filename) { 'app/my_file.rb' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            # @team Foo
+
+            # Some content
+          CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
+        end
+
+        it 'removes the annotation' do
+          current_ownership = CodeOwnership.for_file(filename)
+          expect(current_ownership&.name).to eq 'Foo'
+          expect(File.read(filename)).to eq <<~RUBY
+            # @team Foo
+
+            # Some content
+          RUBY
+
+          remove_file_annotation
+
+          new_ownership = CodeOwnership.for_file(filename)
+          expect(new_ownership).to eq nil
+          expected_output = <<~RUBY
+            # Some content
+          RUBY
+
+          expect(File.read(filename)).to eq expected_output
+        end
+      end
+
+      context 'javascript file has annotation' do
+        let(:filename) { 'app/my_file.jsx' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            // @team Foo
+
+            // Some content
+          CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
+        end
+
+        it 'removes the annotation' do
+          current_ownership = CodeOwnership.for_file(filename)
+          expect(current_ownership&.name).to eq 'Foo'
+          expect(File.read(filename)).to eq <<~JAVASCRIPT
+            // @team Foo
+
+            // Some content
+          JAVASCRIPT
+
+          remove_file_annotation
+
+          new_ownership = CodeOwnership.for_file(filename)
+          expect(new_ownership).to eq nil
+          expected_output = <<~JAVASCRIPT
+            // Some content
+          JAVASCRIPT
+
+          expect(File.read(filename)).to eq expected_output
+        end
+      end
+
+      context 'file has new lines after the annotation' do
+        let(:filename) { 'app/my_file.rb' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            # @team Foo
+
+
+            # Some content
+
+
+            # Some other content
+          CONTENTS
+        end
+
+        it 'removes the annotation and the leading new lines' do
+          expect(File.read(filename)).to eq <<~RUBY
+            # @team Foo
+
+
+            # Some content
+
+
+            # Some other content
+          RUBY
+
+          remove_file_annotation
+
+          expected_output = <<~RUBY
+            # Some content
+
+
+            # Some other content
+          RUBY
+
+          expect(File.read(filename)).to eq expected_output
+        end
+      end
+    end
+
   end
 end
