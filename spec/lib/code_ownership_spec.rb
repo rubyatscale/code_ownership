@@ -1,8 +1,6 @@
 RSpec.describe CodeOwnership do
   # Look at individual validations spec to see other validaions that ship with CodeOwnership
   describe '.validate!' do
-    let(:codeowners_validation) { CodeOwnership.const_get(:Private)::Validations::GithubCodeownersUpToDate }
-
     describe 'teams must exist validation' do
       before do
         write_file('config/teams/bar.yml', <<~CONTENTS)
