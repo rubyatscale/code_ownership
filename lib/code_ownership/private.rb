@@ -10,7 +10,6 @@ require 'code_ownership/private/validations/interface'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
 require 'code_ownership/private/validations/files_have_unique_owners'
-require 'code_ownership/private/validations/no_overlapping_globs'
 require 'code_ownership/private/ownership_mappers/interface'
 require 'code_ownership/private/ownership_mappers/file_annotations'
 require 'code_ownership/private/ownership_mappers/team_globs'
@@ -37,14 +36,7 @@ module CodeOwnership
 
     sig { params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).void }
     def self.validate!(files:, autocorrect: true, stage_changes: true)
-      validators = [
-        Validations::FilesHaveOwners.new,
-        Validations::FilesHaveUniqueOwners.new,
-        Validations::GithubCodeownersUpToDate.new,
-        Validations::NoOverlappingGlobs.new,
-      ]
-
-      errors = validators.flat_map do |validator|
+      errors = Validations::Interface.all.flat_map do |validator|
         validator.validation_errors(
           files: files,
           autocorrect: autocorrect,
@@ -56,23 +48,6 @@ module CodeOwnership
         errors << 'See https://github.com/rubyatscale/code_ownership#README.md for more details'
         raise InvalidCodeOwnershipConfigurationError.new(errors.join("\n")) # rubocop:disable Style/RaiseArgs
       end
-    end
-
-    sig { returns(T::Array[Private::OwnershipMappers::Interface]) }
-    def self.mappers
-      [
-        file_annotations_mapper,
-        Private::OwnershipMappers::TeamGlobs.new,
-        Private::OwnershipMappers::PackageOwnership.new,
-        Private::OwnershipMappers::JsPackageOwnership.new,
-        Private::OwnershipMappers::TeamYmlOwnership.new,
-      ]
-    end
-
-    sig { returns(Private::OwnershipMappers::FileAnnotations) }
-    def self.file_annotations_mapper
-      @file_annotations_mapper = T.let(@file_annotations_mapper, T.nilable(Private::OwnershipMappers::FileAnnotations))
-      @file_annotations_mapper ||= Private::OwnershipMappers::FileAnnotations.new
     end
 
     # Returns a string version of the relative path to a Rails constant,
@@ -112,7 +87,7 @@ module CodeOwnership
       @files_by_mapper ||= begin
         files_by_mapper = files.map { |file| [file, []] }.to_h
 
-        Private.mappers.each do |mapper|
+        Private::OwnershipMappers::Interface.all.each do |mapper|
           mapper.map_files_to_owners(files).each do |file, _team|
             files_by_mapper[file] ||= []
             T.must(files_by_mapper[file]) << mapper.description

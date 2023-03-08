@@ -11,6 +11,22 @@ module CodeOwnership
 
         interface!
 
+        class << self
+          extend T::Sig
+
+          sig { params(base: Class).void }
+          def included(base)
+            @mappers ||= T.let(@mappers, T.nilable(T::Array[Class]))
+            @mappers ||= []
+            @mappers << base
+          end
+
+          sig { returns(T::Array[Interface]) }
+          def all
+            T.unsafe(@mappers).map(&:new)
+          end
+        end
+
         #
         # This should be fast when run with ONE file
         #
