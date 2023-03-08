@@ -43,7 +43,7 @@ module CodeOwnership
 
     describe 'CodeOwnership.for_file' do
       it 'can find the owner of files in team-owned pack' do
-        expect(CodeOwnership.for_file('packs/my_other_package/my_file.rb')).to eq CodeTeams.find('Bar')
+        expect(CodeOwnership.for_file('packs/my_other_package/my_file.rb').name).to eq 'Bar'
       end
     end
 

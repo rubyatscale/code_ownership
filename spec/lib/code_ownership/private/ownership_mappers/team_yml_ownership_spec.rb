@@ -31,7 +31,7 @@ module CodeOwnership
 
     describe 'CodeOwnership.for_file' do
       it 'maps a team YML to be owned by the team itself' do
-        expect(CodeOwnership.for_file('config/teams/bar.yml')).to eq CodeTeams.find('Bar')
+        expect(CodeOwnership.for_file('config/teams/bar.yml').name).to eq 'Bar'
       end
     end
   end

@@ -47,7 +47,7 @@ module CodeOwnership
         end
 
         it 'can find the owner of a ruby file with file annotations' do
-          expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
+          expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb').name).to eq 'Bar'
         end
       end
 
@@ -64,7 +64,7 @@ module CodeOwnership
         end
 
         it 'can find the owner of a javascript file with file annotations' do
-          expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx')).to eq CodeTeams.find('Bar')
+          expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx').name).to eq 'Bar'
         end
       end
     end

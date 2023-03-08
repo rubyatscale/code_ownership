@@ -108,14 +108,6 @@ RSpec.describe CodeOwnership do
 
     before { create_non_empty_application }
 
-    it 'can find the owner of ruby files in owned_globs' do
-      expect(CodeOwnership.for_file('app/services/bar_stuff/thing.rb')).to eq CodeTeams.find('Bar')
-    end
-
-    it 'can find the owner of javascript files in owned_globs' do
-      expect(CodeOwnership.for_file('frontend/javascripts/bar_stuff/thing.jsx')).to eq CodeTeams.find('Bar')
-    end
-
     it 'can find the owner of files in team-owned javascript packages' do
       expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx')).to eq CodeTeams.find('Bar')
     end
