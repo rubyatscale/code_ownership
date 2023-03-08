@@ -6,7 +6,7 @@ module CodeOwnership
       class GithubCodeownersUpToDate
         extend T::Sig
         extend T::Helpers
-        include Interface
+        include Validator
 
         sig { override.params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).returns(T::Array[String]) }
         def validation_errors(files:, autocorrect: true, stage_changes: true)
@@ -105,7 +105,7 @@ module CodeOwnership
             map[team.name] = team_github.team
           end
 
-          Private::OwnershipMappers::Interface.all.flat_map do |mapper|
+          Mapper.all.flat_map do |mapper|
             codeowners_lines = mapper.codeowners_lines_to_owners.filter_map do |line, team|
               team_mapping = github_team_map[team&.name]
               next unless team_mapping

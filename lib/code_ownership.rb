@@ -7,8 +7,11 @@ require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
 require 'packs'
-require 'code_ownership/cli'
+require 'code_ownership/mapper'
+require 'code_ownership/validator'
 require 'code_ownership/private'
+require 'code_ownership/cli'
+require 'code_ownership/configuration'
 
 module CodeOwnership
   extend self
@@ -27,7 +30,7 @@ module CodeOwnership
 
     owner = T.let(nil, T.nilable(CodeTeams::Team))
 
-    Private::OwnershipMappers::Interface.all.each do |mapper|
+    Mapper.all.each do |mapper|
       owner = mapper.map_file_to_owner(file)
       break if owner
     end
@@ -41,7 +44,7 @@ module CodeOwnership
     ownership_information = T.let([], T::Array[String])
 
     ownership_information << "# Code Ownership Report for `#{team.name}` Team"
-    Private::OwnershipMappers::Interface.all.each do |mapper|
+    Mapper.all.each do |mapper|
       ownership_information << "## #{mapper.description}"
       codeowners_lines = mapper.codeowners_lines_to_owners
       ownership_for_mapper = []
@@ -172,6 +175,11 @@ module CodeOwnership
     @for_file = nil
     @memoized_values = nil
     Private.bust_caches!
-    Private::OwnershipMappers::Interface.all.each(&:bust_caches!)
+    Mapper.all.each(&:bust_caches!)
+  end
+
+  sig { returns(Configuration) }
+  def self.configuration
+    Private.configuration
   end
 end

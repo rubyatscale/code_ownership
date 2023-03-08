@@ -16,7 +16,7 @@ module CodeOwnership
       #   }
       class FileAnnotations
         extend T::Sig
-        include Interface
+        include Mapper
 
         @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
 

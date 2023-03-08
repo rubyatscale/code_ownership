@@ -2,15 +2,13 @@
 
 # typed: strict
 
-require 'code_ownership/private/configuration'
+require 'code_ownership/private/extension_loader'
 require 'code_ownership/private/team_plugins/ownership'
 require 'code_ownership/private/team_plugins/github'
 require 'code_ownership/private/parse_js_packages'
-require 'code_ownership/private/validations/interface'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
 require 'code_ownership/private/validations/files_have_unique_owners'
-require 'code_ownership/private/ownership_mappers/interface'
 require 'code_ownership/private/ownership_mappers/file_annotations'
 require 'code_ownership/private/ownership_mappers/team_globs'
 require 'code_ownership/private/ownership_mappers/package_ownership'
@@ -21,10 +19,10 @@ module CodeOwnership
   module Private
     extend T::Sig
 
-    sig { returns(Private::Configuration) }
+    sig { returns(Configuration) }
     def self.configuration
-      @configuration ||= T.let(@configuration, T.nilable(Private::Configuration))
-      @configuration ||= Private::Configuration.fetch
+      @configuration ||= T.let(@configuration, T.nilable(Configuration))
+      @configuration ||= Configuration.fetch
     end
 
     sig { void }
@@ -36,7 +34,7 @@ module CodeOwnership
 
     sig { params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).void }
     def self.validate!(files:, autocorrect: true, stage_changes: true)
-      errors = Validations::Interface.all.flat_map do |validator|
+      errors = Validator.all.flat_map do |validator|
         validator.validation_errors(
           files: files,
           autocorrect: autocorrect,
@@ -87,7 +85,7 @@ module CodeOwnership
       @files_by_mapper ||= begin
         files_by_mapper = files.map { |file| [file, []] }.to_h
 
-        Private::OwnershipMappers::Interface.all.each do |mapper|
+        Mapper.all.each do |mapper|
           mapper.map_files_to_owners(files).each do |file, _team|
             files_by_mapper[file] ||= []
             T.must(files_by_mapper[file]) << mapper.description

@@ -7,8 +7,8 @@ module CodeOwnership
     module OwnershipMappers
       class TeamGlobs
         extend T::Sig
-        include Interface
-        include Validations::Interface
+        include Mapper
+        include Validator
 
         @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
