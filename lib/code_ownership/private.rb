@@ -25,6 +25,14 @@ module CodeOwnership
       @configuration ||= Configuration.fetch
     end
 
+    # This is just an alias for `configuration` that makes it more explicit what we're doing instead of just calling `configuration`.
+    # This is necessary because configuration may contain extensions of code ownership, so those extensions should be loaded prior to
+    # calling APIs that provide ownership information.
+    sig { returns(Configuration) }
+    def self.load_configuration!
+      configuration
+    end
+
     sig { void }
     def self.bust_caches!
       @configuration = nil
