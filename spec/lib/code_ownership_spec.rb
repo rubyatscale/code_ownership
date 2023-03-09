@@ -87,7 +87,7 @@ RSpec.describe CodeOwnership do
 
   describe '.for_backtrace' do
     before do
-      create_files_with_defined_classe
+      create_files_with_defined_classes
     end
 
     context 'excluded_teams is not passed in as an input parameter' do
@@ -111,7 +111,7 @@ RSpec.describe CodeOwnership do
   describe '.first_owned_file_for_backtrace' do
     before do
       create_minimal_configuration
-      create_files_with_defined_classe
+      create_files_with_defined_classes
     end
 
 
@@ -142,7 +142,9 @@ RSpec.describe CodeOwnership do
   end
 
   describe '.for_class' do
-    before { create_files_with_defined_classe }
+    before do
+      create_files_with_defined_classes
+    end
 
     it 'can find the right owner for a class' do
       expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
