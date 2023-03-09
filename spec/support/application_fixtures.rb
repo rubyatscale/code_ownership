@@ -63,7 +63,7 @@ RSpec.shared_context 'application fixtures' do
   end
 
 
-  let(:create_files_with_defined_classe) do
+  let(:create_files_with_defined_classes) do
     write_file('app/my_file.rb', <<~CONTENTS)
       # @team Foo
 

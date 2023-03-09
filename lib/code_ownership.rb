@@ -28,6 +28,8 @@ module CodeOwnership
     return nil if file.start_with?('./')
     return @for_file[file] if @for_file.key?(file)
 
+    Private.load_configuration!
+
     owner = T.let(nil, T.nilable(CodeTeams::Team))
 
     Mapper.all.each do |mapper|
@@ -40,6 +42,8 @@ module CodeOwnership
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(String) }
   def for_team(team)
+    Private.load_configuration!
+
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ownership_information = T.let([], T::Array[String])
 
@@ -87,6 +91,7 @@ module CodeOwnership
     autocorrect: true,
     stage_changes: true
   )
+    Private.load_configuration!
     tracked_file_subset = Private.tracked_files & files
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
   end
