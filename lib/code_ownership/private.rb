@@ -60,12 +60,17 @@ module CodeOwnership
     # or nil if it can't find something
     sig { params(klass_string: T.nilable(String)).returns(T.nilable(String)) }
     def self.path_from_klass_string(klass_string)
-      if klass_string
-        path = Object.const_source_location(klass_string)&.first
-        (path && Pathname.new(path).relative_path_from(Pathname.pwd).to_s) || nil
-      else
+      # Intended as a fast path so that we raise/rescue NameError as little as possible
+      return nil if !klass_string || klass_string == ""
+
+      path = begin
+        Object.const_source_location(klass_string)&.first
+      rescue NameError
         nil
       end
+      return if !path
+
+      Pathname.new(path).relative_path_from(Pathname.pwd).to_s
     end
 
     #

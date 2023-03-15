@@ -148,19 +148,59 @@ RSpec.describe CodeOwnership do
       create_minimal_configuration
     end
 
+    let(:klass) { MyFile }
+    subject { CodeOwnership.for_class(klass) }
+
     it 'can find the right owner for a class' do
-      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
+      expect(subject).to eq CodeTeams.find('Foo')
     end
 
     it 'memoizes the values' do
-      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
+      expect(subject).to eq CodeTeams.find('Foo')
       allow(CodeOwnership).to receive(:for_file)
       allow(Object).to receive(:const_source_location)
-      expect(CodeOwnership.for_class(MyFile)).to eq CodeTeams.find('Foo')
+      expect(subject).to eq CodeTeams.find('Foo')
 
       # Memoization should avoid these calls
       expect(CodeOwnership).to_not have_received(:for_file)
       expect(Object).to_not have_received(:const_source_location)
+    end
+
+    context 'when called with nil' do
+      let(:klass) { nil }
+
+      it 'should return nil' do
+        expect(subject).to be_nil
+      end
+    end
+
+    context 'with an anonymous class (string)' do
+      let(:klass) { "#<Class:0x0000000141ef64a0>" }
+
+      it 'should return nil' do
+        expect(subject).to be_nil
+      end
+    end
+
+    context 'with a string that represents a constant which does not exist' do
+      let(:klass) { "Yeehaw" }
+
+      it 'should return nil' do
+        expect(subject).to be_nil
+      end
+    end
+
+    # Stubbing to simulate. See docs of Module#const_source_location.
+    # If the named constant is not found, nil is returned.
+    # If the constant is found, but its source location can not be extracted
+    # (constant is defined in C code), empty array is returned.
+    context 'with a constant defined in C' do
+      let(:klass) { "Yeehaw" }
+      before { allow(Object).to receive(:const_source_location).and_return([]) }
+
+      it 'should return nil' do
+        expect(subject).to be_nil
+      end
     end
   end
 
