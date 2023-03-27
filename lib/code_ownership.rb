@@ -159,9 +159,8 @@ module CodeOwnership
     # We use key because the memoized value could be `nil`
     if !@memoized_values.key?(klass_string)
       path = Private.path_from_klass_string(klass_string)
-      return nil if path.nil?
 
-      value_to_memoize = for_file(path)
+      value_to_memoize = path ? for_file(path) : nil
       @memoized_values[klass_string] = value_to_memoize
       value_to_memoize
     else
