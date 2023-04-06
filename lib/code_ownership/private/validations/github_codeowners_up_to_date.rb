@@ -12,17 +12,17 @@ module CodeOwnership
         def validation_errors(files:, autocorrect: true, stage_changes: true)
           return [] if Private.configuration.skip_codeowners_validation
 
-          actual_content_lines = Development::CodeownersFile.actual_contents_lines
-          expected_content_lines = Development::CodeownersFile.expected_contents_lines
+          actual_content_lines = CodeownersFile.actual_contents_lines
+          expected_content_lines = CodeownersFile.expected_contents_lines
           codeowners_up_to_date = actual_content_lines == expected_content_lines
 
           errors = T.let([], T::Array[String])
 
           if !codeowners_up_to_date
             if autocorrect
-              Development::CodeownersFile.write!
+              CodeownersFile.write!
               if stage_changes
-                `git add #{Development::CodeownersFile.path}`
+                `git add #{CodeownersFile.path}`
               end
             else
               # If there is no current file or its empty, display a shorter message.
