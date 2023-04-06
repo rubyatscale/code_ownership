@@ -149,23 +149,20 @@ module CodeOwnership
   end
   private_class_method(:backtrace_with_ownership)
 
-  sig { params(klass: T.nilable(T.any(Class, Module, String))).returns(T.nilable(::CodeTeams::Team)) }
+  sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
     @memoized_values ||= T.let(@memoized_values, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)]))
     @memoized_values ||= {}
-
-    klass_string = klass.to_s
-
     # We use key because the memoized value could be `nil`
-    if !@memoized_values.key?(klass_string)
-      path = Private.path_from_klass_string(klass_string)
+    if !@memoized_values.key?(klass.to_s)
+      path = Private.path_from_klass(klass)
       return nil if path.nil?
 
       value_to_memoize = for_file(path)
-      @memoized_values[klass_string] = value_to_memoize
+      @memoized_values[klass.to_s] = value_to_memoize
       value_to_memoize
     else
-      @memoized_values[klass_string]
+      @memoized_values[klass.to_s]
     end
   end
 
