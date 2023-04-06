@@ -5,6 +5,7 @@
 require 'code_ownership/private/extension_loader'
 require 'code_ownership/private/team_plugins/ownership'
 require 'code_ownership/private/team_plugins/github'
+require 'code_ownership/private/development/codeowners_file'
 require 'code_ownership/private/parse_js_packages'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
