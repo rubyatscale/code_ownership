@@ -3,7 +3,11 @@ module CodeOwnership
     describe 'CodeOwnership.validate!' do
       context 'a file in owned_globs has ownership defined in multiple ways' do
         before do
-          create_configuration
+          write_file('config/code_ownership.yml', <<~YML)
+            owned_globs:
+              - '{app,components,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx,json,yml}'
+          YML
+
           write_file('app/services/some_other_file.rb', <<~YML)
             # @team Bar
           YML
@@ -47,7 +51,6 @@ module CodeOwnership
 
         it 'lets the user know that each file can only have ownership defined in one way' do
           expect(CodeOwnership.for_file('app/missing_ownership.rb')).to eq nil
-
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
             puts e.message
@@ -55,9 +58,9 @@ module CodeOwnership
               Code ownership should only be defined for each file in one way. The following files have declared ownership in multiple ways.
 
               - frontend/javascripts/packages/my_package/owned_file.jsx (Annotations at the top of file, Team-specific owned globs, Owner metadata key in package.json)
+              - frontend/javascripts/packages/my_package/package.json (Team-specific owned globs, Owner metadata key in package.json)
               - packs/my_pack/owned_file.rb (Annotations at the top of file, Team-specific owned globs, Owner metadata key in package.yml)
               - packs/my_pack/package.yml (Team-specific owned globs, Owner metadata key in package.yml)
-              - frontend/javascripts/packages/my_package/package.json (Team-specific owned globs, Owner metadata key in package.json)
 
               See https://github.com/rubyatscale/code_ownership#README.md for more details
             EXPECTED

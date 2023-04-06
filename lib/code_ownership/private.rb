@@ -7,6 +7,7 @@ require 'code_ownership/private/team_plugins/ownership'
 require 'code_ownership/private/team_plugins/github'
 require 'code_ownership/private/codeowners_file'
 require 'code_ownership/private/parse_js_packages'
+require 'code_ownership/private/glob_cache'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
 require 'code_ownership/private/validations/files_have_unique_owners'
@@ -38,7 +39,7 @@ module CodeOwnership
     def self.bust_caches!
       @configuration = nil
       @tracked_files = nil
-      @files_by_mapper = nil
+      @glob_cache = nil
     end
 
     sig { params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).void }
@@ -88,21 +89,10 @@ module CodeOwnership
       end
     end
 
-    sig { params(files: T::Array[String]).returns(T::Hash[String, T::Array[String]]) }
-    def self.files_by_mapper(files)
-      @files_by_mapper ||= T.let(@files_by_mapper, T.nilable(T::Hash[String, T::Array[String]]))
-      @files_by_mapper ||= begin
-        files_by_mapper = files.map { |file| [file, []] }.to_h
-
-        Mapper.all.each do |mapper|
-          mapper.map_files_to_owners(files).each do |file, _team|
-            files_by_mapper[file] ||= []
-            T.must(files_by_mapper[file]) << mapper.description
-          end
-        end
-
-        files_by_mapper
-      end
+    sig { returns(GlobCache) }
+    def self.glob_cache
+      @glob_cache ||= T.let(@glob_cache, T.nilable(GlobCache))
+      @glob_cache ||= Mapper.to_glob_cache
     end
   end
 

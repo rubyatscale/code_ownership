@@ -10,9 +10,15 @@ module CodeOwnership
 
         sig { override.params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).returns(T::Array[String]) }
         def validation_errors(files:, autocorrect: true, stage_changes: true)
-          files_by_mapper = Private.files_by_mapper(files)
+          files_by_mapper = Private.glob_cache.files_by_mapper
 
-          files_mapped_by_multiple_mappers = files_by_mapper.select { |_file, mapper_descriptions| mapper_descriptions.count > 1 }.to_h
+          files_mapped_by_multiple_mappers = {}
+          files.each do |file|
+            mappers = files_by_mapper.fetch(file, [])
+            if mappers.count > 1
+              files_mapped_by_multiple_mappers[file] = mappers
+            end
+          end
 
           errors = T.let([], T::Array[String])
 
