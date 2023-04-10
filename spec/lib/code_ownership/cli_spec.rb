@@ -5,11 +5,7 @@ RSpec.describe CodeOwnership::Cli do
     let(:argv) { ['validate'] }
 
     before do
-      write_file('config/code_ownership.yml', <<~YML)
-        owned_globs:
-          - 'app/**/*.rb'
-      YML
-
+      write_configuration
       write_file('app/services/my_file.rb')
       write_file('frontend/javascripts/my_file.jsx')
     end
@@ -19,7 +15,7 @@ RSpec.describe CodeOwnership::Cli do
         expect(CodeOwnership).to receive(:validate!) do |args| # rubocop:disable RSpec/MessageSpies
           expect(args[:autocorrect]).to eq true
           expect(args[:stage_changes]).to eq true
-          expect(args[:files]).to match_array(['app/services/my_file.rb'])
+          expect(args[:files]).to match_array(["app/services/my_file.rb", "frontend/javascripts/my_file.jsx"])
         end
         subject
       end
@@ -29,10 +25,7 @@ RSpec.describe CodeOwnership::Cli do
 
   describe 'for_file' do
     before do
-      write_file('config/code_ownership.yml', <<~YML)
-        owned_globs:
-          - 'app/**/*.rb'
-      YML
+      write_configuration
 
       write_file('app/services/my_file.rb')
       write_file('config/teams/my_team.yml', <<~YML)

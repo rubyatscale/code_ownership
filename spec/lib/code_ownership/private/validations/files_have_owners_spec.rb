@@ -8,7 +8,7 @@ module CodeOwnership
           write_file('Gemfile', <<~CONTENTS)
           CONTENTS
 
-          create_minimal_configuration
+          write_configuration
         end
 
         it 'does not raise an error' do
@@ -24,7 +24,7 @@ module CodeOwnership
 
         context 'the file is not in unowned_globs' do
           before do
-            create_minimal_configuration
+            write_configuration
           end
 
           it 'lets the user know the file must have ownership' do
@@ -50,12 +50,7 @@ module CodeOwnership
 
         context 'that file is in unowned_globs' do
           before do
-            write_file('config/code_ownership.yml', <<~YML)
-              owned_globs:
-                - 'app/**/*.rb'
-              unowned_globs:
-                - app/missing_ownership.rb
-            YML
+            write_configuration('unowned_globs' => ['app/missing_ownership.rb', 'config/code_ownership.yml'])
           end
 
           it 'does not raise an error' do

@@ -1,6 +1,6 @@
 module CodeOwnership
   RSpec.describe Private::OwnershipMappers::TeamGlobs do
-    before { create_configuration }
+    before { write_configuration }
 
     describe 'CodeOwnership.for_file' do
       before do
@@ -27,10 +27,7 @@ module CodeOwnership
     describe 'CodeOwnership.validate!' do
       context 'two teams own the same exact glob' do
         before do
-          write_file('config/code_ownership.yml', <<~YML)
-            owned_globs:
-              - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'
-          YML
+          write_configuration
 
           write_file('packs/my_pack/owned_file.rb')
           write_file('frontend/javascripts/blah/my_file.rb')

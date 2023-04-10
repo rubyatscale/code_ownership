@@ -7,7 +7,7 @@ RSpec.describe CodeOwnership do
           name: Bar
         CONTENTS
 
-        create_minimal_configuration
+        write_configuration
       end
 
       context 'invalid team in a file annotation' do
@@ -88,7 +88,7 @@ RSpec.describe CodeOwnership do
   describe '.for_backtrace' do
     before do
       create_files_with_defined_classes
-      create_minimal_configuration
+      write_configuration
     end
 
     context 'excluded_teams is not passed in as an input parameter' do
@@ -111,7 +111,7 @@ RSpec.describe CodeOwnership do
 
   describe '.first_owned_file_for_backtrace' do
     before do
-      create_minimal_configuration
+      write_configuration
       create_files_with_defined_classes
     end
 
@@ -145,7 +145,7 @@ RSpec.describe CodeOwnership do
   describe '.for_class' do
     before do
       create_files_with_defined_classes
-      create_minimal_configuration
+      write_configuration
     end
 
     it 'can find the right owner for a class' do
