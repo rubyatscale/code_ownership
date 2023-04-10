@@ -4,12 +4,7 @@ module CodeOwnership
     let(:codeowners_validation) { Private::Validations::GithubCodeownersUpToDate }
 
     before do
-      write_file('config/code_ownership.yml', <<~YML)
-        owned_globs:
-          - app/**/*.rb
-        require:
-          - ./lib/my_extension.rb
-      YML
+      write_configuration('require' => ['./lib/my_extension.rb'])
 
       write_file('config/teams/bar.yml', <<~CONTENTS)
         name: Bar
@@ -31,7 +26,7 @@ module CodeOwnership
               returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
           end
           def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
-            files.map{|f| [f, CodeTeams.all.last]}.to_h
+            files.select{|f| Pathname.new(f).extname == '.rb'}.map{|f| [f, CodeTeams.all.last]}.to_h
           end
 
           sig do
@@ -46,7 +41,7 @@ module CodeOwnership
             override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
           end
           def codeowners_lines_to_owners
-            Dir.glob('**/*.*').map{|f| [f, CodeTeams.all.last]}.to_h
+            Dir.glob('**/*.rb').map{|f| [f, CodeTeams.all.last]}.to_h
           end
 
           sig { override.returns(String) }
@@ -105,8 +100,6 @@ module CodeOwnership
 
           # My special extension
           /app/services/my_ownable_file.rb @org/my-team
-          /config/code_ownership.yml @org/my-team
-          /config/teams/bar.yml @org/my-team
           /lib/my_extension.rb @org/my-team
         EXPECTED
       end

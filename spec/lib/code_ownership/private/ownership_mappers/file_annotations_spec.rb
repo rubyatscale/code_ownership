@@ -2,7 +2,7 @@ module CodeOwnership
   RSpec.describe Private::OwnershipMappers::FileAnnotations do
     describe '.for_team' do
       before do
-        create_configuration
+        write_configuration
         write_file('config/teams/bar.yml', <<~CONTENTS)
           name: Bar
         CONTENTS
@@ -36,7 +36,7 @@ module CodeOwnership
     describe '.for_file' do
       context 'ruby owned file' do
         before do
-          create_configuration
+          write_configuration
           write_file('config/teams/bar.yml', <<~CONTENTS)
             name: Bar
           CONTENTS
@@ -53,7 +53,7 @@ module CodeOwnership
 
       context 'javascript owned file' do
         before do
-          create_configuration
+          write_configuration
           write_file('config/teams/bar.yml', <<~CONTENTS)
             name: Bar
           CONTENTS
@@ -80,7 +80,7 @@ module CodeOwnership
         write_file('config/teams/foo.yml', <<~CONTENTS)
           name: Foo
         CONTENTS
-        create_minimal_configuration
+        write_configuration
       end
 
       context 'ruby file has no annotation' do

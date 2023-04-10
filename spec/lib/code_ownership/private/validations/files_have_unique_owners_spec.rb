@@ -3,10 +3,7 @@ module CodeOwnership
     describe 'CodeOwnership.validate!' do
       context 'a file in owned_globs has ownership defined in multiple ways' do
         before do
-          write_file('config/code_ownership.yml', <<~YML)
-            owned_globs:
-              - '{app,components,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx,json,yml}'
-          YML
+          write_configuration
 
           write_file('app/services/some_other_file.rb', <<~YML)
             # @team Bar

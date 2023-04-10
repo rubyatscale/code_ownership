@@ -3,7 +3,7 @@ module CodeOwnership
     describe 'CodeOwnership.validate!' do
       context 'application has invalid JSON in package' do
         before do
-          write_file('config/code_ownership.yml', {}.to_yaml)
+          write_configuration
 
           write_file('frontend/javascripts/my_package/package.json', <<~CONTENTS)
             { syntax error!!!
@@ -27,7 +27,7 @@ module CodeOwnership
 
     describe 'CodeOwnershp.for_file' do
       before do
-        create_configuration
+        write_configuration
 
         write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
           {

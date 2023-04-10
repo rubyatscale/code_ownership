@@ -1,22 +1,18 @@
 RSpec.shared_context 'application fixtures' do
   let(:codeowners_path) { Pathname.pwd.join('.github/CODEOWNERS') }
 
-  let(:create_configuration) do
-    write_file('config/code_ownership.yml', <<~YML)
-      owned_globs:
-        - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'
-    YML
-  end
 
-  let(:create_minimal_configuration) do
-    write_file('config/code_ownership.yml', <<~YML)
-      owned_globs:
-        - app/**/*.{rb,jsx}
-    YML
+  def write_configuration(owned_globs: nil, **kwargs)
+    owned_globs ||= ['{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx,json,yml}']
+    config = {
+      'owned_globs' => owned_globs,
+      'unowned_globs' => ['config/code_ownership.yml']
+    }.merge(kwargs)
+    write_file('config/code_ownership.yml', config.to_yaml)
   end
 
   let(:create_non_empty_application) do
-    create_configuration
+    write_configuration
 
     write_file('frontend/javascripts/packages/my_package/owned_file.jsx', <<~CONTENTS)
       // @team Bar
@@ -25,7 +21,6 @@ RSpec.shared_context 'application fixtures' do
     write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
       # @team Bar
     CONTENTS
-
 
     write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
       {

@@ -5,7 +5,7 @@ module CodeOwnership
 
       context 'run with autocorrect' do
         before do
-          create_minimal_configuration
+          write_configuration
         end
 
         context 'in an empty application' do
@@ -157,7 +157,7 @@ module CodeOwnership
 
         context 'run without staging changes' do
           before do
-            create_minimal_configuration
+            write_configuration
           end
 
           it 'does not stage the changes to the codeowners file' do
@@ -180,7 +180,7 @@ module CodeOwnership
 
       context 'run without autocorrect' do
         before do
-          create_minimal_configuration
+          write_configuration
         end
 
         context 'in an empty application' do
@@ -469,11 +469,7 @@ module CodeOwnership
 
       context 'code_ownership.yml has skip_codeowners_validation set' do
         before do
-          write_file('config/code_ownership.yml', <<~YML)
-            owned_globs:
-              - app/**/*.rb
-            skip_codeowners_validation: true
-          YML
+          write_configuration('skip_codeowners_validation' => true)
         end
 
         it 'skips validating the codeowners file' do

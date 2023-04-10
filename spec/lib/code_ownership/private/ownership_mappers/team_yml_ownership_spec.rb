@@ -1,7 +1,7 @@
 module CodeOwnership
   RSpec.describe Private::OwnershipMappers::TeamYmlOwnership do
     before do
-      create_configuration
+      write_configuration
       write_file('config/teams/bar.yml', <<~CONTENTS)
         name: Bar
       CONTENTS
