@@ -76,7 +76,7 @@ module CodeOwnership
     sig { returns(T::Array[String]) }
     def self.tracked_files
       @tracked_files ||= T.let(@tracked_files, T.nilable(T::Array[String]))
-      @tracked_files ||= Dir.glob(configuration.owned_globs) - Dir.glob(Private.configuration.unowned_globs)
+      @tracked_files ||= Dir.glob(configuration.owned_globs) - Dir.glob(configuration.unowned_globs)
     end
 
     sig { params(team_name: String, location_of_reference: String).returns(CodeTeams::Team) }
