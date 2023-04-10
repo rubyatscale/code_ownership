@@ -1,4 +1,6 @@
 RSpec.shared_context 'application fixtures' do
+  let(:codeowners_path) { Pathname.pwd.join('.github/CODEOWNERS') }
+
   let(:create_configuration) do
     write_file('config/code_ownership.yml', <<~YML)
       owned_globs:
@@ -9,7 +11,7 @@ RSpec.shared_context 'application fixtures' do
   let(:create_minimal_configuration) do
     write_file('config/code_ownership.yml', <<~YML)
       owned_globs:
-        - app/**/*.rb
+        - app/**/*.{rb,jsx}
     YML
   end
 

@@ -19,6 +19,8 @@ RSpec.configure do |config|
   config.include_context 'application fixtures'
 
   config.before do |c|
+    codeowners_path.delete if codeowners_path.exist?
+
     unless c.metadata[:do_not_bust_cache]
       CodeOwnership.bust_caches!
       CodeTeams.bust_caches!

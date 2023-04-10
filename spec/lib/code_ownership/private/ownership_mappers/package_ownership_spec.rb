@@ -13,6 +13,8 @@ module CodeOwnership
           owner: Bar
       CONTENTS
 
+      write_file('packs/my_other_package/my_file.rb')
+
       write_file('package.yml', <<~CONTENTS)
         enforce_dependency: true
         enforce_privacy: true
