@@ -13,7 +13,16 @@ module CodeOwnership
 
       sig { returns(T::Array[String]) }
       def self.actual_contents_lines
-        (path.exist? ? path.read : "").split("\n")
+        if !path.exist?
+          [""]
+        else
+          content = path.read
+          lines = path.read.split("\n")
+          if content.end_with?("\n")
+            lines << ""
+          end
+          lines
+        end
       end
 
       sig { returns(T::Array[T.nilable(String)]) }
@@ -64,9 +73,9 @@ module CodeOwnership
 
         [
           *header.split("\n"),
-          nil, # For line between header and codeowners_file_lines
+          "", # For line between header and codeowners_file_lines
           *codeowners_file_lines,
-          nil, # For end-of-file newline
+          "", # For end-of-file newline
         ]
       end
 

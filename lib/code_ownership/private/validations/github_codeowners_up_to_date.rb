@@ -14,8 +14,10 @@ module CodeOwnership
 
           actual_content_lines = CodeownersFile.actual_contents_lines
           expected_content_lines = CodeownersFile.expected_contents_lines
-          codeowners_up_to_date = actual_content_lines == expected_content_lines
+          missing_lines = expected_content_lines - actual_content_lines
+          extra_lines = actual_content_lines - expected_content_lines
 
+          codeowners_up_to_date = !missing_lines.any? && !extra_lines.any?
           errors = T.let([], T::Array[String])
 
           if !codeowners_up_to_date
@@ -26,8 +28,6 @@ module CodeOwnership
               end
             else
               # If there is no current file or its empty, display a shorter message.
-              missing_lines = expected_content_lines - actual_content_lines
-              extra_lines = actual_content_lines - expected_content_lines
 
               missing_lines_text = if missing_lines.any?
                 <<~COMMENT
@@ -53,7 +53,7 @@ module CodeOwnership
                 ""
               end
 
-              if actual_content_lines == []
+              if actual_content_lines == [""]
                 errors << <<~CODEOWNERS_ERROR
                   CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
                 CODEOWNERS_ERROR
