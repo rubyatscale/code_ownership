@@ -58,5 +58,21 @@ module CodeOwnership
     sig { abstract.void }
     def bust_caches!
     end
+
+    sig { returns(Private::GlobCache) }
+    def self.to_glob_cache
+      glob_to_owner_map_by_mapper_description = {}
+
+      Mapper.all.each do |mapper|
+        mapped_files = mapper.codeowners_lines_to_owners
+        mapped_files.each do |glob, owner|
+          next if owner.nil?
+          glob_to_owner_map_by_mapper_description[mapper.description] ||= {}
+          glob_to_owner_map_by_mapper_description.fetch(mapper.description)[glob] = owner
+        end
+      end
+
+      Private::GlobCache.new(glob_to_owner_map_by_mapper_description)
+    end
   end
 end
