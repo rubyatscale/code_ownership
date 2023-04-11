@@ -12,8 +12,6 @@ module CodeOwnership
 
         @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
-        @@codeowners_lines_to_owners = T.let(@codeowners_lines_to_owners, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
-        @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
           params(files: T::Array[String]).
@@ -103,9 +101,7 @@ module CodeOwnership
             returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
-          return @@codeowners_lines_to_owners if @@codeowners_lines_to_owners&.keys && @@codeowners_lines_to_owners.keys.count > 0
-
-          @@codeowners_lines_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+          CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             TeamPlugins::Ownership.for(team).owned_globs.each do |owned_glob|
               map[owned_glob] = team
             end
@@ -114,7 +110,6 @@ module CodeOwnership
 
         sig { override.void }
         def bust_caches!
-          @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
           @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
         end
 
