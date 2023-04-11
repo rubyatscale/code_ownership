@@ -19,6 +19,7 @@ module CodeOwnership
   extend T::Helpers
 
   requires_ancestor { Kernel }
+  GlobsToOwningTeamMap = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
   sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)

@@ -90,6 +90,58 @@ module CodeOwnership
       def self.path
         Pathname.pwd.join('.github/CODEOWNERS')
       end
+
+      sig { params(files: T::Array[String]).void }
+      def self.update_cache!(files)
+        cache = Private.glob_cache
+        # Each mapper returns a new copy of the cache subset related to that mapper,
+        # which is then stored back into the cache.
+        Mapper.all.each do |mapper|
+          existing_cache = cache.raw_cache_contents.fetch(mapper.description, {})
+          updated_cache = mapper.update_cache(existing_cache, files)
+          cache.raw_cache_contents[mapper.description] = updated_cache
+        end
+      end
+
+      sig { returns(T::Boolean) }
+      def self.use_codeowners_cache?
+        CodeownersFile.path.exist? && !Private.configuration.skip_codeowners_validation
+      end
+
+      sig { returns(GlobCache) }
+      def self.to_glob_cache
+        github_team_to_code_team_map = T.let({}, T::Hash[String, CodeTeams::Team])
+        CodeTeams.all.each do |team|
+          github_team = TeamPlugins::Github.for(team).github.team
+          github_team_to_code_team_map[github_team] = team
+        end
+        raw_cache_contents = T.let({}, GlobCache::CacheShape)
+        current_mapper = T.let(nil, T.nilable(String))
+        mapper_descriptions = Set.new(Mapper.all.map(&:description))
+
+        path.readlines.each do |line|
+          line_with_no_comment = line.chomp.gsub("# ", "")
+          if mapper_descriptions.include?(line_with_no_comment)
+            current_mapper = line_with_no_comment
+          else
+            next if current_mapper.nil?
+            next if line.chomp == ""
+            # The codeowners file stores paths relative to the root of directory
+            # Since a `/` means root of the file system from the perspective of ruby,
+            # we remove that beginning slash so we can correctly glob the files out.
+            normalized_line = line.gsub(/^# /, '').gsub(/^\//, '')
+            split_line = normalized_line.split
+            # Most lines will be in the format: /path/to/file my-github-team
+            # This will skip over lines that are not of the correct form
+            next if split_line.count > 2
+            entry, github_team = split_line
+            raw_cache_contents[current_mapper] ||= {}
+            raw_cache_contents.fetch(current_mapper)[T.must(entry)] = github_team_to_code_team_map.fetch(T.must(github_team))
+          end
+        end
+
+        GlobCache.new(raw_cache_contents)
+      end
     end
   end
 end

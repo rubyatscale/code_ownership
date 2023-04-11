@@ -7,12 +7,11 @@ module CodeOwnership
       extend T::Sig
 
       MapperDescription = T.type_alias { String }
-      GlobsByMapper = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
       CacheShape = T.type_alias do
         T::Hash[
           MapperDescription,
-          GlobsByMapper
+          GlobsToOwningTeamMap
         ]
       end
 

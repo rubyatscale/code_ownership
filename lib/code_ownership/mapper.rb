@@ -51,6 +51,15 @@ module CodeOwnership
     def codeowners_lines_to_owners
     end
 
+    #
+    # This should be fast when run with MANY files
+    #
+    sig do
+      abstract.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
+    end
+    def update_cache(cache, files)
+    end
+
     sig { abstract.returns(String) }
     def description
     end

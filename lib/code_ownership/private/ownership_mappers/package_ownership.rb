@@ -26,7 +26,7 @@ module CodeOwnership
         sig do
           override.
             params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+            returns(T::Hash[String, ::CodeTeams::Team])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
           Packs.all.each_with_object({}) do |package, res|
@@ -49,7 +49,7 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+          override.returns(T::Hash[String, ::CodeTeams::Team])
         end
         def codeowners_lines_to_owners
           Packs.all.each_with_object({}) do |package, res|
@@ -63,6 +63,13 @@ module CodeOwnership
         sig { override.returns(String) }
         def description
           'Owner metadata key in package.yml'
+        end
+
+        sig do
+          override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
+        end
+        def update_cache(cache, files)
+          codeowners_lines_to_owners
         end
 
         sig { params(package: Packs::Pack).returns(T.nilable(CodeTeams::Team)) }
