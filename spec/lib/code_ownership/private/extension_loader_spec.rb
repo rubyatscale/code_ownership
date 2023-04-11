@@ -75,7 +75,6 @@ module CodeOwnership
       it 'allows third party validations to be injected' do
         expect { CodeOwnership.validate! }.to raise_error do |e|
           expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-          puts e.message
           expect(e.message).to eq <<~EXPECTED.chomp
             my validation errors
             See https://github.com/rubyatscale/code_ownership#README.md for more details

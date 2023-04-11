@@ -206,7 +206,6 @@ module CodeOwnership
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
             expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -225,7 +224,6 @@ module CodeOwnership
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
             expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -250,7 +248,6 @@ module CodeOwnership
               expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
               expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
                 expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-                puts e.message
                 expect(e.message).to eq <<~EXPECTED.chomp
                   CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -279,7 +276,6 @@ module CodeOwnership
               expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
               expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
                 expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-                puts e.message
                 expect(e.message).to eq <<~EXPECTED.chomp
                   CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -326,7 +322,6 @@ module CodeOwnership
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
             expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -384,7 +379,6 @@ module CodeOwnership
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
             expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
@@ -430,7 +424,6 @@ module CodeOwnership
             expect_any_instance_of(codeowners_validation).to_not receive(:`) # rubocop:disable RSpec/AnyInstance
             expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 

@@ -30,7 +30,6 @@ module CodeOwnership
           it 'lets the user know the file must have ownership' do
             expect { CodeOwnership.validate! }.to raise_error do |e|
               expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-              puts e.message
               expect(e.message).to eq <<~EXPECTED.chomp
                 Some files are missing ownership:
 
