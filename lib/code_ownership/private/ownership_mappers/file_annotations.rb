@@ -35,7 +35,7 @@ module CodeOwnership
             params(files: T::Array[String]).
             returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def map_files_to_owners(files)
+        def globs_to_owner(files)
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
 
           @@map_files_to_owners = files.each_with_object({}) do |filename_relative_to_root, mapping| # rubocop:disable Style/ClassVars
@@ -50,7 +50,7 @@ module CodeOwnership
           override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
         end
         def update_cache(cache, files)
-          cache.merge!(map_files_to_owners(files))
+          cache.merge!(globs_to_owner(files))
 
           # TODO: Make `tracked_files` return a set
           fileset = Set.new(Private.tracked_files)
@@ -112,14 +112,6 @@ module CodeOwnership
             new_file_contents = "#{new_lines.join("\n")}\n".gsub(/\A\n+/, '')
             filepath.write(new_file_contents)
           end
-        end
-
-        sig do
-          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
-        end
-        def codeowners_lines_to_owners
-          @@map_files_to_owners = nil # rubocop:disable Style/ClassVars
-          map_files_to_owners(Private.tracked_files)
         end
 
         sig { override.returns(String) }

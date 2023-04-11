@@ -16,9 +16,8 @@ module CodeOwnership
         @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
-          override.
-            params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          params(files: T::Array[String]).
+          returns(T::Hash[String, ::CodeTeams::Team])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
@@ -96,13 +95,14 @@ module CodeOwnership
           override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
         end
         def update_cache(cache, files)
-          codeowners_lines_to_owners
+          globs_to_owner(files)
         end
 
         sig do
-          override.returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String]).
+            returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def codeowners_lines_to_owners
+        def globs_to_owner(files)
           return @@codeowners_lines_to_owners if @@codeowners_lines_to_owners&.keys && @@codeowners_lines_to_owners.keys.count > 0
 
           @@codeowners_lines_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars

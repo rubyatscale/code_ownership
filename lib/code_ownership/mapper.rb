@@ -40,15 +40,9 @@ module CodeOwnership
     #
     sig do
       abstract.params(files: T::Array[String]).
-        returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+        returns(T::Hash[String, ::CodeTeams::Team])
     end
-    def map_files_to_owners(files)
-    end
-
-    sig do
-      abstract.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
-    end
-    def codeowners_lines_to_owners
+    def globs_to_owner(files)
     end
 
     #
@@ -73,7 +67,7 @@ module CodeOwnership
       glob_to_owner_map_by_mapper_description = {}
 
       Mapper.all.each do |mapper|
-        mapped_files = mapper.codeowners_lines_to_owners
+        mapped_files = mapper.globs_to_owner(Private.tracked_files)
         mapped_files.each do |glob, owner|
           next if owner.nil?
           glob_to_owner_map_by_mapper_description[mapper.description] ||= {}

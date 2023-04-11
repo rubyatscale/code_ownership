@@ -23,23 +23,6 @@ module CodeOwnership
           owner_for_package(package)
         end
 
-        sig do
-          override.
-            params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
-        end
-        def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
-          Packs.all.each_with_object({}) do |package, res|
-            owner = owner_for_package(package)
-            next if owner.nil?
-
-            glob = package.relative_path.join('**/**').to_s
-            Dir.glob(glob).each do |path|
-              res[path] = owner
-            end
-          end
-        end
-
         #
         # Package ownership ignores the passed in files when generating code owners lines.
         # This is because Package ownership knows that the fastest way to find code owners for package based ownership
@@ -49,9 +32,10 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String]).
+            returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def codeowners_lines_to_owners
+        def globs_to_owner(files)
           Packs.all.each_with_object({}) do |package, res|
             owner = owner_for_package(package)
             next if owner.nil?
@@ -69,7 +53,7 @@ module CodeOwnership
           override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
         end
         def update_cache(cache, files)
-          codeowners_lines_to_owners
+          globs_to_owner(files)
         end
 
         sig { params(package: Packs::Pack).returns(T.nilable(CodeTeams::Team)) }
