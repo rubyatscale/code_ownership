@@ -66,6 +66,26 @@ module CodeOwnership
         end
       end
 
+      context 'many files in owned_globs do not have an owner' do
+        before do
+          write_configuration
+
+          500.times do |i|
+            write_file("app/missing_ownership#{i}.rb", <<~CONTENTS)
+            CONTENTS
+          end
+        end
+
+        it 'lets the user know the file must have ownership' do
+          expect { CodeOwnership.validate! }.to raise_error do |e|
+            expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
+            expect(e.message).to include "Some files are missing ownership:"
+            500.times do |i|
+              expect(e.message).to include "- app/missing_ownership#{i}.rb"
+            end
+          end
+        end
+      end
     end
   end
 end
