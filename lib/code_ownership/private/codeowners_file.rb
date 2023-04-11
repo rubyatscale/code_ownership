@@ -56,14 +56,15 @@ module CodeOwnership
           ownership_map_cache.each do |path, code_team|
             team_mapping = github_team_map[code_team.name]
             next if team_mapping.nil?
-            next if ignored_teams.include?(code_team.name)
-            entry = "/#{path} #{team_mapping}"
-            # In order to use the codeowners file as a proper cache, we'll need to insert commented out entries for ignored teams
-            # entry = if ignored_teams.include?(code_team.name)
-            #   "# /#{path} #{team_mapping}"
-            # else
-            #   "/#{path} #{team_mapping}"
-            # end
+
+            # Leaving a commented out entry has two major benefits:
+            # 1) It allows the CODEOWNERS file to be used as a cache for validations
+            # 2) It allows users to specifically see what their team will not be notified about.
+            entry = if ignored_teams.include?(code_team.name)
+              "# /#{path} #{team_mapping}"
+            else
+              "/#{path} #{team_mapping}"
+            end
             ownership_entries << entry
           end
 

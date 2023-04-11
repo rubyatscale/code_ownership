@@ -150,6 +150,23 @@ module CodeOwnership
                 # code/file owner is notified. Reference GitHub docs for more details:
                 # https://help.github.com/en/articles/about-code-owners
 
+
+                # Annotations at the top of file
+                # /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+                # /packs/my_pack/owned_file.rb @MyOrg/bar-team
+
+                # Team-specific owned globs
+                # /app/services/bar_stuff/** @MyOrg/bar-team
+                # /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
+
+                # Owner metadata key in package.yml
+                # /packs/my_other_package/**/** @MyOrg/bar-team
+
+                # Owner metadata key in package.json
+                # /frontend/javascripts/packages/my_other_package/**/** @MyOrg/bar-team
+
+                # Team YML ownership
+                # /config/teams/bar.yml @MyOrg/bar-team
               EXPECTED
             end
           end
