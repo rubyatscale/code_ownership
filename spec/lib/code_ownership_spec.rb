@@ -20,7 +20,6 @@ RSpec.describe CodeOwnership do
         it 'lets the user know the team cannot be found in the file' do
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a StandardError
-            puts e.message
             expect(e.message).to eq <<~EXPECTED.chomp
               Could not find team with name: `Foo` in app/some_file.rb. Make sure the team is one of `["Bar"]`
             EXPECTED
@@ -39,7 +38,6 @@ RSpec.describe CodeOwnership do
         it 'lets the user know the team cannot be found in the package.yml' do
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a StandardError
-            puts e.message
             expect(e.message).to eq <<~EXPECTED.chomp
               Could not find team with name: `Foo` in packs/my_pack/package.yml. Make sure the team is one of `["Bar"]`
             EXPECTED
@@ -61,7 +59,6 @@ RSpec.describe CodeOwnership do
         it 'lets the user know the team cannot be found in the package.json' do
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a StandardError
-            puts e.message
             expect(e.message).to eq <<~EXPECTED.chomp
               Could not find team with name: `Foo` in frontend/javascripts/my_package. Make sure the team is one of `["Bar"]`
             EXPECTED

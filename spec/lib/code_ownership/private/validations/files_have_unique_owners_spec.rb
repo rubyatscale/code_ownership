@@ -50,7 +50,6 @@ module CodeOwnership
           expect(CodeOwnership.for_file('app/missing_ownership.rb')).to eq nil
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-            puts e.message
             expect(e.message).to eq <<~EXPECTED.chomp
               Code ownership should only be defined for each file in one way. The following files have declared ownership in multiple ways.
 

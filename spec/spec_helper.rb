@@ -19,6 +19,8 @@ RSpec.configure do |config|
   config.include_context 'application fixtures'
 
   config.before do |c|
+    allow_any_instance_of(CodeOwnership.const_get(:Private)::Validations::GithubCodeownersUpToDate).to receive(:`)
+    allow(CodeOwnership::Cli).to receive(:`)
     codeowners_path.delete if codeowners_path.exist?
 
     unless c.metadata[:do_not_bust_cache]

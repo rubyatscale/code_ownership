@@ -51,7 +51,6 @@ module CodeOwnership
         it 'lets the user know that `owned_globs` can not overlap' do
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-            puts e.message
             expect(e.message).to eq <<~EXPECTED.chomp
               `owned_globs` cannot overlap between teams. The following globs overlap:
 
