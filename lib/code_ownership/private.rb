@@ -81,6 +81,19 @@ module CodeOwnership
       @tracked_files ||= Dir.glob(configuration.owned_globs) - Dir.glob(configuration.unowned_globs)
     end
 
+    sig { params(file: String).returns(T::Boolean) }
+    def self.file_tracked?(file)
+      in_owned_globs = configuration.owned_globs.all? do |owned_glob|
+        File.fnmatch?(owned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
+      end
+
+      in_unowned_globs = configuration.unowned_globs.all? do |unowned_glob|
+        File.fnmatch?(unowned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
+      end
+
+      in_owned_globs && !in_unowned_globs
+    end
+
     sig { params(team_name: String, location_of_reference: String).returns(CodeTeams::Team) }
     def self.find_team!(team_name, location_of_reference)
       found_team = CodeTeams.find(team_name)

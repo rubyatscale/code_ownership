@@ -20,6 +20,14 @@ module CodeOwnership
         before do
           write_file('app/missing_ownership.rb', <<~CONTENTS)
           CONTENTS
+
+          write_file('app/some_other_file.rb', <<~CONTENTS)
+            # @team Bar
+          CONTENTS
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
         end
 
         context 'the file is not in unowned_globs' do

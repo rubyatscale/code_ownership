@@ -21,6 +21,7 @@ module CodeOwnership
         @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
 
         TEAM_PATTERN = T.let(/\A(?:#|\/\/) @team (?<team>.*)\Z/.freeze, Regexp)
+        DESCRIPTION = 'Annotations at the top of file'
 
         sig do
           override.params(file: String).
@@ -51,11 +52,8 @@ module CodeOwnership
         end
         def update_cache(cache, files)
           cache.merge!(globs_to_owner(files))
-
-          # TODO: Make `tracked_files` return a set
-          fileset = Set.new(Private.tracked_files)
           invalid_files = cache.keys.select do |file|
-            !fileset.include?(file)
+            !Private.file_tracked?(file)
           end
           invalid_files.each do |invalid_file|
             cache.delete(invalid_file)
@@ -116,7 +114,7 @@ module CodeOwnership
 
         sig { override.returns(String) }
         def description
-          'Annotations at the top of file'
+          DESCRIPTION
         end
 
         sig { override.void }
