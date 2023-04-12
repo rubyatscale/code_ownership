@@ -19,6 +19,7 @@ module CodeOwnership
   extend T::Helpers
 
   requires_ancestor { Kernel }
+  GlobsToOwningTeamMap = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
   sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)
@@ -50,7 +51,7 @@ module CodeOwnership
     ownership_information << "# Code Ownership Report for `#{team.name}` Team"
     Mapper.all.each do |mapper|
       ownership_information << "## #{mapper.description}"
-      codeowners_lines = mapper.codeowners_lines_to_owners
+      codeowners_lines = mapper.globs_to_owner(Private.tracked_files)
       ownership_for_mapper = []
       codeowners_lines.each do |line, team_for_line|
         next if team_for_line.nil?

@@ -19,15 +19,6 @@ module CodeOwnership
           extend T::Sig
           include CodeOwnership::Mapper
           include CodeOwnership::Validator
-          
-          sig do
-            override.
-              params(files: T::Array[String]).
-              returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
-          end
-          def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
-            files.select{|f| Pathname.new(f).extname == '.rb'}.map{|f| [f, CodeTeams.all.last]}.to_h
-          end
 
           sig do
             override.params(file: String).
@@ -38,9 +29,10 @@ module CodeOwnership
           end
 
           sig do
-            override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+            override.params(files: T::Array[String]).
+              returns(T::Hash[String, ::CodeTeams::Team])
           end
-          def codeowners_lines_to_owners
+          def globs_to_owner(files)
             Dir.glob('**/*.rb').map{|f| [f, CodeTeams.all.last]}.to_h
           end
 

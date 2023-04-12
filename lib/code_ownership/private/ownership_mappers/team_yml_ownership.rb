@@ -9,15 +9,14 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
+        @@map_files_to_owners = T.let(@map_files_to_owners, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
-        @@codeowners_lines_to_owners = T.let(@codeowners_lines_to_owners, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)])) # rubocop:disable Style/ClassVars
+        @@codeowners_lines_to_owners = T.let(@codeowners_lines_to_owners, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
         @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
-          override.
-            params(files: T::Array[String]).
-            returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+          params(files: T::Array[String]).
+          returns(T::Hash[String, ::CodeTeams::Team])
         end
         def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
@@ -36,9 +35,10 @@ module CodeOwnership
         end
 
         sig do
-          override.returns(T::Hash[String, T.nilable(::CodeTeams::Team)])
+          override.params(files: T::Array[String]).
+            returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def codeowners_lines_to_owners
+        def globs_to_owner(files)
           return @@codeowners_lines_to_owners if @@codeowners_lines_to_owners&.keys && @@codeowners_lines_to_owners.keys.count > 0
 
           @@codeowners_lines_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
@@ -50,6 +50,13 @@ module CodeOwnership
         def bust_caches!
           @@codeowners_lines_to_owners = {} # rubocop:disable Style/ClassVars
           @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
+        end
+
+        sig do
+          override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
+        end
+        def update_cache(cache, files)
+          globs_to_owner(files)
         end
 
         sig { override.returns(String) }

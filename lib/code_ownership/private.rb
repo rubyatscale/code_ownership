@@ -44,6 +44,8 @@ module CodeOwnership
 
     sig { params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).void }
     def self.validate!(files:, autocorrect: true, stage_changes: true)
+      CodeownersFile.update_cache!(files) if CodeownersFile.use_codeowners_cache?
+
       errors = Validator.all.flat_map do |validator|
         validator.validation_errors(
           files: files,
@@ -92,7 +94,13 @@ module CodeOwnership
     sig { returns(GlobCache) }
     def self.glob_cache
       @glob_cache ||= T.let(@glob_cache, T.nilable(GlobCache))
-      @glob_cache ||= Mapper.to_glob_cache
+      @glob_cache ||= begin
+        if CodeownersFile.use_codeowners_cache?
+          CodeownersFile.to_glob_cache
+        else
+          Mapper.to_glob_cache
+        end
+      end
     end
   end
 
