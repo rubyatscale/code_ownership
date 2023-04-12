@@ -68,9 +68,10 @@ module CodeOwnership
 
       Mapper.all.each do |mapper|
         mapped_files = mapper.globs_to_owner(Private.tracked_files)
+        glob_to_owner_map_by_mapper_description[mapper.description] ||= {}
+
         mapped_files.each do |glob, owner|
           next if owner.nil?
-          glob_to_owner_map_by_mapper_description[mapper.description] ||= {}
           glob_to_owner_map_by_mapper_description.fetch(mapper.description)[glob] = owner
         end
       end

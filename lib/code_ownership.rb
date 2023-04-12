@@ -43,27 +43,23 @@ module CodeOwnership
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(String) }
   def for_team(team)
-    Private.load_configuration!
-
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ownership_information = T.let([], T::Array[String])
 
     ownership_information << "# Code Ownership Report for `#{team.name}` Team"
-    Mapper.all.each do |mapper|
-      ownership_information << "## #{mapper.description}"
-      codeowners_lines = mapper.globs_to_owner(Private.tracked_files)
+
+    Private.glob_cache.raw_cache_contents.each do |mapper_description, glob_to_owning_team_map|
+      ownership_information << "## #{mapper_description}"
       ownership_for_mapper = []
-      codeowners_lines.each do |line, team_for_line|
-        next if team_for_line.nil?
-        if team_for_line.name == team.name
-          ownership_for_mapper << "- #{line}"
-        end
+      glob_to_owning_team_map.each do |glob, owning_team|
+        next if owning_team != team
+        ownership_for_mapper << "- #{glob}"
       end
 
       if ownership_for_mapper.empty?
         ownership_information << 'This team owns nothing in this category.'
       else
-        ownership_information += ownership_for_mapper
+        ownership_information += ownership_for_mapper.sort
       end
 
       ownership_information << ""
