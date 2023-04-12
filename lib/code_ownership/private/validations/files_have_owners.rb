@@ -10,10 +10,10 @@ module CodeOwnership
 
         sig { override.params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).returns(T::Array[String]) }
         def validation_errors(files:, autocorrect: true, stage_changes: true)
-          files_by_mapper = Private.glob_cache.files_by_mapper
-
-          files_not_mapped_at_all = files.select do |file|
-            files_by_mapper.fetch(file, []).count == 0
+          cache = Private.glob_cache
+          file_mappings = cache.mapper_descriptions_that_map_files(files)
+          files_not_mapped_at_all = file_mappings.select do |file, mapper_descriptions|
+            mapper_descriptions.count == 0
           end
 
           errors = T.let([], T::Array[String])
@@ -22,7 +22,7 @@ module CodeOwnership
             errors << <<~MSG
               Some files are missing ownership:
 
-              #{files_not_mapped_at_all.map { |file| "- #{file}" }.join("\n")}
+              #{files_not_mapped_at_all.map { |file, mappers| "- #{file}" }.join("\n")}
             MSG
           end
 

@@ -82,18 +82,24 @@ module CodeOwnership
 
   sig do
     params(
-      files: T::Array[String],
       autocorrect: T::Boolean,
-      stage_changes: T::Boolean
+      stage_changes: T::Boolean,
+      files: T.nilable(T::Array[String]),
     ).void
   end
   def validate!(
-    files: Private.tracked_files,
     autocorrect: true,
-    stage_changes: true
+    stage_changes: true,
+    files: nil
   )
     Private.load_configuration!
-    tracked_file_subset = Private.tracked_files & files
+
+    tracked_file_subset = if files
+      files.select{|f| Private.file_tracked?(f)}
+    else
+      Private.tracked_files
+    end
+
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
   end
 

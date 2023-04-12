@@ -61,7 +61,7 @@ module CodeOwnership
           File.exist?(file)
         end
       else
-        Private.tracked_files
+        nil
       end
 
       CodeOwnership.validate!(

@@ -15,7 +15,7 @@ RSpec.describe CodeOwnership::Cli do
         expect(CodeOwnership).to receive(:validate!) do |args| # rubocop:disable RSpec/MessageSpies
           expect(args[:autocorrect]).to eq true
           expect(args[:stage_changes]).to eq true
-          expect(args[:files]).to match_array(["app/services/my_file.rb", "frontend/javascripts/my_file.jsx"])
+          expect(args[:files]).to be_nil
         end
         subject
       end
