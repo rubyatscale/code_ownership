@@ -18,8 +18,6 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        @@map_files_to_owners = T.let({}, T.nilable(T::Hash[String, ::CodeTeams::Team])) # rubocop:disable Style/ClassVars
-
         TEAM_PATTERN = T.let(/\A(?:#|\/\/) @team (?<team>.*)\Z/.freeze, Regexp)
         DESCRIPTION = 'Annotations at the top of file'
 
@@ -37,9 +35,7 @@ module CodeOwnership
             returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
-          return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
-
-          @@map_files_to_owners = files.each_with_object({}) do |filename_relative_to_root, mapping| # rubocop:disable Style/ClassVars
+          files.each_with_object({}) do |filename_relative_to_root, mapping| # rubocop:disable Style/ClassVars
             owner = file_annotation_based_owner(filename_relative_to_root)
             next unless owner
 
@@ -119,7 +115,6 @@ module CodeOwnership
 
         sig { override.void }
         def bust_caches!
-          @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
         end
       end
     end

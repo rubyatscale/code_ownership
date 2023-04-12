@@ -9,8 +9,6 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        @@package_yml_cache = T.let({}, T::Hash[String, T.nilable(Packs::Pack)]) # rubocop:disable Style/ClassVars
-
         sig do
           override.params(file: String).
             returns(T.nilable(::CodeTeams::Team))
@@ -69,7 +67,6 @@ module CodeOwnership
 
         sig { override.void }
         def bust_caches!
-          @@package_yml_cache = {} # rubocop:disable Style/ClassVars
         end
       end
     end
