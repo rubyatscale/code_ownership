@@ -83,6 +83,11 @@ module CodeOwnership
 
     sig { params(file: String).returns(T::Boolean) }
     def self.file_tracked?(file)
+      # Another way to accomplish this is
+      # (Dir.glob(configuration.owned_globs) - Dir.glob(configuration.unowned_globs)).include?(file)
+      # However, globbing out can take 5 or more seconds on a large repository, dramatically slowing down
+      # invocations to `bin/codeownership validate --diff`.
+      # Using `File.fnmatch?` is a lot faster!
       in_owned_globs = configuration.owned_globs.all? do |owned_glob|
         File.fnmatch?(owned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
       end

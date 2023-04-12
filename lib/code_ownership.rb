@@ -94,10 +94,10 @@ module CodeOwnership
   )
     Private.load_configuration!
 
-    if files
-      tracked_file_subset = files.select{|f| Private.file_tracked?(f)}
+    tracked_file_subset = if files
+      files.select{|f| Private.file_tracked?(f)}
     else
-      tracked_file_subset = Private.tracked_files
+      Private.tracked_files
     end
 
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
