@@ -135,6 +135,12 @@ module CodeOwnership
             # This will skip over lines that are not of the correct form
             next if split_line.count > 2
             entry, github_team = split_line
+            code_team = github_team_to_code_team_map[T.must(github_team)]
+            # If a GitHub team is changed and a user runs `bin/codeownership validate`, we won't be able to identify
+            # what team is associated with the removed github team.
+            # Therefore, if we can't determine the team, we just skip it.
+            # This affects how complete the cache is, but that will still be caught by `bin/codeownership validate`.
+            next if code_team.nil?
             raw_cache_contents[current_mapper] ||= {}
             raw_cache_contents.fetch(current_mapper)[T.must(entry)] = github_team_to_code_team_map.fetch(T.must(github_team))
           end
