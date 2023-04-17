@@ -18,6 +18,28 @@ module CodeOwnership
             raw_github['do_not_add_to_codeowners_file'] || false
           )
         end
+
+        sig { override.params(teams: T::Array[CodeTeams::Team]).returns(T::Array[String]) }
+        def self.validation_errors(teams)
+          all_github_teams = teams.flat_map { |team| self.for(team).github.team }
+
+          teams_used_more_than_once = all_github_teams.tally.select do |_team, count|
+            count > 1
+          end
+
+          errors = T.let([], T::Array[String])
+
+          if teams_used_more_than_once.any?
+            errors << <<~ERROR
+              The following teams are specified multiple times:
+              Each code team must have a unique GitHub team in order to write the CODEOWNERS file correctly.
+
+              #{teams_used_more_than_once.keys.join("\n")}
+            ERROR
+          end
+
+          errors
+        end
       end
     end
   end
