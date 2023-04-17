@@ -96,7 +96,7 @@ module CodeOwnership
         File.fnmatch?(unowned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
       end
 
-      in_owned_globs && !in_unowned_globs
+      in_owned_globs && !in_unowned_globs && File.exist?(file)
     end
 
     sig { params(team_name: String, location_of_reference: String).returns(CodeTeams::Team) }
