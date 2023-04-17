@@ -125,7 +125,7 @@ CodeOwnership comes with a validation function to ensure the following things ar
 1) Only one mechanism is defining file ownership. That is -- you can't have a file annotation on a file owned via package-based or glob-based ownership. This helps make ownership behavior more clear by avoiding concerns about precedence.
 2) All teams referenced as an owner for any file or package is a valid team (i.e. it's in the list of `CodeTeams.all`).
 3) All files have ownership. You can specify in `unowned_globs` to represent a TODO list of files to add ownership to.
-3) The `.github/CODEOWNERS` file is up to date. This is automatically corrected and staged unless specified otherwise with `bin/codeownership validate --skip-autocorrect --skip-stage`. You can turn this validation off by setting `skip_codeowners_validation: true` in `code_ownership.yml`.
+3) The `.github/CODEOWNERS` file is up to date. This is automatically corrected and staged unless specified otherwise with `bin/codeownership validate --skip-autocorrect --skip-stage`. You can turn this validation off by setting `skip_codeowners_validation: true` in `config/code_ownership.yml`.
 
 CodeOwnership also allows you to specify which globs and file extensions should be considered ownable.
 
