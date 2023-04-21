@@ -47,10 +47,19 @@ module CodeOwnership
           override.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
         end
         def update_cache(cache, files)
-          cache.merge!(globs_to_owner(files))
+          # We map files to nil owners so that files whose annotation have been removed will be properly
+          # overwritten (i.e. removed) from the cache.
+          updated_cache_for_files = globs_to_owner(files)
+          cache.merge!(updated_cache_for_files)
+
           invalid_files = cache.keys.select do |file|
-            !Private.file_tracked?(file)
+            # If a file is not tracked, it should be removed from the cache
+            !Private.file_tracked?(file) ||
+            # If a file no longer has a file annotation (i.e. `globs_to_owner` doesn't map it)
+            # it should be removed from the cache
+            !updated_cache_for_files.key?(file)
           end
+
           invalid_files.each do |invalid_file|
             cache.delete(invalid_file)
           end
