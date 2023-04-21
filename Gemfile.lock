@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.32.15)
+    code_ownership (1.32.16)
       code_teams (~> 1.0)
       packs
       sorbet-runtime
