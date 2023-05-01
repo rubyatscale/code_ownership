@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'code_ownership'
-  spec.version       = '1.32.16'
+  spec.version       = '1.32.17'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
