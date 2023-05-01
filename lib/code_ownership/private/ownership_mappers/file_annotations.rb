@@ -49,6 +49,7 @@ module CodeOwnership
         def update_cache(cache, files)
           # We map files to nil owners so that files whose annotation have been removed will be properly
           # overwritten (i.e. removed) from the cache.
+          fileset = Set.new(files)
           updated_cache_for_files = globs_to_owner(files)
           cache.merge!(updated_cache_for_files)
 
@@ -57,7 +58,8 @@ module CodeOwnership
             !Private.file_tracked?(file) ||
             # If a file no longer has a file annotation (i.e. `globs_to_owner` doesn't map it)
             # it should be removed from the cache
-            !updated_cache_for_files.key?(file)
+            # We make sure to only apply this to the input files since otherwise `updated_cache_for_files.key?(file)` would always return `false` when files == []
+            (fileset.include?(file) && !updated_cache_for_files.key?(file))
           end
 
           invalid_files.each do |invalid_file|
