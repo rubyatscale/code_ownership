@@ -96,7 +96,7 @@ See `code_ownership_spec.rb` for an example.
 `CodeOwnership.for_class` can be given a class and will either return `nil`, or a `CodeTeams::Team`.
 
 ```ruby
-CodeOwnership.for_class(MyClass.name)
+CodeOwnership.for_class(MyClass)
 ```
 
 Under the hood, this finds the file where the class is defined and returns the owner of that file.
