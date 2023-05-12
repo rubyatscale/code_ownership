@@ -9,8 +9,7 @@ module CodeOwnership
       write_file('packs/my_other_package/package.yml', <<~CONTENTS)
         enforce_dependency: true
         enforce_privacy: true
-        metadata:
-          owner: Bar
+        owner: Bar
       CONTENTS
 
       write_file('packs/my_other_package/my_file.rb')

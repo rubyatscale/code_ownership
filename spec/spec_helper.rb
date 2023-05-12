@@ -1,5 +1,6 @@
 require 'bundler/setup'
 require 'pry'
+require 'packwerk'
 require 'code_ownership'
 require 'code_teams'
 require 'packs/rspec/support'

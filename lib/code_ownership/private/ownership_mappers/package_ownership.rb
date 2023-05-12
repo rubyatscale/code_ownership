@@ -56,7 +56,7 @@ module CodeOwnership
 
         sig { params(package: Packs::Pack).returns(T.nilable(CodeTeams::Team)) }
         def owner_for_package(package)
-          raw_owner_value = package.metadata['owner']
+          raw_owner_value = package.raw_hash['owner'] || package.metadata['owner']
           return nil if !raw_owner_value
 
           Private.find_team!(

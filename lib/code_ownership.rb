@@ -13,6 +13,10 @@ require 'code_ownership/private'
 require 'code_ownership/cli'
 require 'code_ownership/configuration'
 
+if defined?(Packwerk)
+  require 'code_ownership/private/permit_pack_owner_top_level_key'
+end
+
 module CodeOwnership
   extend self
   extend T::Sig

@@ -30,6 +30,23 @@ RSpec.describe CodeOwnership do
       context 'invalid team in a package.yml' do
         before do
           write_file('packs/my_pack/package.yml', <<~CONTENTS)
+            owner: Foo
+          CONTENTS
+        end
+
+        it 'lets the user know the team cannot be found in the package.yml' do
+          expect { CodeOwnership.validate! }.to raise_error do |e|
+            expect(e).to be_a StandardError
+            expect(e.message).to eq <<~EXPECTED.chomp
+              Could not find team with name: `Foo` in packs/my_pack/package.yml. Make sure the team is one of `["Bar"]`
+            EXPECTED
+          end
+        end
+      end
+
+      context 'invalid team in a package.yml using metadata' do
+        before do
+          write_file('packs/my_pack/package.yml', <<~CONTENTS)
             metadata:
               owner: Foo
           CONTENTS
@@ -218,6 +235,31 @@ RSpec.describe CodeOwnership do
         ## Team YML ownership
         - config/teams/bar.yml
       OWNERSHIP
+    end
+  end
+
+  describe 'pack level ownership' do
+    # These errors show up from `bin/packwerk validate`, so using the `ApplicationValidator` to test
+    let(:validation_result) do
+      configuration = Packwerk::Configuration.from_path
+      package_set = Packwerk::PackageSet.load_all_from(
+        configuration.root_path,
+        package_pathspec: configuration.package_paths
+      )
+      Packwerk.const_get(:ApplicationValidator).new.call(package_set, configuration)
+    end
+
+    before do
+      # We stub this to avoid needing to set up a Rails app
+      allow(Packwerk::RailsLoadPaths).to receive(:for).and_return({ 'packs/my_pack/app/services' => Object })
+      write_pack('.')
+      write_pack('packs/my_pack', { 'owner' => 'Foo' })
+      write_file('packs/my_pack/app/services/my_pack.rb')
+    end
+
+    it 'does not create a validation error' do
+      expect(validation_result.error_value).to be_nil
+      expect(validation_result.ok?).to eq true
     end
   end
 end
