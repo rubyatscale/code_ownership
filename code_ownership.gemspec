@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'code_ownership'
-  spec.version       = '1.32.17'
+  spec.version       = '1.32.18'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'code_teams', '~> 1.0'
   spec.add_dependency 'packs'
-  spec.add_dependency 'sorbet-runtime'
+  spec.add_dependency 'sorbet-runtime', '>= 0.5.10821'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'

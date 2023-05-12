@@ -1,10 +1,10 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.32.17)
+    code_ownership (1.32.18)
       code_teams (~> 1.0)
       packs
-      sorbet-runtime
+      sorbet-runtime (>= 0.5.10821)
 
 GEM
   remote: https://rubygems.org/
