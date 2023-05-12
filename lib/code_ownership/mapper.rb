@@ -12,16 +12,16 @@ module CodeOwnership
     class << self
       extend T::Sig
 
-      sig { params(base: Class).void }
+      sig { params(base: T::Class[Mapper]).void }
       def included(base)
-        @mappers ||= T.let(@mappers, T.nilable(T::Array[Class]))
+        @mappers ||= T.let(@mappers, T.nilable(T::Array[T::Class[Mapper]]))
         @mappers ||= []
         @mappers << base
       end
 
       sig { returns(T::Array[Mapper]) }
       def all
-        T.unsafe(@mappers).map(&:new)
+        (@mappers || []).map(&:new)
       end
     end
 

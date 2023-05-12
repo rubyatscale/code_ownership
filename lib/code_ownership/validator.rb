@@ -14,16 +14,16 @@ module CodeOwnership
     class << self
       extend T::Sig
 
-      sig { params(base: Class).void }
+      sig { params(base: T::Class[Validator]).void }
       def included(base)
-        @validators ||= T.let(@validators, T.nilable(T::Array[Class]))
+        @validators ||= T.let(@validators, T.nilable(T::Array[T::Class[Validator]]))
         @validators ||= []
         @validators << base
       end
 
       sig { returns(T::Array[Validator]) }
       def all
-        T.unsafe(@validators).map(&:new)
+        (@validators || []).map(&:new)
       end
     end
   end
