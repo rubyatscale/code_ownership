@@ -53,7 +53,10 @@ module CodeOwnership
 
         cache.each do |mapper_description, ownership_map_cache|
           ownership_entries = []
-          ownership_map_cache.each do |path, code_team|
+          sorted_ownership_map_cache = ownership_map_cache.sort_by do |glob, team|
+            glob
+          end
+          sorted_ownership_map_cache.to_h.each do |path, code_team|
             team_mapping = github_team_map[code_team.name]
             next if team_mapping.nil?
 
