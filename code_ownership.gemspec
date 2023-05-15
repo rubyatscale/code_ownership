@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = 'code_ownership'
-  spec.version       = '1.32.19'
+  spec.version       = '1.33.0'
   spec.authors       = ['Gusto Engineers']
   spec.email         = ['dev@gusto.com']
   spec.summary       = 'A gem to help engineering teams declare ownership of code'
@@ -35,4 +35,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rspec', '~> 3.0'
   spec.add_development_dependency 'sorbet'
   spec.add_development_dependency 'tapioca'
+  spec.add_development_dependency 'packwerk'
+  spec.add_development_dependency 'railties'
 end

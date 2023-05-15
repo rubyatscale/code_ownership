@@ -21,6 +21,15 @@ metadata:
   owner: Team
 ```
 
+You can also define `owner` as a top-level key, e.g.
+```yml
+enforce_dependency: true
+enforce_privacy: true
+owner: Team
+```
+
+To do this, add `code_ownership` to the `require` key of your `packwerk.yml`. See https://github.com/Shopify/packwerk/blob/main/USAGE.md#loading-extensions for more information.
+
 ### Glob-Based Ownership
 In your team's configured YML (see [`code_teams`](https://github.com/rubyatscale/code_teams)), you can set `owned_globs` to be a glob of files your team owns. For example, in `my_team.yml`:
 ```yml

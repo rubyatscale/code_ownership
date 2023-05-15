@@ -36,8 +36,7 @@ module CodeOwnership
           write_file('packs/my_pack/package.yml', <<~CONTENTS)
             enforce_dependency: true
             enforce_privacy: true
-            metadata:
-              owner: Bar
+            owner: Bar
           CONTENTS
 
           write_file('package.yml', <<~CONTENTS)
