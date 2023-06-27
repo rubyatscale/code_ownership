@@ -210,6 +210,12 @@ RSpec.describe CodeOwnership do
       expect(CodeOwnership).to_not have_received(:for_file)
       expect(Object).to_not have_received(:const_source_location)
     end
+
+    it 'returns nil if the class constant cannot be found' do
+      allow(CodeOwnership).to receive(:for_file)
+      allow(Object).to receive(:const_source_location).and_raise(NameError)
+      expect(CodeOwnership.for_class(MyFile)).to eq nil
+    end
   end
 
   describe '.for_team' do

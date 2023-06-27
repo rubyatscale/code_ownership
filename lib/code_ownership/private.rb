@@ -70,6 +70,8 @@ module CodeOwnership
       else
         nil
       end
+    rescue NameError
+      nil
     end
 
     #

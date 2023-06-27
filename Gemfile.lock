@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.33.0)
+    code_ownership (1.33.1)
       code_teams (~> 1.0)
       packs
       sorbet-runtime (>= 0.5.10821)
@@ -59,6 +59,8 @@ GEM
     nokogiri (1.14.4-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.14.4-x86_64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.14.4-x86_64-linux)
       racc (~> 1.4)
     packs (0.0.6)
       sorbet-runtime
