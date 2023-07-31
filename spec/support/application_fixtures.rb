@@ -22,6 +22,11 @@ RSpec.shared_context 'application fixtures' do
       # @team Bar
     CONTENTS
 
+    write_file('directory/owner/.codeowners', <<~CONTENTS)
+      Bar
+    CONTENTS
+    write_file('directory/owner/some_directory_file.ts')
+
     write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
       {
         "name": "@gusto/my_package",
