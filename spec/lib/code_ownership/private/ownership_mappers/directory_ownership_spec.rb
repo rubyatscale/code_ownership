@@ -4,7 +4,7 @@ module CodeOwnership
       before do
         write_configuration
 
-        write_file('a/b/.codeowners', <<~CONTENTS)
+        write_file('a/b/.codeowner', <<~CONTENTS)
           Bar
         CONTENTS
         write_file('a/b/c/c_file.jsx')

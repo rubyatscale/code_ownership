@@ -22,7 +22,7 @@ RSpec.shared_context 'application fixtures' do
       # @team Bar
     CONTENTS
 
-    write_file('directory/owner/.codeowners', <<~CONTENTS)
+    write_file('directory/owner/.codeowner', <<~CONTENTS)
       Bar
     CONTENTS
     write_file('directory/owner/some_directory_file.ts')

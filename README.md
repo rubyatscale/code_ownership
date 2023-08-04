@@ -13,7 +13,7 @@ There is also a [companion VSCode Extension]([url](https://github.com/rubyatscal
 There are three ways to declare code ownership using this gem.
 
 ### Directory-Based Ownership
-Directory based ownership allows for all files in that directory and all its sub-directories to be owned by one team. To define this, add a `.codeowners` file inside that directory with the name of the team as the contents of that file.
+Directory based ownership allows for all files in that directory and all its sub-directories to be owned by one team. To define this, add a `.codeowner` file inside that directory with the name of the team as the contents of that file.
 ```
 Team
 ```

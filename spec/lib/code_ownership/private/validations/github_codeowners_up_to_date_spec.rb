@@ -51,7 +51,7 @@ module CodeOwnership
               /app/services/bar_stuff/** @MyOrg/bar-team
               /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
 
-              # Owner in .codeowners
+              # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
 
               # Owner metadata key in package.yml
@@ -88,7 +88,7 @@ module CodeOwnership
                 /app/services/bar_stuff/** @MyOrg/bar-team
                 /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
 
-                # Owner in .codeowners
+                # Owner in .codeowner
                 /directory/owner/**/** @MyOrg/bar-team
 
                 # Owner metadata key in package.yml
@@ -165,7 +165,7 @@ module CodeOwnership
                 # /app/services/bar_stuff/** @MyOrg/bar-team
                 # /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
 
-                # Owner in .codeowners
+                # Owner in .codeowner
                 # /directory/owner/**/** @MyOrg/bar-team
 
                 # Owner metadata key in package.yml
@@ -336,7 +336,7 @@ module CodeOwnership
 
                 CODEOWNERS should contain the following lines, but does not:
                 - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
-                - "# Owner in .codeowners"
+                - "# Owner in .codeowner"
                 - "/directory/owner/**/** @MyOrg/bar-team"
                 - "# Owner metadata key in package.yml"
                 - "/packs/my_other_package/**/** @MyOrg/bar-team"
@@ -375,7 +375,7 @@ module CodeOwnership
               /app/services/bar_stuff/** @MyOrg/bar-team
               /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
 
-              # Owner in .codeowners
+              # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
 
               # Owner metadata key in package.yml
@@ -443,7 +443,7 @@ module CodeOwnership
 
                 CODEOWNERS should contain the following lines, but does not:
                 - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
-                - "# Owner in .codeowners"
+                - "# Owner in .codeowner"
                 - "/directory/owner/**/** @MyOrg/bar-team"
                 - "# Owner metadata key in package.yml"
                 - "/packs/my_other_package/**/** @MyOrg/bar-team"
@@ -473,7 +473,7 @@ module CodeOwnership
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
               /packs/my_pack/owned_file.rb @MyOrg/bar-team
 
-              # Owner in .codeowners
+              # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
 
               # Owner metadata key in package.yml
@@ -514,7 +514,7 @@ module CodeOwnership
               /packs/my_pack/owned_file.rb @MyOrg/bar-team
               /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
 
-              # Owner in .codeowners
+              # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
 
               # Owner metadata key in package.yml

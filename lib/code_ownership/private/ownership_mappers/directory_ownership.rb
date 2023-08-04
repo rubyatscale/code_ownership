@@ -9,7 +9,7 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        CODEOWNERS_DIRECTORY_FILE_NAME = '.codeowners'
+        CODEOWNERS_DIRECTORY_FILE_NAME = '.codeowner'
 
         @@directory_cache = T.let({}, T::Hash[String, T.nilable(CodeTeams::Team)]) # rubocop:disable Style/ClassVars
 
@@ -54,7 +54,7 @@ module CodeOwnership
 
         sig { override.returns(String) }
         def description
-          'Owner in .codeowners'
+          'Owner in .codeowner'
         end
 
         sig { override.void }
@@ -74,9 +74,9 @@ module CodeOwnership
           )
         end
 
-        # takes a file and finds the relevant `.codeowners` file by walking up the directory
-        # structure. Example, given `a/b/c.rb`, this looks for `a/b/.codeowners`, `a/.codeowners`,
-        # and `.codeowners` in that order, stopping at the first file to actually exist.
+        # takes a file and finds the relevant `.codeowner` file by walking up the directory
+        # structure. Example, given `a/b/c.rb`, this looks for `a/b/.codeowner`, `a/.codeowner`,
+        # and `.codeowner` in that order, stopping at the first file to actually exist.
         # We do additional caching so that we don't have to check for file existence every time
         sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
         def map_file_to_relevant_owner(file)
