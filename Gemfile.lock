@@ -54,6 +54,8 @@ GEM
     netrc (0.11.0)
     nokogiri (1.15.3-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.15.3-x86_64-linux)
+      racc (~> 1.4)
     packs (0.0.6)
       sorbet-runtime
     packwerk (3.0.1)
@@ -116,6 +118,7 @@ GEM
       sorbet-static (= 0.5.10950)
     sorbet-runtime (0.5.10950)
     sorbet-static (0.5.10950-universal-darwin-22)
+    sorbet-static (0.5.10950-x86_64-linux)
     sorbet-static-and-runtime (0.5.10950)
       sorbet (= 0.5.10950)
       sorbet-runtime (= 0.5.10950)
@@ -150,6 +153,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  x86_64-linux
 
 DEPENDENCIES
   code_ownership!
