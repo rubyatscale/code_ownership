@@ -17,6 +17,9 @@ module CodeOwnership
           ## Team-specific owned globs
           This team owns nothing in this category.
 
+          ## Owner in .codeowner
+          This team owns nothing in this category.
+
           ## Owner metadata key in package.yml
           This team owns nothing in this category.
 

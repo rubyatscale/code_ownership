@@ -17,6 +17,10 @@ module CodeOwnership
             // @team Bar
           CONTENTS
 
+          write_file('frontend/javascripts/packages/my_package/.codeowner', <<~CONTENTS)
+            Bar
+          CONTENTS
+
           write_file('frontend/javascripts/packages/my_package/package.json', <<~CONTENTS)
             {
               "name": "@gusto/my_package",
@@ -52,8 +56,8 @@ module CodeOwnership
             expect(e.message).to eq <<~EXPECTED.chomp
               Code ownership should only be defined for each file in one way. The following files have declared ownership in multiple ways.
 
-              - frontend/javascripts/packages/my_package/owned_file.jsx (Annotations at the top of file, Team-specific owned globs, Owner metadata key in package.json)
-              - frontend/javascripts/packages/my_package/package.json (Team-specific owned globs, Owner metadata key in package.json)
+              - frontend/javascripts/packages/my_package/owned_file.jsx (Annotations at the top of file, Team-specific owned globs, Owner in .codeowner, Owner metadata key in package.json)
+              - frontend/javascripts/packages/my_package/package.json (Team-specific owned globs, Owner in .codeowner, Owner metadata key in package.json)
               - packs/my_pack/owned_file.rb (Annotations at the top of file, Team-specific owned globs, Owner metadata key in package.yml)
               - packs/my_pack/package.yml (Team-specific owned globs, Owner metadata key in package.yml)
 

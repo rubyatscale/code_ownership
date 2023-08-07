@@ -232,6 +232,9 @@ RSpec.describe CodeOwnership do
         - app/services/bar_stuff/**
         - frontend/javascripts/bar_stuff/**
 
+        ## Owner in .codeowner
+        - directory/owner/**/**
+
         ## Owner metadata key in package.yml
         - packs/my_other_package/**/**
 

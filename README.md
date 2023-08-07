@@ -12,6 +12,18 @@ There is also a [companion VSCode Extension]([url](https://github.com/rubyatscal
 
 There are three ways to declare code ownership using this gem.
 
+### Directory-Based Ownership
+Directory based ownership allows for all files in that directory and all its sub-directories to be owned by one team. To define this, add a `.codeowner` file inside that directory with the name of the team as the contents of that file.
+```
+Team
+```
+
+### File-Annotation Based Ownership
+File annotations are a last resort if there is no clear home for your code. File annotations go at the top of your file, and look like this:
+```ruby
+# @team MyTeam
+```
+
 ### Package-Based Ownership
 Package based ownership integrates [`packwerk`](https://github.com/Shopify/packwerk) and has ownership defined per package. To define that all files within a package are owned by one team, configure your `package.yml` like this:
 ```yml
@@ -37,11 +49,6 @@ name: My Team
 owned_globs:
   - app/services/stuff_belonging_to_my_team/**/**
   - app/controllers/other_stuff_belonging_to_my_team/**/**
-```
-### File-Annotation Based Ownership
-File annotations are a last resort if there is no clear home for your code. File annotations go at the top of your file, and look like this:
-```ruby
-# @team MyTeam
 ```
 
 ### Javascript Package Ownership
