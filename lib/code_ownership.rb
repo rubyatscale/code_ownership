@@ -156,7 +156,7 @@ module CodeOwnership
   end
   private_class_method(:backtrace_with_ownership)
 
-  sig { params(klass: T.nilable(T.any(Class, Module))).returns(T.nilable(::CodeTeams::Team)) }
+  sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
     @memoized_values ||= T.let(@memoized_values, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)]))
     @memoized_values ||= {}
