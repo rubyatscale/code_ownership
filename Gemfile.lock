@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    code_ownership (1.34.1)
+    code_ownership (1.34.2)
       code_teams (~> 1.0)
-      packs
+      packs-specification
       sorbet-runtime (>= 0.5.10821)
 
 GEM
@@ -56,7 +56,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.15.3-x86_64-linux)
       racc (~> 1.4)
-    packs (0.0.6)
+    packs-specification (0.0.8)
       sorbet-runtime
     packwerk (3.0.1)
       activesupport (>= 6.0)
