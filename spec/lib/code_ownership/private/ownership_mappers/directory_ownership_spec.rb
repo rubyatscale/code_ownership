@@ -24,6 +24,7 @@ module CodeOwnership
 
       it 'looks for codeowner file within directory' do
         expect(CodeOwnership.for_file('a/b').name).to eq 'Bar'
+        expect(CodeOwnership.for_file(Pathname.pwd.join('a/b').to_s).name).to eq 'Bar'
       end
     end
   end
