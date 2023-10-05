@@ -10,6 +10,8 @@ module CodeOwnership
         include Mapper
 
         CODEOWNERS_DIRECTORY_FILE_NAME = '.codeowner'
+        RELATIVE_ROOT = Pathname('.').freeze
+        ABSOLUTE_ROOT = Pathname('/').freeze
 
         @@directory_cache = T.let({}, T::Hash[String, T.nilable(CodeTeams::Team)]) # rubocop:disable Style/ClassVars
 
@@ -88,8 +90,7 @@ module CodeOwnership
             team = get_team_from_codeowners_file_within_directory(file_path)
           end
 
-          # Pathname of '.' and '/' are the root for relative and absolute paths respectively
-          while team.nil? && file_path != Pathname('.') && file_path != Pathname('/')
+          while team.nil? && file_path != RELATIVE_ROOT && file_path != ABSOLUTE_ROOT
             file_path = file_path.parent
             team = get_team_from_codeowners_file_within_directory(file_path)
           end
