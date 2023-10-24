@@ -73,6 +73,12 @@ js_package_paths:
 
 This defaults `**/`, which makes it look for `package.json` files across your application.
 
+> [!NOTE]
+> Javscript package ownership does not respect `unowned_globs`. If you wish to disable usage of this feature you can set `js_package_paths` to an empty list.
+```yml
+js_package_paths: []
+```
+
 ### Custom Ownership
 To enable custom ownership, you can inject your own custom classes into `code_ownership`.
 To do this, first create a class that adheres to the `CodeOwnership::Mapper` and/or `CodeOwnership::Validator` interface.
@@ -155,7 +161,7 @@ unowned_globs:
   - app/services/some_file2.rb
   - frontend/javascripts/**/__generated__/**/*
 ```
-You can call the validation function with the Ruby API 
+You can call the validation function with the Ruby API
 ```ruby
 CodeOwnership.validate!
 ```
