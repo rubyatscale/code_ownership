@@ -22,7 +22,7 @@ module CodeOwnership
         sig { override.params(teams: T::Array[CodeTeams::Team]).returns(T::Array[String]) }
         def self.validation_errors(teams)
           all_github_teams = teams.flat_map { |team| self.for(team).github.team }
-          missing_github_teams = teams.select { |team| !team.raw_hash.dig('github', 'team') }
+          missing_github_teams = teams.select { |team| self.for(team).github.team.nil? }
 
           teams_used_more_than_once = all_github_teams.tally.select do |_team, count|
             count > 1
