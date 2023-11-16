@@ -780,5 +780,37 @@ module CodeOwnership
         ])
       end
     end
+
+    describe 'require_github_teams configuration option' do
+      before do
+        write_configuration('require_github_teams' => require_github_teams)
+
+        write_file('config/teams/foo.yml', <<~CONTENTS)
+          name: Foo
+        CONTENTS
+
+        write_file('config/teams/bar.yml', <<~CONTENTS)
+          name: Bar
+        CONTENTS
+      end
+
+      context 'when require_github_teams is enabled' do
+        let(:require_github_teams) { true }
+
+        it 'reports CodeTeams without github.team keys' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "The following teams are missing `github.team` entries:\n\nconfig/teams/bar.yml\nconfig/teams/foo.yml\n"
+          ])
+        end
+      end
+
+      context 'when require_github_teams is disabled' do
+        let(:require_github_teams) { false }
+
+        it 'does not report any errors' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to be_empty
+        end
+      end
+    end
   end
 end
