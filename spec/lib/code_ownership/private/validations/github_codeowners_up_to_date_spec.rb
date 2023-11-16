@@ -757,27 +757,49 @@ module CodeOwnership
     end
 
     describe 'uniqueness of github teams' do
-      before do
-        write_configuration
+      context 'when the CodeTeam has a github.team key' do
+        before do
+          write_configuration
 
-        write_file('config/teams/bar.yml', <<~CONTENTS)
-          name: Bar
-          github:
-            team: '@MyOrg/bar-team'
-        CONTENTS
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+            github:
+              team: '@MyOrg/bar-team'
+          CONTENTS
 
-        write_file('config/teams/foo.yml', <<~CONTENTS)
-          name: Bar
-          github:
-            team: '@MyOrg/bar-team'
-        CONTENTS
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Bar
+            github:
+              team: '@MyOrg/bar-team'
+          CONTENTS
+        end
+
+        it 'expect code teams validations to fail' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "More than 1 definition for Bar found",
+            "The following teams are specified multiple times:\nEach code team must have a unique GitHub team in order to write the CODEOWNERS file correctly.\n\n@MyOrg/bar-team\n"
+          ])
+        end
       end
 
-      it 'expect code teams validations to fail' do
-        expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
-          "More than 1 definition for Bar found",
-          "The following teams are specified multiple times:\nEach code team must have a unique GitHub team in order to write the CODEOWNERS file correctly.\n\n@MyOrg/bar-team\n"
-        ])
+      context 'when the CodeTeam does not have a github.team key' do
+        before do
+          write_configuration
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+        end
+
+        it 'does not report CodeTeams without github.teams key' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "More than 1 definition for Bar found"
+          ])
+        end
       end
     end
 
