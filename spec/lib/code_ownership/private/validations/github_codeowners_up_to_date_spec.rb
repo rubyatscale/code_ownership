@@ -758,6 +758,8 @@ module CodeOwnership
 
     describe 'uniqueness of github teams' do
       before do
+        write_configuration
+
         write_file('config/teams/bar.yml', <<~CONTENTS)
           name: Bar
           github:
