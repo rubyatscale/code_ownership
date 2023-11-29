@@ -11,6 +11,7 @@ module CodeOwnership
     const :unbuilt_gems_path, T.nilable(String)
     const :skip_codeowners_validation, T::Boolean
     const :raw_hash, T::Hash[T.untyped, T.untyped]
+    const :require_github_teams, T::Boolean
 
     sig { returns(Configuration) }
     def self.fetch
@@ -27,7 +28,8 @@ module CodeOwnership
         unowned_globs: config_hash.fetch('unowned_globs', []),
         js_package_paths: js_package_paths(config_hash),
         skip_codeowners_validation: config_hash.fetch('skip_codeowners_validation', false),
-        raw_hash: config_hash
+        raw_hash: config_hash,
+        require_github_teams: config_hash.fetch('require_github_teams', false)
       )
     end
 

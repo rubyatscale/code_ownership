@@ -757,25 +757,81 @@ module CodeOwnership
     end
 
     describe 'uniqueness of github teams' do
+      context 'when the CodeTeam has a github.team key' do
+        before do
+          write_configuration
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+            github:
+              team: '@MyOrg/bar-team'
+          CONTENTS
+
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Bar
+            github:
+              team: '@MyOrg/bar-team'
+          CONTENTS
+        end
+
+        it 'expect code teams validations to fail' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "More than 1 definition for Bar found",
+            "The following teams are specified multiple times:\nEach code team must have a unique GitHub team in order to write the CODEOWNERS file correctly.\n\n@MyOrg/bar-team\n"
+          ])
+        end
+      end
+
+      context 'when the CodeTeam does not have a github.team key' do
+        before do
+          write_configuration
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+        end
+
+        it 'does not report CodeTeams without github.teams key' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "More than 1 definition for Bar found"
+          ])
+        end
+      end
+    end
+
+    describe 'require_github_teams configuration option' do
       before do
-        write_file('config/teams/bar.yml', <<~CONTENTS)
-          name: Bar
-          github:
-            team: '@MyOrg/bar-team'
-        CONTENTS
+        write_configuration('require_github_teams' => require_github_teams)
 
         write_file('config/teams/foo.yml', <<~CONTENTS)
+          name: Foo
+        CONTENTS
+
+        write_file('config/teams/bar.yml', <<~CONTENTS)
           name: Bar
-          github:
-            team: '@MyOrg/bar-team'
         CONTENTS
       end
 
-      it 'expect code teams validations to fail' do
-        expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
-          "More than 1 definition for Bar found",
-          "The following teams are specified multiple times:\nEach code team must have a unique GitHub team in order to write the CODEOWNERS file correctly.\n\n@MyOrg/bar-team\n"
-        ])
+      context 'when require_github_teams is enabled' do
+        let(:require_github_teams) { true }
+
+        it 'reports CodeTeams without github.team keys' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
+            "The following teams are missing `github.team` entries:\n\nconfig/teams/bar.yml\nconfig/teams/foo.yml\n"
+          ])
+        end
+      end
+
+      context 'when require_github_teams is disabled' do
+        let(:require_github_teams) { false }
+
+        it 'does not report any errors' do
+          expect(CodeTeams.validation_errors(CodeTeams.all)).to be_empty
+        end
       end
     end
   end
