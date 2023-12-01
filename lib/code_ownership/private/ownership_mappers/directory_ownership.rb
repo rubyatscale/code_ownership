@@ -41,12 +41,10 @@ module CodeOwnership
             returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
-          # The T.unsafe is because the upstream RBI is wrong for Pathname.glob
-          T
-            .unsafe(Pathname)
-            .glob(File.join('**/', CODEOWNERS_DIRECTORY_FILE_NAME))
-            .map(&:cleanpath)
-            .each_with_object({}) do |pathname, res|
+          `git ls-files **/#{CODEOWNERS_DIRECTORY_FILE_NAME}`
+            .each_line
+            .each_with_object({}) do |fname, res|
+            pathname = Pathname.new(fname.strip).cleanpath
             owner = owner_for_codeowners_file(pathname)
             res[pathname.dirname.cleanpath.join('**/**').to_s] = owner
           end
