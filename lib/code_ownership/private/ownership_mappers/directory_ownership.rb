@@ -10,6 +10,8 @@ module CodeOwnership
         include Mapper
 
         CODEOWNERS_DIRECTORY_FILE_NAME = '.codeowner'
+        RELATIVE_ROOT = Pathname('.').freeze
+        ABSOLUTE_ROOT = Pathname('/').freeze
 
         @@directory_cache = T.let({}, T::Hash[String, T.nilable(CodeTeams::Team)]) # rubocop:disable Style/ClassVars
 
@@ -74,36 +76,46 @@ module CodeOwnership
           )
         end
 
-        # takes a file and finds the relevant `.codeowner` file by walking up the directory
+        # Takes a file and finds the relevant `.codeowner` file by walking up the directory
         # structure. Example, given `a/b/c.rb`, this looks for `a/b/.codeowner`, `a/.codeowner`,
         # and `.codeowner` in that order, stopping at the first file to actually exist.
-        # We do additional caching so that we don't have to check for file existence every time
+        # If the parovided file is a directory, it will look for `.codeowner` in that directory and then upwards.
+        # We do additional caching so that we don't have to check for file existence every time.
         sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
         def map_file_to_relevant_owner(file)
           file_path = Pathname.new(file)
-          path_components = file_path.each_filename.to_a.map { |path| Pathname.new(path) }
+          team = T.let(nil, T.nilable(CodeTeams::Team))
 
-          (path_components.length - 1).downto(0).each do |i|
-            potential_relative_path_name = T.must(path_components[0...i]).reduce(Pathname.new('')) { |built_path, path| built_path.join(path) }
-            potential_codeowners_file = potential_relative_path_name.join(CODEOWNERS_DIRECTORY_FILE_NAME)
-
-            potential_codeowners_file_name = potential_codeowners_file.to_s
-
-            team = nil
-            if @@directory_cache.key?(potential_codeowners_file_name)
-              team = @@directory_cache[potential_codeowners_file_name]
-            elsif potential_codeowners_file.exist?
-              team = owner_for_codeowners_file(potential_codeowners_file)
-
-              @@directory_cache[potential_codeowners_file_name] = team
-            else
-              @@directory_cache[potential_codeowners_file_name] = nil
-            end
-
-            return team unless team.nil?
+          if File.directory?(file)
+            team = get_team_from_codeowners_file_within_directory(file_path)
           end
 
-          nil
+          while team.nil? && file_path != RELATIVE_ROOT && file_path != ABSOLUTE_ROOT
+            file_path = file_path.parent
+            team = get_team_from_codeowners_file_within_directory(file_path)
+          end
+
+          team
+        end
+
+        sig { params(directory: Pathname).returns(T.nilable(CodeTeams::Team)) }
+        def get_team_from_codeowners_file_within_directory(directory)
+          potential_codeowners_file = directory.join(CODEOWNERS_DIRECTORY_FILE_NAME)
+
+          potential_codeowners_file_name = potential_codeowners_file.to_s
+
+          team = nil
+          if @@directory_cache.key?(potential_codeowners_file_name)
+            team = @@directory_cache[potential_codeowners_file_name]
+          elsif potential_codeowners_file.exist?
+            team = owner_for_codeowners_file(potential_codeowners_file)
+
+            @@directory_cache[potential_codeowners_file_name] = team
+          else
+            @@directory_cache[potential_codeowners_file_name] = nil
+          end
+
+          return team
         end
       end
     end
