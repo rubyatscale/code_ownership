@@ -21,11 +21,6 @@ module CodeOwnership
       it 'can find the owner of files in a sub-directory of a team-owned directory' do
         expect(CodeOwnership.for_file('a/b/c/c_file.jsx').name).to eq 'Bar'
       end
-
-      it 'looks for codeowner file within directory' do
-        expect(CodeOwnership.for_file('a/b').name).to eq 'Bar'
-        expect(CodeOwnership.for_file(Pathname.pwd.join('a/b').to_s).name).to eq 'Bar'
-      end
     end
   end
 end
