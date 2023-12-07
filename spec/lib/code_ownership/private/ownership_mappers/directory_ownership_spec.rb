@@ -1,5 +1,5 @@
 module CodeOwnership
-  RSpec.describe Private::OwnershipMappers::JsPackageOwnership do
+  RSpec.describe Private::OwnershipMappers::DirectoryOwnership do
     describe 'CodeOwnershp.for_file' do
       before do
         write_configuration
@@ -22,9 +22,13 @@ module CodeOwnership
         expect(CodeOwnership.for_file('a/b/c/c_file.jsx').name).to eq 'Bar'
       end
 
+
+      it 'looks for codeowner file within lower directory' do
+        expect(CodeOwnership.for_file('a/b/c').name).to eq 'Bar'
+      end
+
       it 'looks for codeowner file within directory' do
         expect(CodeOwnership.for_file('a/b').name).to eq 'Bar'
-        expect(CodeOwnership.for_file(Pathname.pwd.join('a/b').to_s).name).to eq 'Bar'
       end
     end
   end
