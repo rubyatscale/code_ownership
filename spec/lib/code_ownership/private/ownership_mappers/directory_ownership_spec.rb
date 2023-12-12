@@ -30,11 +30,13 @@ module CodeOwnership
 
       it 'returns null when no team is found' do
         expect(subject.map_file_to_owner('tmp/tmp/foo.txt')).to be_nil
+        expect(subject.map_file_to_owner('../tmp/tmp/foo.txt')).to be_nil
         expect(subject.map_file_to_owner(Pathname.pwd.join('tmp/tmp/foo.txt').to_s)).to be_nil
       end
 
       it 'looks for codeowner file within directory' do
         expect(subject.map_file_to_owner('a/b').name).to eq 'Bar'
+        expect(subject.map_file_to_owner('a/../a/b').name).to eq 'Bar'
         expect(subject.map_file_to_owner(Pathname.pwd.join('a/b').to_s).name).to eq 'Bar'
       end
     end

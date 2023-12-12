@@ -104,7 +104,6 @@ module CodeOwnership
           team
         end
 
-
         sig { params(directory: Pathname).returns(T.nilable(CodeTeams::Team)) }
         def get_team_from_codeowners_file_within_directory(directory)
           potential_codeowners_file = directory.join(CODEOWNERS_DIRECTORY_FILE_NAME)
