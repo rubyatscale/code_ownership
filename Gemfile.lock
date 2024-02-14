@@ -4,7 +4,7 @@ PATH
     code_ownership (1.36.1)
       code_teams (~> 1.0)
       packs-specification
-      sorbet-runtime (>= 0.5.10821)
+      sorbet-runtime (>= 0.5.11249)
 
 GEM
   remote: https://rubygems.org/
@@ -42,19 +42,26 @@ GEM
     concurrent-ruby (1.2.2)
     constant_resolver (0.2.0)
     crass (1.0.6)
+    debug (1.9.1)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.5.0)
     erubi (1.12.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    io-console (0.7.2)
+    irb (1.11.2)
+      rdoc
+      reline (>= 0.4.2)
     loofah (2.21.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.12.0)
     method_source (1.0.0)
+    mini_portile2 (2.8.5)
     minitest (5.19.0)
     netrc (0.11.0)
-    nokogiri (1.15.3-arm64-darwin)
-      racc (~> 1.4)
-    nokogiri (1.15.3-x86_64-linux)
+    nokogiri (1.15.3)
+      mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
     packs-specification (0.0.8)
       sorbet-runtime
@@ -76,6 +83,8 @@ GEM
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    psych (5.1.2)
+      stringio
     racc (1.7.1)
     rack (2.2.8)
     rack-test (2.1.0)
@@ -100,6 +109,10 @@ GEM
       parser (>= 3.0.0)
       sorbet-runtime (>= 0.5.9204)
       unparser (>= 0.5.6)
+    rdoc (6.6.2)
+      psych (>= 4.0.0)
+    reline (0.4.2)
+      io-console (~> 0.5)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
       rspec-expectations (~> 3.12.0)
@@ -114,20 +127,21 @@ GEM
       rspec-support (~> 3.12.0)
     rspec-support (3.12.1)
     smart_properties (1.17.0)
-    sorbet (0.5.10950)
-      sorbet-static (= 0.5.10950)
-    sorbet-runtime (0.5.10950)
-    sorbet-static (0.5.10950-universal-darwin-22)
-    sorbet-static (0.5.10950-x86_64-linux)
-    sorbet-static-and-runtime (0.5.10950)
-      sorbet (= 0.5.10950)
-      sorbet-runtime (= 0.5.10950)
+    sorbet (0.5.11249)
+      sorbet-static (= 0.5.11249)
+    sorbet-runtime (0.5.11249)
+    sorbet-static (0.5.11249-universal-darwin)
+    sorbet-static (0.5.11249-x86_64-linux)
+    sorbet-static-and-runtime (0.5.11249)
+      sorbet (= 0.5.11249)
+      sorbet-runtime (= 0.5.11249)
     spoom (1.2.1)
       erubi (>= 1.10.0)
       sorbet (>= 0.5.10187)
       sorbet-runtime (>= 0.5.9204)
       syntax_tree (>= 6.1.1)
       thor (>= 0.19.2)
+    stringio (3.1.0)
     syntax_tree (6.1.1)
       prettier_print (>= 1.2.0)
     tapioca (0.11.8)
@@ -153,12 +167,13 @@ GEM
 
 PLATFORMS
   arm64-darwin-22
+  arm64-darwin-23
   x86_64-linux
 
 DEPENDENCIES
   code_ownership!
+  debug
   packwerk
-  pry
   railties
   rake
   rspec (~> 3.0)

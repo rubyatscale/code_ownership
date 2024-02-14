@@ -1,5 +1,5 @@
 require 'bundler/setup'
-require 'pry'
+require 'debug'
 require 'packwerk'
 require 'code_ownership'
 require 'code_teams'
