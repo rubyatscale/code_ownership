@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'code_teams', '~> 1.0'
   spec.add_dependency 'packs-specification'
-  spec.add_dependency 'sorbet-runtime', '>= 0.5.10821'
+  spec.add_dependency 'sorbet-runtime', '>= 0.5.11249'
 
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rake'
