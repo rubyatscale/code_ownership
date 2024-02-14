@@ -172,8 +172,8 @@ PLATFORMS
 
 DEPENDENCIES
   code_ownership!
+  debug
   packwerk
-  pry
   railties
   rake
   rspec (~> 3.0)
