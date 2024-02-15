@@ -55,12 +55,13 @@ module CodeOwnership
           @raw_cache_contents.each do |mapper_description, globs_by_owner|
             expanded_cache[mapper_description] = {}
             globs_by_owner.each do |glob, owner|
+              expanded_cache[mapper_description][glob] = owner if File.exist?(glob)
+
               Dir.glob(glob).each do |file, owner|
                 expanded_cache[mapper_description][file] = owner
               end
             end
           end
-          
           expanded_cache
         end
       end

@@ -10,6 +10,44 @@ RSpec.describe CodeOwnership do
         write_configuration
       end
 
+      context 'directory with [] characters' do
+        before do
+          write_file('app/services/.codeowner', <<~CONTENTS)
+            Bar
+          CONTENTS
+          write_file('app/services/test/some_unowned_file.rb', '')
+          write_file('app/services/[test]/some_unowned_file.rb', '')
+        end
+
+        it 'has no validation errors' do
+          expect { CodeOwnership.validate!(files: ['app/services/test/some_unowned_file.rb']) }.to_not raise_error
+          expect { CodeOwnership.validate!(files: ['app/services/[test]/some_unowned_file.rb']) }.to_not raise_error
+        end
+      end
+
+      context 'file ownership with [] characters' do
+        before do
+          write_file('app/services/[test]/some_other_file.ts', <<~YML)
+          // @team Bar
+          // Countries
+          YML
+
+          100.times do |i|
+            write_file("app/services/withoutbracket/some_other_file#{i}.ts", <<~YML)
+              // @team Bar
+            YML
+          end
+        end
+
+        it 'has no validation errors' do
+          expect { CodeOwnership.validate!(files: ['app/services/withoutbracket/some_other_file.rb']) }.to_not raise_error
+          expect { CodeOwnership.validate!(files: ['app/services/[test]/some_other_file.rb']) }.to_not raise_error
+          expect { CodeOwnership.validate!(files: ['app/services/*/some_other_file.rb']) }.to_not raise_error
+          expect { CodeOwnership.validate!(files: ['app/*/[test]/some_other_file.rb']) }.to_not raise_error
+          expect { CodeOwnership.validate! }.to_not raise_error
+        end
+      end
+
       context 'invalid team in a file annotation' do
         before do
           write_file('app/some_file.rb', <<~CONTENTS)

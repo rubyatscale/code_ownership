@@ -9,6 +9,7 @@ module CodeOwnership
         CONTENTS
         write_file('a/b/c/c_file.jsx')
         write_file('a/b/b_file.jsx')
+        write_file('a/b/[test]/b_file.jsx')
         write_file('config/teams/bar.yml', <<~CONTENTS)
           name: Bar
         CONTENTS
@@ -22,6 +23,10 @@ module CodeOwnership
 
       it 'can find the owner of files in team-owned directory' do
         expect(subject.map_file_to_owner('a/b/b_file.jsx').name).to eq 'Bar'
+      end
+
+      it 'can find the owner of files containing [] dirs' do
+        expect(subject.map_file_to_owner('a/b/[test]/b_file.jsx').name).to eq 'Bar'
       end
 
       it 'can find the owner of files in a sub-directory of a team-owned directory' do

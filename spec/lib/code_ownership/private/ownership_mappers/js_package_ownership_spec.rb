@@ -38,6 +38,12 @@ module CodeOwnership
           }
         CONTENTS
         write_file('frontend/javascripts/packages/my_other_package/my_file.jsx')
+        write_file('frontend/javascripts/packages/different_package/test/my_file.ts', <<~CONTENTS)
+          // @team Bar
+        CONTENTS
+        write_file('frontend/javascripts/packages/different_package/[test]/my_file.ts', <<~CONTENTS)
+          // @team Bar
+        CONTENTS
         write_file('config/teams/bar.yml', <<~CONTENTS)
           name: Bar
         CONTENTS
@@ -45,6 +51,7 @@ module CodeOwnership
 
       it 'can find the owner of files in team-owned javascript packages' do
         expect(CodeOwnership.for_file('frontend/javascripts/packages/my_other_package/my_file.jsx').name).to eq 'Bar'
+        expect(CodeOwnership.for_file('frontend/javascripts/packages/different_package/[test]/my_file.ts').name).to eq 'Bar'
       end
     end
   end
