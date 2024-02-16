@@ -8,6 +8,7 @@ require 'code_ownership/private/team_plugins/github'
 require 'code_ownership/private/codeowners_file'
 require 'code_ownership/private/parse_js_packages'
 require 'code_ownership/private/glob_cache'
+require 'code_ownership/private/owner_assigner'
 require 'code_ownership/private/validations/files_have_owners'
 require 'code_ownership/private/validations/github_codeowners_up_to_date'
 require 'code_ownership/private/validations/files_have_unique_owners'
@@ -98,7 +99,6 @@ module CodeOwnership
       in_unowned_globs = configuration.unowned_globs.any? do |unowned_glob|
         File.fnmatch?(unowned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
       end
-
       in_owned_globs && !in_unowned_globs && File.exist?(file)
     end
 
