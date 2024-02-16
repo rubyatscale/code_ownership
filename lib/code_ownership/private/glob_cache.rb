@@ -53,14 +53,8 @@ module CodeOwnership
         @expanded_cache ||= begin
           expanded_cache = {}
           @raw_cache_contents.each do |mapper_description, globs_by_owner|
-            expanded_cache[mapper_description] = {}
-            globs_by_owner.each do |glob, owner|
-              Dir.glob(glob).each do |file, owner|
-                expanded_cache[mapper_description][file] = owner
-              end
-            end
+            expanded_cache[mapper_description] = OwnerAssigner.assign_owners(globs_by_owner)
           end
-          
           expanded_cache
         end
       end
