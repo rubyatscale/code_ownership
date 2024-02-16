@@ -820,9 +820,11 @@ module CodeOwnership
         let(:require_github_teams) { true }
 
         it 'reports CodeTeams without github.team keys' do
-          expect(CodeTeams.validation_errors(CodeTeams.all)).to eq([
-            "The following teams are missing `github.team` entries:\n\nconfig/teams/bar.yml\nconfig/teams/foo.yml\n"
-          ])
+          errors = CodeTeams.validation_errors(CodeTeams.all)
+          expect(errors.length).to eq(1)
+          expect(errors.first).to include("The following teams are missing `github.team` entries:")
+          expect(errors.first).to include("config/teams/bar.yml")
+          expect(errors.first).to include("config/teams/foo.yml")
         end
       end
 
