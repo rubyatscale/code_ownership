@@ -31,6 +31,31 @@ module CodeOwnership
         )
       end
 
+      context 'when file name includes square brackets' do
+        let(:globs_to_owning_team_map) do
+          {
+            'app/services/[test]/some_other_[test]_file.ts' => team_1,
+          }
+        end
+
+        before do
+          write_file('app/services/[test]/some_other_[test]_file.ts', <<~YML)
+          // @team Bar
+          YML
+
+          write_file('app/services/t/some_other_e_file.ts', <<~YML)
+          // @team Bar
+          YML
+        end
+
+        it 'matches the glob pattern' do
+          expect(assign_owners).to eq(
+            'app/services/[test]/some_other_[test]_file.ts' => team_1,
+            'app/services/t/some_other_e_file.ts' => team_1
+          )
+        end
+      end
+
       context 'when glob pattern also exists' do
         before do
           write_file('app/services/t/some_other_file.ts', <<~YML)
