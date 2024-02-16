@@ -46,6 +46,26 @@ module CodeOwnership
           )
         end
       end
+
+      context 'when * is used in glob pattern' do
+        before do
+          write_file('app/models/some_file.rb', <<~YML)
+          // @team Bar
+          YML
+
+          write_file('app/models/nested/some_file.rb', <<~YML)
+          // @team Bar
+          YML
+        end
+
+        it 'also matches the glob pattern' do
+          expect(assign_owners).to eq(
+            'app/services/[test]/some_other_file.ts' => team_1,
+            'app/services/withoutbracket/file.ts' => team_2,
+            'app/models/some_file.rb' => team_2
+          )
+        end
+      end
     end
   end
 end
