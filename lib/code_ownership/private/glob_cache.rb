@@ -38,9 +38,11 @@ module CodeOwnership
           # When looking at many files, expanding the cache out using Dir.glob and checking for intersections is faster
           files_by_mappers = files.map{ |f| [f, Set.new([]) ]}.to_h
 
-          T.unsafe(
-            files_by_mappers.merge(files_by_mappers_via_expanded_cache)
-          ).slice(*files)
+          files_by_mappers_via_expanded_cache.each do |file, mapper|
+            T.must(files_by_mappers[file]) << mapper if files_by_mappers[file]
+          end
+
+          files_by_mappers
         else
           # When looking at few files, using File.fnmatch is faster
           files_by_mappers_via_file_fnmatch(files)
