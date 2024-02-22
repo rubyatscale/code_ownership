@@ -6,6 +6,8 @@ module CodeOwnership
     class GlobCache
       extend T::Sig
 
+      EXPANDED_CACHE_FILE_COUNT_THRESHOLD = 100
+
       MapperDescription = T.type_alias { String }
 
       CacheShape = T.type_alias do
@@ -34,7 +36,7 @@ module CodeOwnership
 
       sig { params(files: T::Array[String]).returns(FilesByMapper) }
       def mapper_descriptions_that_map_files(files)
-        if files.count > 100
+        if files.count > EXPANDED_CACHE_FILE_COUNT_THRESHOLD
           # When looking at many files, expanding the cache out using Dir.glob and checking for intersections is faster
           files_by_mappers = files.map{ |f| [f, Set.new([]) ]}.to_h
 
