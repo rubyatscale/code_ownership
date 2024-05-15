@@ -90,6 +90,37 @@ module CodeOwnership
           end
         end
       end
+
+      context 'with mutliple directory ownership files' do
+        before do
+          write_configuration
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Foo
+          CONTENTS
+
+          write_file('app/services/exciting/some_other_file.rb', <<~YML)
+            class Exciting::SomeOtherFile; end
+          YML
+
+          write_file('app/services/exciting/.codeowner', <<~YML)
+            Bar
+          YML
+
+          write_file('app/services/.codeowner', <<~YML)
+            Foo
+          YML
+        end
+
+        it 'allows multiple .codeowner ancestor files' do
+          expect(CodeOwnership.for_file('app/services/exciting/some_other_file.rb').name).to eq 'Bar'
+          expect { CodeOwnership.validate! }.to_not raise_error
+        end
+      end
     end
   end
 end

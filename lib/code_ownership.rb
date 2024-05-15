@@ -39,7 +39,7 @@ module CodeOwnership
 
     Mapper.all.each do |mapper|
       owner = mapper.map_file_to_owner(file)
-      break if owner
+      break if owner # TODO: what if there are multiple owners? Should we respond with an error instead of the first match?
     end
 
     @for_file[file] = owner
