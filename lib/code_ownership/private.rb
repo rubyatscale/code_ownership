@@ -92,7 +92,7 @@ module CodeOwnership
       # However, globbing out can take 5 or more seconds on a large repository, dramatically slowing down
       # invocations to `bin/codeownership validate --diff`.
       # Using `File.fnmatch?` is a lot faster!
-      in_owned_globs = configuration.owned_globs.all? do |owned_glob|
+      in_owned_globs = configuration.owned_globs.any? do |owned_glob|
         File.fnmatch?(owned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
       end
 
