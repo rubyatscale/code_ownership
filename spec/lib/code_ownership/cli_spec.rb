@@ -3,9 +3,10 @@ RSpec.describe CodeOwnership::Cli do
 
   describe 'validate' do
     let(:argv) { ['validate'] }
+    let(:owned_globs) { nil }
 
     before do
-      write_configuration
+      write_configuration(owned_globs: owned_globs)
       write_file('app/services/my_file.rb')
       write_file('frontend/javascripts/my_file.jsx')
     end
@@ -21,6 +22,22 @@ RSpec.describe CodeOwnership::Cli do
       end
     end
 
+    context 'with --diff argument' do
+      let(:argv) { ['validate', '--diff'] }
+
+      before do
+        allow(ENV).to receive(:fetch).and_call_original
+        allow(ENV).to receive(:fetch).with('CODEOWNERS_GIT_STAGED_FILES').and_return('app/services/my_file.rb')
+      end
+
+      context 'when there are multiple owned_globs' do
+        let(:owned_globs) { ['app/*/**', 'lib/*/**'] }
+
+        it 'validates the tracked file' do
+          expect { subject }.to raise_error CodeOwnership::InvalidCodeOwnershipConfigurationError
+        end
+      end
+    end
   end
 
   describe 'for_file' do
