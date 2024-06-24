@@ -23,6 +23,23 @@ RSpec.describe CodeOwnership do
           expect { CodeOwnership.validate!(files: ['app/services/test/some_unowned_file.rb']) }.to_not raise_error
           expect { CodeOwnership.validate!(files: ['app/services/[test]/some_unowned_file.rb']) }.to_not raise_error
         end
+
+        context 'when the the configuration for use_git_ls_files is enabled' do
+          before do
+            allow(CodeOwnership.configuration).to receive(:use_git_ls_files) { true }
+            allow_any_instance_of(Object).to receive(:`) do
+              Pathname
+                .glob(File.join('**/', '.codeowner'))
+                .map(&:to_s)
+                .join("\n")
+            end
+          end
+
+          it 'has no validation errors' do
+            expect { CodeOwnership.validate!(files: ['app/services/test/some_unowned_file.rb']) }.to_not raise_error
+            expect { CodeOwnership.validate!(files: ['app/services/[test]/some_unowned_file.rb']) }.to_not raise_error
+          end
+        end
       end
 
       context 'file ownership with [] characters' do

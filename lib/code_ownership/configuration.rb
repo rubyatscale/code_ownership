@@ -12,6 +12,7 @@ module CodeOwnership
     const :skip_codeowners_validation, T::Boolean
     const :raw_hash, T::Hash[T.untyped, T.untyped]
     const :require_github_teams, T::Boolean
+    const :use_git_ls_files, T::Boolean
 
     sig { returns(Configuration) }
     def self.fetch
@@ -29,7 +30,8 @@ module CodeOwnership
         js_package_paths: js_package_paths(config_hash),
         skip_codeowners_validation: config_hash.fetch('skip_codeowners_validation', false),
         raw_hash: config_hash,
-        require_github_teams: config_hash.fetch('require_github_teams', false)
+        require_github_teams: config_hash.fetch('require_github_teams', false),
+        use_git_ls_files: config_hash.fetch('use_git_ls_files', false)
       )
     end
 
