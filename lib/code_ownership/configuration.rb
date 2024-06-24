@@ -12,7 +12,7 @@ module CodeOwnership
     const :skip_codeowners_validation, T::Boolean
     const :raw_hash, T::Hash[T.untyped, T.untyped]
     const :require_github_teams, T::Boolean
-    const :use_git_ls_files, T::Boolean
+    prop :use_git_ls_files, T::Boolean
 
     sig { returns(Configuration) }
     def self.fetch
