@@ -50,7 +50,7 @@ module CodeOwnership
 
         opts.on('--use-git-ls-files',
                 'Use git ls-files for findinging .codeowner files instead of globs. Will be faster if in a git context.') do
-          CodeOwnership::Configuration.use_git_ls_files = true
+          options[:use_git_ls_files] = true
         end
 
         opts.on('--help', 'Shows this prompt') do
@@ -72,7 +72,8 @@ module CodeOwnership
       CodeOwnership.validate!(
         files: files,
         autocorrect: !options[:skip_autocorrect],
-        stage_changes: !options[:skip_stage]
+        stage_changes: !options[:skip_stage],
+        use_git_ls_files: !!options[:use_git_ls_files]
       )
     end
 

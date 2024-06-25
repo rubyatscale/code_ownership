@@ -85,14 +85,17 @@ module CodeOwnership
       autocorrect: T::Boolean,
       stage_changes: T::Boolean,
       files: T.nilable(T::Array[String]),
+      use_git_ls_files: T::Boolean,
     ).void
   end
   def validate!(
     autocorrect: true,
     stage_changes: true,
-    files: nil
+    files: nil,
+    use_git_ls_files: false
   )
     Private.load_configuration!
+    configuration.use_git_ls_files = use_git_ls_files
 
     tracked_file_subset = if files
       files.select{|f| Private.file_tracked?(f)}
