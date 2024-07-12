@@ -13,7 +13,7 @@ RSpec.describe CodeOwnership::Cli do
 
     context 'when run without arguments' do
       it 'runs validations with the right defaults' do
-        expect(CodeOwnership).to receive(:validate!) do |args| # rubocop:disable RSpec/MessageSpies
+        expect(CodeOwnership).to receive(:validate!) do |args|
           expect(args[:autocorrect]).to eq true
           expect(args[:stage_changes]).to eq true
           expect(args[:files]).to be_nil
@@ -47,7 +47,7 @@ RSpec.describe CodeOwnership::Cli do
       write_file('app/services/my_file.rb')
       write_file('config/teams/my_team.yml', <<~YML)
         name: My Team
-        owned_globs: 
+        owned_globs:#{' '}
           - 'app/**/*.rb'
       YML
     end
@@ -55,7 +55,7 @@ RSpec.describe CodeOwnership::Cli do
     context 'when run with no flags' do
       context 'when run with one file' do
         let(:argv) { ['for_file', 'app/services/my_file.rb'] }
-        
+
         it 'outputs the team info in human readable format' do
           expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
             Team: My Team
@@ -67,17 +67,17 @@ RSpec.describe CodeOwnership::Cli do
 
       context 'when run with no files' do
         let(:argv) { ['for_file'] }
-        
+
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `bin/codeownership for_file --help` for more info"
+          expect { subject }.to raise_error 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
         end
       end
 
       context 'when run with multiple files' do
         let(:argv) { ['for_file', 'app/services/my_file.rb', 'app/services/my_file2.rb'] }
-        
+
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `bin/codeownership for_file --help` for more info"
+          expect { subject }.to raise_error 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
         end
       end
     end
@@ -98,17 +98,17 @@ RSpec.describe CodeOwnership::Cli do
 
       context 'when run with no files' do
         let(:argv) { ['for_file', '--json'] }
-        
+
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `bin/codeownership for_file --help` for more info"
+          expect { subject }.to raise_error 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
         end
       end
 
       context 'when run with multiple files' do
         let(:argv) { ['for_file', 'app/services/my_file.rb', 'app/services/my_file2.rb'] }
-        
+
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `bin/codeownership for_file --help` for more info"
+          expect { subject }.to raise_error 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
         end
       end
     end
@@ -128,13 +128,13 @@ RSpec.describe CodeOwnership::Cli do
 
     it 'outputs help text' do
       expected = <<~EXPECTED
-      Usage: bin/codeownership <subcommand>
+        Usage: bin/codeownership <subcommand>
 
-      Subcommands:
-        validate - run all validations
-        for_file - find code ownership for a single file
-        for_team - find code ownership information for a team
-        help  - display help information about code_ownership
+        Subcommands:
+          validate - run all validations
+          for_file - find code ownership for a single file
+          for_team - find code ownership information for a team
+          help  - display help information about code_ownership
       EXPECTED
       expect(CodeOwnership::Cli).to receive(:puts).with(expected)
       subject

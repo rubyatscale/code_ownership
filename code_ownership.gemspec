@@ -7,6 +7,7 @@ Gem::Specification.new do |spec|
   spec.description   = 'A gem to help engineering teams declare ownership of code'
   spec.homepage      = 'https://github.com/rubyatscale/code_ownership'
   spec.license       = 'MIT'
+  spec.required_ruby_version = '>= 2.6'
 
   if spec.respond_to?(:metadata)
     spec.metadata['homepage_uri'] = spec.homepage
@@ -31,10 +32,11 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'sorbet-runtime', '>= 0.5.11249'
 
   spec.add_development_dependency 'debug'
-  spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec', '~> 3.0'
-  spec.add_development_dependency 'sorbet'
-  spec.add_development_dependency 'tapioca'
   spec.add_development_dependency 'packwerk'
   spec.add_development_dependency 'railties'
+  spec.add_development_dependency 'rake'
+  spec.add_development_dependency 'rspec', '~> 3.0'
+  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'sorbet'
+  spec.add_development_dependency 'tapioca'
 end

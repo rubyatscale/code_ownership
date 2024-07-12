@@ -18,7 +18,8 @@ if defined?(Packwerk)
 end
 
 module CodeOwnership
-  extend self
+  module_function
+
   extend T::Sig
   extend T::Helpers
 
@@ -57,6 +58,7 @@ module CodeOwnership
       ownership_for_mapper = []
       glob_to_owning_team_map.each do |glob, owning_team|
         next if owning_team != team
+
         ownership_for_mapper << "- #{glob}"
       end
 
@@ -66,7 +68,7 @@ module CodeOwnership
         ownership_information += ownership_for_mapper.sort
       end
 
-      ownership_information << ""
+      ownership_information << ''
     end
 
     ownership_information.join("\n")
@@ -84,7 +86,7 @@ module CodeOwnership
     params(
       autocorrect: T::Boolean,
       stage_changes: T::Boolean,
-      files: T.nilable(T::Array[String]),
+      files: T.nilable(T::Array[String])
     ).void
   end
   def validate!(
@@ -95,10 +97,10 @@ module CodeOwnership
     Private.load_configuration!
 
     tracked_file_subset = if files
-      files.select{|f| Private.file_tracked?(f)}
-    else
-      Private.tracked_files
-    end
+                            files.select { |f| Private.file_tracked?(f) }
+                          else
+                            Private.tracked_files
+                          end
 
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
   end
@@ -150,7 +152,7 @@ module CodeOwnership
 
       [
         CodeOwnership.for_file(file),
-        file,
+        file
       ]
     end
   end
@@ -161,15 +163,15 @@ module CodeOwnership
     @memoized_values ||= T.let(@memoized_values, T.nilable(T::Hash[String, T.nilable(::CodeTeams::Team)]))
     @memoized_values ||= {}
     # We use key because the memoized value could be `nil`
-    if !@memoized_values.key?(klass.to_s)
+    if @memoized_values.key?(klass.to_s)
+      @memoized_values[klass.to_s]
+    else
       path = Private.path_from_klass(klass)
       return nil if path.nil?
 
       value_to_memoize = for_file(path)
       @memoized_values[klass.to_s] = value_to_memoize
       value_to_memoize
-    else
-      @memoized_values[klass.to_s]
     end
   end
 

@@ -115,13 +115,11 @@ module CodeOwnership
     sig { returns(GlobCache) }
     def self.glob_cache
       @glob_cache ||= T.let(@glob_cache, T.nilable(GlobCache))
-      @glob_cache ||= begin
-        if CodeownersFile.use_codeowners_cache?
-          CodeownersFile.to_glob_cache
-        else
-          Mapper.to_glob_cache
-        end
-      end
+      @glob_cache ||= if CodeownersFile.use_codeowners_cache?
+                        CodeownersFile.to_glob_cache
+                      else
+                        Mapper.to_glob_cache
+                      end
     end
   end
 

@@ -217,6 +217,5 @@ module CodeOwnership
         end
       end
     end
-
   end
 end

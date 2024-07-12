@@ -1,7 +1,6 @@
 RSpec.shared_context 'application fixtures' do
   let(:codeowners_path) { Pathname.pwd.join('.github/CODEOWNERS') }
 
-
   def write_configuration(owned_globs: nil, **kwargs)
     owned_globs ||= ['{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx,json,yml}']
     config = {
@@ -63,7 +62,6 @@ RSpec.shared_context 'application fixtures' do
     write_file('packs/my_other_package/my_file.rb')
   end
 
-
   let(:create_files_with_defined_classes) do
     write_file('app/my_file.rb', <<~CONTENTS)
       # @team Foo
@@ -98,8 +96,8 @@ RSpec.shared_context 'application fixtures' do
     # Some of the tests use the `SequoiaTree` constant. Since the implementation leverages:
     # `path = Object.const_source_location(klass.to_s)&.first`, we want to make sure that
     # we re-require the constant each time, since `RSpecTempfiles` changes where the file lives with each test
-    Object.send(:remove_const, :MyFile) if defined? MyFile # rubocop:disable Style/Send:
-    Object.send(:remove_const, :MyError) if defined? MyError # rubocop:disable Style/Send:
+    Object.send(:remove_const, :MyFile) if defined? MyFile # :
+    Object.send(:remove_const, :MyError) if defined? MyError # :
     require Pathname.pwd.join('app/my_file')
   end
 end

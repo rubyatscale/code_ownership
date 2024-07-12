@@ -23,10 +23,10 @@ module CodeOwnership
           package_loaded_json = JSON.parse(pathname.read)
 
           package_name = if pathname.dirname == Pathname.new('.')
-            ROOT_PACKAGE_NAME
-          else
-            pathname.dirname.cleanpath.to_s
-          end
+                           ROOT_PACKAGE_NAME
+                         else
+                           pathname.dirname.cleanpath.to_s
+                         end
 
           new(
             name: package_name,
@@ -41,7 +41,7 @@ module CodeOwnership
             Please either make the JSON in that file valid or specify `js_package_paths` in config/code_ownership.yml.
           MESSAGE
 
-          raise InvalidCodeOwnershipConfigurationError.new(error_message)
+          raise InvalidCodeOwnershipConfigurationError, error_message
         end
 
         sig { returns(Pathname) }

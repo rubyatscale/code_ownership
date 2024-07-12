@@ -13,15 +13,15 @@ module CodeOwnership
 
       sig { returns(T::Array[String]) }
       def self.actual_contents_lines
-        if !path.exist?
-          [""]
-        else
+        if path.exist?
           content = path.read
           lines = path.read.split("\n")
           if content.end_with?("\n")
-            lines << ""
+            lines << ''
           end
           lines
+        else
+          ['']
         end
       end
 
@@ -53,7 +53,7 @@ module CodeOwnership
 
         cache.each do |mapper_description, ownership_map_cache|
           ownership_entries = []
-          sorted_ownership_map_cache = ownership_map_cache.sort_by do |glob, team|
+          sorted_ownership_map_cache = ownership_map_cache.sort_by do |glob, _team|
             glob
           end
           sorted_ownership_map_cache.to_h.each do |path, code_team|
@@ -64,22 +64,23 @@ module CodeOwnership
             # 1) It allows the CODEOWNERS file to be used as a cache for validations
             # 2) It allows users to specifically see what their team will not be notified about.
             entry = if ignored_teams.include?(code_team.name)
-              "# /#{path} #{team_mapping}"
-            else
-              "/#{path} #{team_mapping}"
-            end
+                      "# /#{path} #{team_mapping}"
+                    else
+                      "/#{path} #{team_mapping}"
+                    end
             ownership_entries << entry
           end
 
           next if ownership_entries.none?
+
           codeowners_file_lines += ['', "# #{mapper_description}", *ownership_entries.sort]
         end
 
         [
           *header.split("\n"),
-          "", # For line between header and codeowners_file_lines
+          '', # For line between header and codeowners_file_lines
           *codeowners_file_lines,
-          "", # For end-of-file newline
+          '' # For end-of-file newline
         ]
       end
 
@@ -123,20 +124,22 @@ module CodeOwnership
         mapper_descriptions = Set.new(Mapper.all.map(&:description))
 
         path.readlines.each do |line|
-          line_with_no_comment = line.chomp.gsub("# ", "")
+          line_with_no_comment = line.chomp.gsub('# ', '')
           if mapper_descriptions.include?(line_with_no_comment)
             current_mapper = line_with_no_comment
           else
             next if current_mapper.nil?
-            next if line.chomp == ""
+            next if line.chomp == ''
+
             # The codeowners file stores paths relative to the root of directory
             # Since a `/` means root of the file system from the perspective of ruby,
             # we remove that beginning slash so we can correctly glob the files out.
-            normalized_line = line.gsub(/^# /, '').gsub(/^\//, '')
+            normalized_line = line.gsub(/^# /, '').gsub(%r{^/}, '')
             split_line = normalized_line.split
             # Most lines will be in the format: /path/to/file my-github-team
             # This will skip over lines that are not of the correct form
             next if split_line.count > 2
+
             entry, github_team = split_line
             code_team = github_team_to_code_team_map[T.must(github_team)]
             # If a GitHub team is changed and a user runs `bin/codeownership validate`, we won't be able to identify
@@ -144,6 +147,7 @@ module CodeOwnership
             # Therefore, if we can't determine the team, we just skip it.
             # This affects how complete the cache is, but that will still be caught by `bin/codeownership validate`.
             next if code_team.nil?
+
             raw_cache_contents[current_mapper] ||= {}
             raw_cache_contents.fetch(current_mapper)[T.must(entry)] = github_team_to_code_team_map.fetch(T.must(github_team))
           end

@@ -12,8 +12,8 @@ module CodeOwnership
         def validation_errors(files:, autocorrect: true, stage_changes: true)
           cache = Private.glob_cache
           file_mappings = cache.mapper_descriptions_that_map_files(files)
-          files_not_mapped_at_all = file_mappings.select do |file, mapper_descriptions|
-            mapper_descriptions.count == 0
+          files_not_mapped_at_all = file_mappings.select do |_file, mapper_descriptions|
+            mapper_descriptions.count.zero?
           end
 
           errors = T.let([], T::Array[String])
@@ -22,7 +22,7 @@ module CodeOwnership
             errors << <<~MSG
               Some files are missing ownership:
 
-              #{files_not_mapped_at_all.map { |file, mappers| "- #{file}" }.join("\n")}
+              #{files_not_mapped_at_all.map { |file, _mappers| "- #{file}" }.join("\n")}
             MSG
           end
 

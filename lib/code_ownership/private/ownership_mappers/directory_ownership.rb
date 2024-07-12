@@ -14,8 +14,8 @@ module CodeOwnership
         @@directory_cache = T.let({}, T::Hash[String, T.nilable(CodeTeams::Team)]) # rubocop:disable Style/ClassVars
 
         sig do
-          override.params(file: String).
-            returns(T.nilable(::CodeTeams::Team))
+          override.params(file: String)
+            .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           map_file_to_relevant_owner(file)
@@ -37,8 +37,8 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String])
+            .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
           # The T.unsafe is because the upstream RBI is wrong for Pathname.glob
@@ -97,7 +97,7 @@ module CodeOwnership
           (path_components.length - 1).downto(0).each do |i|
             team = get_team_from_codeowners_file_within_directory(
                Pathname.new(File.join(*T.unsafe(path_components[0...i])))
-            )
+             )
             return team unless team.nil?
           end
 
@@ -121,7 +121,7 @@ module CodeOwnership
             @@directory_cache[potential_codeowners_file_name] = nil
           end
 
-          return team
+          team
         end
       end
     end

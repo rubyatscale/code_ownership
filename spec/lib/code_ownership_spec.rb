@@ -28,8 +28,8 @@ RSpec.describe CodeOwnership do
       context 'file ownership with [] characters' do
         before do
           write_file('app/services/[test]/some_other_file.ts', <<~YML)
-          // @team Bar
-          // Countries
+            // @team Bar
+            // Countries
           YML
 
           100.times do |i|
@@ -168,7 +168,6 @@ RSpec.describe CodeOwnership do
     end
 
     before { create_non_empty_application }
-
   end
 
   describe '.for_backtrace' do
@@ -200,7 +199,6 @@ RSpec.describe CodeOwnership do
       write_configuration
       create_files_with_defined_classes
     end
-
 
     context 'excluded_teams is not passed in as an input parameter' do
       it 'finds the right team' do

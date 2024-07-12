@@ -5,8 +5,7 @@ module CodeOwnership
 
       context 'input files are not part of configured owned_globs' do
         before do
-          write_file('Gemfile', <<~CONTENTS)
-          CONTENTS
+          write_file('Gemfile', '')
 
           write_configuration
         end
@@ -18,8 +17,7 @@ module CodeOwnership
 
       context 'a file in owned_globs does not have an owner' do
         before do
-          write_file('app/missing_ownership.rb', <<~CONTENTS)
-          CONTENTS
+          write_file('app/missing_ownership.rb', '')
 
           write_file('app/some_other_file.rb', <<~CONTENTS)
             # @team Bar
@@ -71,15 +69,14 @@ module CodeOwnership
           write_configuration
 
           500.times do |i|
-            write_file("app/missing_ownership#{i}.rb", <<~CONTENTS)
-            CONTENTS
+            write_file("app/missing_ownership#{i}.rb", '')
           end
         end
 
         it 'lets the user know the file must have ownership' do
           expect { CodeOwnership.validate! }.to raise_error do |e|
             expect(e).to be_a CodeOwnership::InvalidCodeOwnershipConfigurationError
-            expect(e.message).to include "Some files are missing ownership:"
+            expect(e.message).to include 'Some files are missing ownership:'
             500.times do |i|
               expect(e.message).to include "- app/missing_ownership#{i}.rb"
             end

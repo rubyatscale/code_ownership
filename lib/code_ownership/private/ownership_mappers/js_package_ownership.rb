@@ -12,8 +12,8 @@ module CodeOwnership
         @@package_json_cache = T.let({}, T::Hash[String, T.nilable(ParseJsPackages::Package)]) # rubocop:disable Style/ClassVars
 
         sig do
-          override.params(file: String).
-            returns(T.nilable(::CodeTeams::Team))
+          override.params(file: String)
+            .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           package = map_file_to_relevant_package(file)
@@ -39,8 +39,8 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String])
+            .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
           ParseJsPackages.all.each_with_object({}) do |package, res|
@@ -85,8 +85,8 @@ module CodeOwnership
 
           (path_components.length - 1).downto(0).each do |i|
             potential_relative_path_name = T.must(path_components[0...i]).reduce(Pathname.new('')) { |built_path, path| built_path.join(path) }
-            potential_package_json_path = potential_relative_path_name.
-              join(ParseJsPackages::PACKAGE_JSON_NAME)
+            potential_package_json_path = potential_relative_path_name
+              .join(ParseJsPackages::PACKAGE_JSON_NAME)
 
             potential_package_json_string = potential_package_json_path.to_s
 
