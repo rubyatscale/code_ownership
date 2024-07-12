@@ -83,12 +83,12 @@ module CodeOwnership
           # and if the annotation isn't in the first two lines we assume it
           # doesn't exist.
 
-          line_1 = File.foreach(filename).first
+          line1 = File.foreach(filename).first
 
-          return if !line_1
+          return if !line1
 
           begin
-            team = line_1[TEAM_PATTERN, :team]
+            team = line1[TEAM_PATTERN, :team]
           rescue ArgumentError => e
             if e.message.include?('invalid byte sequence')
               team = nil

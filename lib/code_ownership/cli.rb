@@ -52,7 +52,7 @@ module CodeOwnership
           exit
         end
       end
-      args = parser.order!(argv) {}
+      args = parser.order!(argv)
       parser.parse!(args)
 
       files = if options[:diff]
@@ -92,7 +92,7 @@ module CodeOwnership
           exit
         end
       end
-      args = parser.order!(argv) {}
+      args = parser.order!(argv)
       parser.parse!(args)
 
       if files.count != 1
@@ -129,7 +129,7 @@ module CodeOwnership
         end
       end
       teams = argv.reject { |arg| arg.start_with?('--') }
-      args = parser.order!(argv) {}
+      args = parser.order!(argv)
       parser.parse!(args)
 
       if teams.count != 1
