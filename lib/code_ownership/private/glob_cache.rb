@@ -68,7 +68,7 @@ module CodeOwnership
 
       sig { returns(FilesByMapper) }
       def files_by_mappers_via_expanded_cache
-        @files_by_mappers ||= T.let(@files_by_mappers, T.nilable(FilesByMapper))
+        @files_by_mappers_via_expanded_cache ||= T.let(@files_by_mappers_via_expanded_cache, T.nilable(FilesByMapper))
         @files_by_mappers_via_expanded_cache ||= begin
           files_by_mappers = T.let({}, FilesByMapper)
           expanded_cache.each do |mapper_description, file_by_owner|
