@@ -14,7 +14,7 @@ module CodeOwnership
         for_file(argv)
       elsif command == 'for_team'
         for_team(argv)
-      elsif [nil, "help"].include?(command)
+      elsif [nil, 'help'].include?(command)
         puts <<~USAGE
           Usage: bin/codeownership <subcommand>
 
@@ -27,7 +27,6 @@ module CodeOwnership
       else
         puts "'#{command}' is not a code_ownership command. See `bin/codeownership help`."
       end
-
     end
 
     def self.validate!(argv)
@@ -57,12 +56,12 @@ module CodeOwnership
       parser.parse!(args)
 
       files = if options[:diff]
-        ENV.fetch('CODEOWNERS_GIT_STAGED_FILES') { `git diff --staged --name-only` }.split("\n").select do |file|
-          File.exist?(file)
-        end
-      else
-        nil
-      end
+                ENV.fetch('CODEOWNERS_GIT_STAGED_FILES') { `git diff --staged --name-only` }.split("\n").select do |file|
+                  File.exist?(file)
+                end
+              else
+                nil
+              end
 
       CodeOwnership.validate!(
         files: files,
@@ -79,7 +78,7 @@ module CodeOwnership
       # Long-term, we probably want to use something like `thor` so we don't have to implement logic
       # like this. In the short-term, this is a simple way for us to use the built-in OptionParser
       # while having an ergonomic CLI.
-      files = argv.select { |arg| !arg.start_with?('--') }
+      files = argv.reject { |arg| arg.start_with?('--') }
 
       parser = OptionParser.new do |opts|
         opts.banner = 'Usage: bin/codeownership for_file [options]'
@@ -97,18 +96,18 @@ module CodeOwnership
       parser.parse!(args)
 
       if files.count != 1
-        raise "Please pass in one file. Use `bin/codeownership for_file --help` for more info"
+        raise 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
       end
-      
+
       team = CodeOwnership.for_file(files.first)
 
-      team_name = team&.name || "Unowned"
-      team_yml = team&.config_yml || "Unowned"
+      team_name = team&.name || 'Unowned'
+      team_yml = team&.config_yml || 'Unowned'
 
       if options[:json]
         json = {
           team_name: team_name,
-          team_yml: team_yml,
+          team_yml: team_yml
         }
 
         puts json.to_json
@@ -121,8 +120,6 @@ module CodeOwnership
     end
 
     def self.for_team(argv)
-      options = {}
-
       parser = OptionParser.new do |opts|
         opts.banner = 'Usage: bin/codeownership for_team \'Team Name\''
 
@@ -131,14 +128,14 @@ module CodeOwnership
           exit
         end
       end
-      teams = argv.select { |arg| !arg.start_with?('--') }
+      teams = argv.reject { |arg| arg.start_with?('--') }
       args = parser.order!(argv) {}
       parser.parse!(args)
 
       if teams.count != 1
-        raise "Please pass in one team. Use `bin/codeownership for_team --help` for more info"
+        raise 'Please pass in one team. Use `bin/codeownership for_team --help` for more info'
       end
-      
+
       puts CodeOwnership.for_team(teams.first)
     end
 

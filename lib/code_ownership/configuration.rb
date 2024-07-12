@@ -17,8 +17,8 @@ module CodeOwnership
     def self.fetch
       config_hash = YAML.load_file('config/code_ownership.yml')
 
-      if config_hash.key?("require")
-        config_hash["require"].each do |require_directive|
+      if config_hash.key?('require')
+        config_hash['require'].each do |require_directive|
           Private::ExtensionLoader.load(require_directive)
         end
       end

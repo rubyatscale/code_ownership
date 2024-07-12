@@ -12,7 +12,7 @@ module CodeOwnership
         def validation_errors(files:, autocorrect: true, stage_changes: true)
           cache = Private.glob_cache
           file_mappings = cache.mapper_descriptions_that_map_files(files)
-          files_mapped_by_multiple_mappers = file_mappings.select do |file, mapper_descriptions|
+          files_mapped_by_multiple_mappers = file_mappings.select do |_file, mapper_descriptions|
             mapper_descriptions.count > 1
           end
 

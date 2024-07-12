@@ -29,21 +29,19 @@ module CodeOwnership
     # This should be fast when run with ONE file
     #
     sig do
-      abstract.params(file: String).
-        returns(T.nilable(::CodeTeams::Team))
+      abstract.params(file: String)
+        .returns(T.nilable(::CodeTeams::Team))
     end
-    def map_file_to_owner(file)
-    end
+    def map_file_to_owner(file); end
 
     #
     # This should be fast when run with MANY files
     #
     sig do
-      abstract.params(files: T::Array[String]).
-        returns(T::Hash[String, ::CodeTeams::Team])
+      abstract.params(files: T::Array[String])
+        .returns(T::Hash[String, ::CodeTeams::Team])
     end
-    def globs_to_owner(files)
-    end
+    def globs_to_owner(files); end
 
     #
     # This should be fast when run with MANY files
@@ -51,16 +49,13 @@ module CodeOwnership
     sig do
       abstract.params(cache: GlobsToOwningTeamMap, files: T::Array[String]).returns(GlobsToOwningTeamMap)
     end
-    def update_cache(cache, files)
-    end
+    def update_cache(cache, files); end
 
     sig { abstract.returns(String) }
-    def description
-    end
+    def description; end
 
     sig { abstract.void }
-    def bust_caches!
-    end
+    def bust_caches!; end
 
     sig { returns(Private::GlobCache) }
     def self.to_glob_cache
@@ -72,6 +67,7 @@ module CodeOwnership
 
         mapped_files.each do |glob, owner|
           next if owner.nil?
+
           glob_to_owner_map_by_mapper_description.fetch(mapper.description)[glob] = owner
         end
       end

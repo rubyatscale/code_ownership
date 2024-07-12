@@ -14,11 +14,11 @@ module CodeOwnership
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
-          params(files: T::Array[String]).
-          returns(T::Hash[String, ::CodeTeams::Team])
+          params(files: T::Array[String])
+          .returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def map_files_to_owners(files) # rubocop:disable Lint/UnusedMethodArgument
-          return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count > 0
+        def map_files_to_owners(files)
+          return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count.positive?
 
           @@map_files_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
@@ -42,7 +42,7 @@ module CodeOwnership
           sig { returns(String) }
           def description
             # These are sorted only to prevent non-determinism in output between local and CI environments.
-            sorted_contexts = mapping_contexts.sort_by{|context| context.team.config_yml.to_s }
+            sorted_contexts = mapping_contexts.sort_by { |context| context.team.config_yml.to_s }
             description_args = sorted_contexts.map do |context|
               "`#{context.glob}` (from `#{context.team.config_yml}`)"
             end
@@ -56,7 +56,7 @@ module CodeOwnership
         end
         def find_overlapping_globs
           mapped_files = T.let({}, T::Hash[String, T::Array[MappingContext]])
-          CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+          CodeTeams.all.each_with_object({}) do |team, _map|
             TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
               Dir.glob(glob).each do |filename|
                 mapped_files[filename] ||= []
@@ -66,24 +66,22 @@ module CodeOwnership
           end
 
           overlaps = T.let([], T::Array[GlobOverlap])
-          mapped_files.each do |filename, mapping_contexts|
+          mapped_files.each_value do |mapping_contexts|
             if mapping_contexts.count > 1
               overlaps << GlobOverlap.new(mapping_contexts: mapping_contexts)
             end
           end
 
-          deduplicated_overlaps = overlaps.uniq do |glob_overlap|
+          overlaps.uniq do |glob_overlap|
             glob_overlap.mapping_contexts.map do |context|
               [context.glob, context.team.name]
             end
           end
-
-          deduplicated_overlaps
         end
 
         sig do
-          override.params(file: String).
-            returns(T.nilable(::CodeTeams::Team))
+          override.params(file: String)
+            .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           map_files_to_owners([file])[file]
@@ -97,11 +95,11 @@ module CodeOwnership
         end
 
         sig do
-          override.params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String])
+            .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
-          CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
+          CodeTeams.all.each_with_object({}) do |team, map|
             TeamPlugins::Ownership.for(team).owned_globs.each do |owned_glob|
               map[owned_glob] = team
             end
@@ -128,7 +126,7 @@ module CodeOwnership
             errors << <<~MSG
               `owned_globs` cannot overlap between teams. The following globs overlap:
 
-              #{overlapping_globs.map { |overlap| "- #{overlap.description}"}.join("\n")}
+              #{overlapping_globs.map { |overlap| "- #{overlap.description}" }.join("\n")}
             MSG
           end
 

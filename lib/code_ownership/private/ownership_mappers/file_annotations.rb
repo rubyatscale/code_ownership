@@ -18,24 +18,24 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        TEAM_PATTERN = T.let(/\A(?:#|\/\/) @team (?<team>.*)\Z/.freeze, Regexp)
+        TEAM_PATTERN = T.let(%r{\A(?:#|//) @team (?<team>.*)\Z}.freeze, Regexp)
         DESCRIPTION = 'Annotations at the top of file'
 
         sig do
-          override.params(file: String).
-            returns(T.nilable(::CodeTeams::Team))
+          override.params(file: String)
+            .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           file_annotation_based_owner(file)
         end
 
         sig do
-          override.
-            params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          override
+            .params(files: T::Array[String])
+            .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
-          files.each_with_object({}) do |filename_relative_to_root, mapping| # rubocop:disable Style/ClassVars
+          files.each_with_object({}) do |filename_relative_to_root, mapping|
             owner = file_annotation_based_owner(filename_relative_to_root)
             next unless owner
 
@@ -56,10 +56,10 @@ module CodeOwnership
           invalid_files = cache.keys.select do |file|
             # If a file is not tracked, it should be removed from the cache
             !Private.file_tracked?(file) ||
-            # If a file no longer has a file annotation (i.e. `globs_to_owner` doesn't map it)
-            # it should be removed from the cache
-            # We make sure to only apply this to the input files since otherwise `updated_cache_for_files.key?(file)` would always return `false` when files == []
-            (fileset.include?(file) && !updated_cache_for_files.key?(file))
+              # If a file no longer has a file annotation (i.e. `globs_to_owner` doesn't map it)
+              # it should be removed from the cache
+              # We make sure to only apply this to the input files since otherwise `updated_cache_for_files.key?(file)` would always return `false` when files == []
+              (fileset.include?(file) && !updated_cache_for_files.key?(file))
           end
 
           invalid_files.each do |invalid_file|
@@ -89,8 +89,8 @@ module CodeOwnership
 
           begin
             team = line_1[TEAM_PATTERN, :team]
-          rescue ArgumentError => ex
-            if ex.message.include?('invalid byte sequence')
+          rescue ArgumentError => e
+            if e.message.include?('invalid byte sequence')
               team = nil
             else
               raise
@@ -110,7 +110,7 @@ module CodeOwnership
           if file_annotation_based_owner(filename)
             filepath = Pathname.new(filename)
             lines = filepath.read.split("\n")
-            new_lines = lines.select { |line| !line[TEAM_PATTERN] }
+            new_lines = lines.reject { |line| line[TEAM_PATTERN] }
             # We explicitly add a final new line since splitting by new line when reading the file lines
             # ignores new lines at the ends of files
             # We also remove leading new lines, since there is after a new line after an annotation
@@ -125,8 +125,7 @@ module CodeOwnership
         end
 
         sig { override.void }
-        def bust_caches!
-        end
+        def bust_caches!; end
       end
     end
   end

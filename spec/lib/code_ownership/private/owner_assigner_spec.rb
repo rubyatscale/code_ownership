@@ -16,7 +16,7 @@ module CodeOwnership
 
       before do
         write_file('app/services/[test]/some_other_file.ts', <<~YML)
-        // @team Bar
+          // @team Bar
         YML
 
         write_file('app/services/withoutbracket/file.ts', <<~YML)
@@ -34,17 +34,17 @@ module CodeOwnership
       context 'when file name includes square brackets' do
         let(:globs_to_owning_team_map) do
           {
-            'app/services/[test]/some_other_[test]_file.ts' => team_1,
+            'app/services/[test]/some_other_[test]_file.ts' => team_1
           }
         end
 
         before do
           write_file('app/services/[test]/some_other_[test]_file.ts', <<~YML)
-          // @team Bar
+            // @team Bar
           YML
 
           write_file('app/services/t/some_other_e_file.ts', <<~YML)
-          // @team Bar
+            // @team Bar
           YML
         end
 
@@ -59,7 +59,7 @@ module CodeOwnership
       context 'when glob pattern also exists' do
         before do
           write_file('app/services/t/some_other_file.ts', <<~YML)
-          // @team Bar
+            // @team Bar
           YML
         end
 
@@ -75,11 +75,11 @@ module CodeOwnership
       context 'when * is used in glob pattern' do
         before do
           write_file('app/models/some_file.rb', <<~YML)
-          // @team Bar
+            // @team Bar
           YML
 
           write_file('app/models/nested/some_file.rb', <<~YML)
-          // @team Bar
+            // @team Bar
           YML
         end
 

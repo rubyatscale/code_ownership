@@ -53,14 +53,14 @@ module CodeOwnership
         end
       RUBY
 
-      expect_any_instance_of(codeowners_validation).to receive(:`).with("git add #{codeowners_path}") # rubocop:disable RSpec/AnyInstance
+      expect_any_instance_of(codeowners_validation).to receive(:`).with("git add #{codeowners_path}")
     end
 
     after(:all) do
-      validators_without_extension = Validator.instance_variable_get(:@validators).reject{|v| v == MyExtension }
+      validators_without_extension = Validator.instance_variable_get(:@validators).reject { |v| v == MyExtension }
       Validator.instance_variable_set(:@validators, validators_without_extension)
-      mappers_without_extension = Mapper.instance_variable_get(:@mappers).reject{|v| v == MyExtension }
-      Mapper.instance_variable_set(:@mappers, mappers_without_extension)        
+      mappers_without_extension = Mapper.instance_variable_get(:@mappers).reject { |v| v == MyExtension }
+      Mapper.instance_variable_set(:@mappers, mappers_without_extension)
     end
 
     describe 'CodeOwnership.validate!' do

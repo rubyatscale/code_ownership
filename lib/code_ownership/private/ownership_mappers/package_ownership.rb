@@ -10,8 +10,8 @@ module CodeOwnership
         include Mapper
 
         sig do
-          override.params(file: String).
-            returns(T.nilable(::CodeTeams::Team))
+          override.params(file: String)
+            .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
           package = Packs.for_file(file)
@@ -30,8 +30,8 @@ module CodeOwnership
         # subset of files, but rather we want code ownership for all files.
         #
         sig do
-          override.params(files: T::Array[String]).
-            returns(T::Hash[String, ::CodeTeams::Team])
+          override.params(files: T::Array[String])
+            .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
           Packs.all.each_with_object({}) do |package, res|
@@ -66,8 +66,7 @@ module CodeOwnership
         end
 
         sig { override.void }
-        def bust_caches!
-        end
+        def bust_caches!; end
       end
     end
   end
