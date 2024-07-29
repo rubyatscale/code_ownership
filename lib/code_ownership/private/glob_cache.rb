@@ -36,8 +36,10 @@ module CodeOwnership
       def mapper_descriptions_that_map_files(files)
         files_by_mappers = files.to_h { |f| [f, Set.new([])] }
 
-        files_by_mappers_via_expanded_cache.each do |file, mapper|
-          T.must(files_by_mappers[file]) << mapper if files_by_mappers[file]
+        files_by_mappers_via_expanded_cache.each do |file, mappers|
+          mappers.each do |mapper|
+            T.must(files_by_mappers[file]) << mapper if files_by_mappers[file]
+          end
         end
 
         files_by_mappers
