@@ -161,6 +161,19 @@ RSpec.describe CodeOwnership do
       end
     end
 
+    context '.codeowner in a directory with [] characters' do
+      before do
+        write_file('app/javascript/[test]/.codeowner', <<~CONTENTS)
+          Bar
+        CONTENTS
+        write_file('app/javascript/[test]/test.js', '')
+      end
+
+      it 'properly assigns ownership' do
+        expect(CodeOwnership.for_file('app/javascript/[test]/test.js')).to eq CodeTeams.find('Bar')
+      end
+    end
+
     before { create_non_empty_application }
   end
 
