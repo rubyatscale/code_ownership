@@ -6,8 +6,6 @@ module CodeOwnership
     class GlobCache
       extend T::Sig
 
-      EXPANDED_CACHE_FILE_COUNT_THRESHOLD = 100
-
       MapperDescription = T.type_alias { String }
 
       CacheShape = T.type_alias do
@@ -36,19 +34,15 @@ module CodeOwnership
 
       sig { params(files: T::Array[String]).returns(FilesByMapper) }
       def mapper_descriptions_that_map_files(files)
-        if files.count > EXPANDED_CACHE_FILE_COUNT_THRESHOLD
-          # When looking at many files, expanding the cache out using Dir.glob and checking for intersections is faster
-          files_by_mappers = files.to_h { |f| [f, Set.new([])] }
+        files_by_mappers = files.to_h { |f| [f, Set.new([])] }
 
-          files_by_mappers_via_expanded_cache.each do |file, mapper|
+        files_by_mappers_via_expanded_cache.each do |file, mappers|
+          mappers.each do |mapper|
             T.must(files_by_mappers[file]) << mapper if files_by_mappers[file]
           end
-
-          files_by_mappers
-        else
-          # When looking at few files, using File.fnmatch is faster
-          files_by_mappers_via_file_fnmatch(files)
         end
+
+        files_by_mappers
       end
 
       private
@@ -80,31 +74,6 @@ module CodeOwnership
 
           files_by_mappers
         end
-      end
-
-      sig { params(files: T::Array[String]).returns(FilesByMapper) }
-      def files_by_mappers_via_file_fnmatch(files)
-        files_by_mappers = T.let({}, FilesByMapper)
-
-        files.each do |file|
-          files_by_mappers[file] ||= Set.new([])
-          @raw_cache_contents.each do |mapper_description, globs_by_owner|
-            # As much as I'd like to *not* special case the file annotations mapper, using File.fnmatch? on the thousands of files mapped by the
-            # file annotations mapper is a lot of unnecessary extra work.
-            # Therefore we can just check if the file is in the globs directly for file annotations, otherwise use File.fnmatch
-            if mapper_description == OwnershipMappers::FileAnnotations::DESCRIPTION
-              files_by_mappers.fetch(file) << mapper_description if globs_by_owner[file]
-            else
-              globs_by_owner.each_key do |glob|
-                if File.fnmatch?(glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
-                  files_by_mappers.fetch(file) << mapper_description
-                end
-              end
-            end
-          end
-        end
-
-        files_by_mappers
       end
     end
   end

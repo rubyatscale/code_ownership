@@ -27,16 +27,10 @@ RSpec.describe CodeOwnership do
 
       context 'file ownership with [] characters' do
         before do
-          write_file('app/services/[test]/some_other_file.ts', <<~YML)
+          write_file('app/services/[test]/some_file.ts', <<~TYPESCRIPT)
             // @team Bar
             // Countries
-          YML
-
-          100.times do |i|
-            write_file("app/services/withoutbracket/some_other_file#{i}.ts", <<~YML)
-              // @team Bar
-            YML
-          end
+          TYPESCRIPT
         end
 
         it 'has no validation errors' do

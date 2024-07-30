@@ -69,26 +69,6 @@ module CodeOwnership
         it "ignores the file with multiple ownership if it's not in the files param" do
           expect { CodeOwnership.validate!(files: ['app/services/some_other_file.rb']) }.to_not raise_error
         end
-
-        context 'there are > 100 files in validation check' do
-          let(:files) do
-            files = []
-
-            101.times do |i|
-              filename = "app/services/some_other_file#{i}.rb"
-              files << filename
-              write_file(filename, <<~YML)
-                # @team Bar
-              YML
-            end
-
-            files
-          end
-
-          it "ignores the file with multiple ownership if it's not in the files param" do
-            expect { CodeOwnership.validate!(files: files) }.to_not raise_error
-          end
-        end
       end
 
       context 'with mutliple directory ownership files' do
