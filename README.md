@@ -8,6 +8,30 @@ Check out [`code_ownership_spec.rb`](https://github.com/rubyatscale/code_ownersh
 
 There is also a [companion VSCode Extension]([url](https://github.com/rubyatscale/code-ownership-vscode)) for this gem. Just search `Gusto.code-ownership-vscode` in the VSCode Extension Marketplace.
 
+## Getting started
+
+To get started there's a few things you should do.
+
+1) Create a `config/code_ownership.yml` file and declare where your files live. Here's a sample to start with:
+```yml
+owned_globs:
+  - '{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx}'
+js_package_paths: []
+unowned_globs:
+  - db/**/*
+  - app/services/some_file1.rb
+  - app/services/some_file2.rb
+  - frontend/javascripts/**/__generated__/**/*
+```
+2) Declare some teams. Here's an example, that would live at `config/teams/operations.yml`:
+```yml
+name: Operations
+github:
+  team: '@my-org/operations-team'
+```
+3) Declare ownership. You can do this at a directory level or at a file level. All of the files within the `owned_globs` you declared in step 1 will need to have an owner assigned (or be opted out via `unowned_globs`). See the next section for more detail.
+4) Run validations when you commit, and/or in CI. If you run validations in CI, ensure that if your `.github/CODEOWNERS` file gets changed, that gets pushed to the PR.
+
 ## Usage: Declaring Ownership
 
 There are three ways to declare code ownership using this gem.
