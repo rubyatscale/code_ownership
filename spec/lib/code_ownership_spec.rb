@@ -25,6 +25,19 @@ RSpec.describe CodeOwnership do
         end
       end
 
+      context 'directory with [] characters containing a .codeowner file' do
+        before do
+          write_file('app/services/[test]/.codeowner', <<~CONTENTS)
+            Bar
+          CONTENTS
+          write_file('app/services/[test]/some_file.rb', '')
+        end
+
+        it 'has no validation errors' do
+          expect { CodeOwnership.validate!(files: ['app/services/[test]/some_file.rb']) }.to_not raise_error
+        end
+      end
+
       context 'file ownership with [] characters' do
         before do
           write_file('app/services/[test]/some_file.ts', <<~TYPESCRIPT)
