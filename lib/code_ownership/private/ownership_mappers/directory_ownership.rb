@@ -130,10 +130,10 @@ module CodeOwnership
           unescaped = codeowners_file.dirname.cleanpath.join('**/**').to_s
 
           # Globs can contain certain regex characters, like "[" and "]".
-          # However, when we are generating a glob from a .codeowners file, we
+          # However, when we are generating a glob from a .codeowner file, we
           # need to escape bracket characters and interpret them literally.
           # Otherwise the resulting glob will not actually match the directory
-          # containing the .codeowners file.
+          # containing the .codeowner file.
           #
           # Example
           # file: "/some/[dir]/.codeowner"
