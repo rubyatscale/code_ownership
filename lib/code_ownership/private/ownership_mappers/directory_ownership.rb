@@ -48,7 +48,8 @@ module CodeOwnership
             .map(&:cleanpath)
             .each_with_object({}) do |pathname, res|
             owner = owner_for_codeowners_file(pathname)
-            res[pathname.dirname.cleanpath.join('**/**').to_s] = owner
+            glob = glob_for_codeowners_file(pathname)
+            res[glob] = owner
           end
         end
 
@@ -77,7 +78,7 @@ module CodeOwnership
         # Takes a file and finds the relevant `.codeowner` file by walking up the directory
         # structure. Example, given `a/b/c.rb`, this looks for `a/b/.codeowner`, `a/.codeowner`,
         # and `.codeowner` in that order, stopping at the first file to actually exist.
-        # If the parovided file is a directory, it will look for `.codeowner` in that directory and then upwards.
+        # If the provided file is a directory, it will look for `.codeowner` in that directory and then upwards.
         # We do additional caching so that we don't have to check for file existence every time.
         sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
         def map_file_to_relevant_owner(file)
@@ -122,6 +123,26 @@ module CodeOwnership
           end
 
           team
+        end
+
+        sig { params(codeowners_file: Pathname).returns(String) }
+        def glob_for_codeowners_file(codeowners_file)
+          unescaped = codeowners_file.dirname.cleanpath.join('**/**').to_s
+
+          # Globs can contain certain regex characters, like "[" and "]".
+          # However, when we are generating a glob from a .codeowners file, we
+          # need to escape bracket characters and interpret them literally.
+          # Otherise the resulting glob will not actually match the directory
+          # containing the .codeowners file.
+          #
+          # Example
+          # file: "/some/[dir]/.codeowner"
+          # unescaped: "/some/[dir]/**/**"
+          # matches: "/some/d/file"
+          # matches: "/some/i/file"
+          # matches: "/some/r/file"
+          # does not match!: "/some/[dir]/file"
+          unescaped.gsub(/[\[\]]/) { |x| "\\#{x}" }
         end
       end
     end
