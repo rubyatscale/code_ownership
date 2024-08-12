@@ -132,7 +132,7 @@ module CodeOwnership
           # Globs can contain certain regex characters, like "[" and "]".
           # However, when we are generating a glob from a .codeowners file, we
           # need to escape bracket characters and interpret them literally.
-          # Otherise the resulting glob will not actually match the directory
+          # Otherwise the resulting glob will not actually match the directory
           # containing the .codeowners file.
           #
           # Example
