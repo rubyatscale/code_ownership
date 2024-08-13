@@ -25,6 +25,19 @@ RSpec.describe CodeOwnership do
         end
       end
 
+      context 'directory with [] characters containing a .codeowner file' do
+        before do
+          write_file('app/services/[test]/.codeowner', <<~CONTENTS)
+            Bar
+          CONTENTS
+          write_file('app/services/[test]/some_file.rb', '')
+        end
+
+        it 'has no validation errors' do
+          expect { CodeOwnership.validate!(files: ['app/services/[test]/some_file.rb']) }.to_not raise_error
+        end
+      end
+
       context 'file ownership with [] characters' do
         before do
           write_file('app/services/[test]/some_file.ts', <<~TYPESCRIPT)
@@ -158,6 +171,19 @@ RSpec.describe CodeOwnership do
       it 'will not find the ownership of a file that is not a cleanpath' do
         expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
         expect(CodeOwnership.for_file('./packs/my_pack/owned_file.rb')).to eq nil
+      end
+    end
+
+    context '.codeowner in a directory with [] characters' do
+      before do
+        write_file('app/javascript/[test]/.codeowner', <<~CONTENTS)
+          Bar
+        CONTENTS
+        write_file('app/javascript/[test]/test.js', '')
+      end
+
+      it 'properly assigns ownership' do
+        expect(CodeOwnership.for_file('app/javascript/[test]/test.js')).to eq CodeTeams.find('Bar')
       end
     end
 
