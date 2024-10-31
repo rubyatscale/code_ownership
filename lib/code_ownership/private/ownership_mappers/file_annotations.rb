@@ -39,7 +39,8 @@ module CodeOwnership
             owner = file_annotation_based_owner(filename_relative_to_root)
             next unless owner
 
-            mapping[filename_relative_to_root] = owner
+            escaped_filename = escaped_path_for_codeowners_file(filename_relative_to_root)
+            mapping[escaped_filename] = owner
           end
         end
 
@@ -55,7 +56,8 @@ module CodeOwnership
 
           invalid_files = cache.keys.select do |file|
             # If a file is not tracked, it should be removed from the cache
-            !Private.file_tracked?(file) ||
+            unescaped_file = unescaped_path_for_codeowners_file(file)
+            !Private.file_tracked?(unescaped_file) ||
               # If a file no longer has a file annotation (i.e. `globs_to_owner` doesn't map it)
               # it should be removed from the cache
               # We make sure to only apply this to the input files since otherwise `updated_cache_for_files.key?(file)` would always return `false` when files == []
@@ -126,6 +128,32 @@ module CodeOwnership
 
         sig { override.void }
         def bust_caches!; end
+
+        sig { params(filename: String).returns(String) }
+        def escaped_path_for_codeowners_file(filename)
+          # Globs can contain certain regex characters, like "[" and "]".
+          # However, when we are generating a glob from a file annotation, we
+          # need to escape bracket characters and interpret them literally.
+          # Otherwise the resulting glob will not actually match the directory
+          # containing the file.
+          #
+          # Example
+          # filename: "/some/[xId]/myfile.tsx"
+          # matches: "/some/1/file"
+          # matches: "/some/2/file"
+          # matches: "/some/3/file"
+          # does not match!: "/some/[xId]/myfile.tsx"
+          filename.gsub(/[\[\]]/) { |x| "\\#{x}" }
+        end
+
+        sig { params(filename: String).returns(String) }
+        def unescaped_path_for_codeowners_file(filename)
+          # Globs can contain certain regex characters, like "[" and "]".
+          # We escape bracket characters and interpret them literally for
+          # the CODEOWNERS file. However, we want to compare the unescaped
+          # glob to the actual file path when we check if the file was deleted.
+          filename.gsub(/\\([\[\]])/, '\1')
+        end
       end
     end
   end

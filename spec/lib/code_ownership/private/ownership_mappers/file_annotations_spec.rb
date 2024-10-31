@@ -70,6 +70,23 @@ module CodeOwnership
           expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/owned_file.jsx').name).to eq 'Bar'
         end
       end
+
+      context 'javascript owned file with brackets' do
+        before do
+          write_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('frontend/javascripts/packages/my_package/[formID]/owned_file.jsx', <<~CONTENTS)
+            // @team Bar
+          CONTENTS
+        end
+
+        it 'can find the owner of a javascript file with file annotations' do
+          expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/[formID]/owned_file.jsx').name).to eq 'Bar'
+        end
+      end
     end
 
     describe '.remove_file_annotation!' do
