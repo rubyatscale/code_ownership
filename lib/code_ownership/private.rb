@@ -99,6 +99,7 @@ module CodeOwnership
       in_unowned_globs = configuration.unowned_globs.any? do |unowned_glob|
         File.fnmatch?(unowned_glob, file, File::FNM_PATHNAME | File::FNM_EXTGLOB)
       end
+
       in_owned_globs && !in_unowned_globs && File.exist?(file)
     end
 
