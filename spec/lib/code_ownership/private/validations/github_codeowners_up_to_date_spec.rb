@@ -53,6 +53,7 @@ module CodeOwnership
 
               # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
+              /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
               # Owner metadata key in package.yml
               /packs/my_other_package/**/** @MyOrg/bar-team
@@ -62,6 +63,7 @@ module CodeOwnership
 
               # Team YML ownership
               /config/teams/bar.yml @MyOrg/bar-team
+              /config/teams/foo.yml @MyOrg/foo-team
             EXPECTED
           end
 
@@ -90,6 +92,7 @@ module CodeOwnership
 
                 # Owner in .codeowner
                 /directory/owner/**/** @MyOrg/bar-team
+                /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
                 # Owner metadata key in package.yml
                 /packs/my_other_package/**/** @MyOrg/bar-team
@@ -99,6 +102,7 @@ module CodeOwnership
 
                 # Team YML ownership
                 /config/teams/bar.yml @MyOrg/bar-team
+                /config/teams/foo.yml @MyOrg/foo-team
               EXPECTED
             end
           end
@@ -126,6 +130,12 @@ module CodeOwnership
                 # code/file owner is notified. Reference GitHub docs for more details:
                 # https://help.github.com/en/articles/about-code-owners
 
+
+                # Owner in .codeowner
+                /directory/owner/(my_folder)/**/** @MyOrg/foo-team
+
+                # Team YML ownership
+                /config/teams/foo.yml @MyOrg/foo-team
               EXPECTED
             end
           end
@@ -167,6 +177,7 @@ module CodeOwnership
 
                 # Owner in .codeowner
                 # /directory/owner/**/** @MyOrg/bar-team
+                /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
                 # Owner metadata key in package.yml
                 # /packs/my_other_package/**/** @MyOrg/bar-team
@@ -176,6 +187,7 @@ module CodeOwnership
 
                 # Team YML ownership
                 # /config/teams/bar.yml @MyOrg/bar-team
+                /config/teams/foo.yml @MyOrg/foo-team
               EXPECTED
             end
           end
@@ -336,8 +348,10 @@ module CodeOwnership
 
                 CODEOWNERS should contain the following lines, but does not:
                 - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
+                - "/config/teams/foo.yml @MyOrg/foo-team"
                 - "# Owner in .codeowner"
                 - "/directory/owner/**/** @MyOrg/bar-team"
+                - "/directory/owner/(my_folder)/**/** @MyOrg/foo-team"
                 - "# Owner metadata key in package.yml"
                 - "/packs/my_other_package/**/** @MyOrg/bar-team"
 
@@ -377,6 +391,7 @@ module CodeOwnership
 
               # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
+              /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
               # Owner metadata key in package.yml
               /packs/my_other_package/**/** @MyOrg/bar-team
@@ -388,6 +403,7 @@ module CodeOwnership
 
               # Team YML ownership
               /config/teams/bar.yml @MyOrg/bar-team
+              /config/teams/foo.yml @MyOrg/foo-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`)
@@ -443,8 +459,10 @@ module CodeOwnership
 
                 CODEOWNERS should contain the following lines, but does not:
                 - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
+                - "/config/teams/foo.yml @MyOrg/foo-team"
                 - "# Owner in .codeowner"
                 - "/directory/owner/**/** @MyOrg/bar-team"
+                - "/directory/owner/(my_folder)/**/** @MyOrg/foo-team"
                 - "# Owner metadata key in package.yml"
                 - "/packs/my_other_package/**/** @MyOrg/bar-team"
 
@@ -475,6 +493,7 @@ module CodeOwnership
 
               # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
+              /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
               # Owner metadata key in package.yml
               /packs/my_other_package/**/** @MyOrg/bar-team
@@ -488,6 +507,7 @@ module CodeOwnership
 
               # Team YML ownership
               /config/teams/bar.yml @MyOrg/bar-team
+              /config/teams/foo.yml @MyOrg/foo-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`)
@@ -516,6 +536,7 @@ module CodeOwnership
 
               # Owner in .codeowner
               /directory/owner/**/** @MyOrg/bar-team
+              /directory/owner/(my_folder)/**/** @MyOrg/foo-team
 
               # Owner metadata key in package.yml
               /packs/my_other_package/**/** @MyOrg/bar-team
@@ -529,6 +550,7 @@ module CodeOwnership
 
               # Team YML ownership
               /config/teams/bar.yml @MyOrg/bar-team
+              /config/teams/foo.yml @MyOrg/foo-team
             CODEOWNERS
 
             expect_any_instance_of(codeowners_validation).to_not receive(:`)

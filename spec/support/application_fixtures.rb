@@ -25,6 +25,10 @@ RSpec.shared_context 'application fixtures' do
       Bar
     CONTENTS
     write_file('directory/owner/some_directory_file.ts')
+    write_file('directory/owner/(my_folder)/.codeowner', <<~CONTENTS)
+      Foo
+    CONTENTS
+    write_file('directory/owner/(my_folder)/some_other_file.ts')
 
     write_file('frontend/javascripts/packages/my_other_package/package.json', <<~CONTENTS)
       {
@@ -35,6 +39,12 @@ RSpec.shared_context 'application fixtures' do
       }
     CONTENTS
     write_file('frontend/javascripts/packages/my_other_package/my_file.jsx')
+
+    write_file('config/teams/foo.yml', <<~CONTENTS)
+      name: Foo
+      github:
+        team: '@MyOrg/foo-team'
+    CONTENTS
 
     write_file('config/teams/bar.yml', <<~CONTENTS)
       name: Bar

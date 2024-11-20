@@ -73,7 +73,26 @@ module CodeOwnership
 
           next if ownership_entries.none?
 
-          codeowners_file_lines += ['', "# #{mapper_description}", *ownership_entries.sort]
+          # When we have a special character at the beginning of a folder name, then this character
+          # may be prioritized over *. However, we want the most specific folder to be listed last
+          # in the CODEOWNERS file, so we should prioritize any character above an asterisk in the
+          # same position.
+          if mapper_description == OwnershipMappers::FileAnnotations::DESCRIPTION
+            # individually owned files definitely won't have globs so we don't need to do special sorting
+            sorted_ownership_entries = ownership_entries.sort
+          else
+            sorted_ownership_entries = ownership_entries.sort do |entry1, entry2|
+              if entry2.start_with?(entry1.split('**').first)
+                -1
+              elsif entry1.start_with?(entry2.split('**').first)
+                1
+              else
+                entry1 <=> entry2
+              end
+            end
+          end
+
+          codeowners_file_lines += ['', "# #{mapper_description}", *sorted_ownership_entries]
         end
 
         [
