@@ -1,5 +1,5 @@
 RSpec.describe CodeOwnership do
-  # Look at individual validations spec to see other validaions that ship with CodeOwnership
+  # Look at individual validations spec to see other validations that ship with CodeOwnership
   describe '.validate!' do
     describe 'teams must exist validation' do
       before do
