@@ -136,13 +136,23 @@ module CodeOwnership
     #
     #   ./app/controllers/some_controller.rb:43:in `block (3 levels) in create'
     #
-    backtrace_line = %r{\A(#{Pathname.pwd}/|\./)?
-        (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-        :
-        (?<line>\d+)      # Matches '43'
-        :in\s
-        `(?<function>.*)' # Matches "`block (3 levels) in create'"
-      \z}x
+    backtrace_line = if RUBY_VERSION >= '3.4.0'
+      %r{\A(#{Pathname.pwd}/|\./)?
+          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+          :
+          (?<line>\d+)      # Matches '43'
+          :in\s
+          '(?<function>.*)' # Matches "`block (3 levels) in create'"
+        \z}x
+    else
+      %r{\A(#{Pathname.pwd}/|\./)?
+          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+          :
+          (?<line>\d+)      # Matches '43'
+          :in\s
+          `(?<function>.*)' # Matches "`block (3 levels) in create'"
+        \z}x
+    end
 
     backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)
