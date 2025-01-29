@@ -111,7 +111,10 @@ module CodeOwnership
 
       sig { returns(Pathname) }
       def self.path
-        Pathname.pwd.join('.github/CODEOWNERS')
+        Pathname.pwd.join(
+          ENV.fetch('CODEOWNERS_PATH', '.github'),
+          'CODEOWNERS'
+        )
       end
 
       sig { params(files: T::Array[String]).void }
