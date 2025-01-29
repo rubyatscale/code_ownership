@@ -164,7 +164,7 @@ bin/codeownership for_team 'My Team' > tmp/ownership_report.md
 
 A `CODEOWNERS` file defines who owns specific files or paths in a repository. When you run `bin/codeownership validate`, a `.github/CODEOWNERS` file will automatically be generated and updated.
 
-If the `CODEOWNERS_PATH` environment variable is set, codeowners will use that path to generate the `CODEOWNERS` file. For example, `CODEOWNERS=docs` will generate `docs/CODEOWNERS`.
+If the `CODEOWNERS_PATH` environment variable is set, codeowners will use that path to generate the `CODEOWNERS` file. For example, `CODEOWNERS_PATH=docs` will generate `docs/CODEOWNERS`.
 
 ## Proper Configuration & Validation
 
