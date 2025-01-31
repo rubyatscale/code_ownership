@@ -112,7 +112,7 @@ module CodeOwnership
       sig { returns(Pathname) }
       def self.path
         Pathname.pwd.join(
-          ENV.fetch('CODEOWNERS_PATH', '.github'),
+          CodeOwnership.configuration.codeowners_path,
           'CODEOWNERS'
         )
       end

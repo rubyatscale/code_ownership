@@ -3,10 +3,22 @@ module CodeOwnership
     describe '.path' do
       subject { described_class.path }
 
-      context 'when the environment variable is set' do
+      context 'when codeowners_path is set in the configuration' do
+        let(:configuration) do
+          Configuration.new(
+            owned_globs: [],
+            unowned_globs: [],
+            js_package_paths: [],
+            unbuilt_gems_path: nil,
+            skip_codeowners_validation: false,
+            raw_hash: {},
+            require_github_teams: false,
+            codeowners_path: path
+          )
+        end
+
         before do
-          allow(ENV).to receive(:fetch).and_call_original
-          allow(ENV).to receive(:fetch).with('CODEOWNERS_PATH', anything).and_return(path)
+          allow(CodeOwnership).to receive(:configuration).and_return(configuration)
         end
 
         context "to 'foo'" do
@@ -23,12 +35,6 @@ module CodeOwnership
           it 'uses the environment variable' do
             expect(subject).to eq(Pathname.pwd.join('CODEOWNERS'))
           end
-        end
-      end
-
-      context 'when the environment variable is not set' do
-        it 'uses the default' do
-          expect(subject).to eq(Pathname.pwd.join('.github', 'CODEOWNERS'))
         end
       end
     end
