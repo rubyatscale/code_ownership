@@ -164,6 +164,8 @@ bin/codeownership for_team 'My Team' > tmp/ownership_report.md
 
 A `CODEOWNERS` file defines who owns specific files or paths in a repository. When you run `bin/codeownership validate`, a `.github/CODEOWNERS` file will automatically be generated and updated.
 
+If `codeowners_path` is set in `code_ownership.yml` codeowners will use that path to generate the `CODEOWNERS` file. For example, `codeowners_path: docs` will generate `docs/CODEOWNERS`.
+
 ## Proper Configuration & Validation
 
 CodeOwnership comes with a validation function to ensure the following things are true:
