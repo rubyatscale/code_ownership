@@ -214,6 +214,43 @@ module CodeOwnership
         end
       end
 
+      context 'haml has annotation' do
+        let(:filename) { 'app.my_file.html.haml' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            -# @team Foo
+
+            -# Some content
+          CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
+        end
+
+        it 'removes the annotation' do
+          current_ownership = CodeOwnership.for_file(filename)
+          expect(current_ownership&.name).to eq 'Foo'
+          expect(File.read(filename)).to eq <<~HAML
+            -# @team Foo
+
+            -# Some content
+          HAML
+
+          remove_file_annotation
+
+          new_ownership = CodeOwnership.for_file(filename)
+          expect(new_ownership).to eq nil
+          expected_output = <<~HAML
+            -# Some content
+          HAML
+
+          expect(File.read(filename)).to eq expected_output
+        end
+      end
+
       context 'file has new lines after the annotation' do
         let(:filename) { 'app/my_file.rb' }
 
