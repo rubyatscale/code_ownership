@@ -87,7 +87,26 @@ module CodeOwnership
           expect(CodeOwnership.for_file('frontend/javascripts/packages/my_package/[formID]/owned_file.jsx').name).to eq 'Bar'
         end
       end
+
+      context 'haml owned file' do
+        before do
+          write_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('packs/my_pack/owned_file.html.haml', <<~CONTENTS)
+            -# @team Bar
+          CONTENTS
+        end
+
+        it 'can find the owner of a haml file with file annotations' do
+          expect(CodeOwnership.for_file('packs/my_pack/owned_file.html.haml').name).to eq 'Bar'
+        end
+      end
     end
+
+
 
     describe '.remove_file_annotation!' do
       subject(:remove_file_annotation) do
@@ -190,6 +209,43 @@ module CodeOwnership
           expected_output = <<~JAVASCRIPT
             // Some content
           JAVASCRIPT
+
+          expect(File.read(filename)).to eq expected_output
+        end
+      end
+
+      context 'haml has annotation' do
+        let(:filename) { 'app.my_file.html.haml' }
+
+        before do
+          write_file(filename, <<~CONTENTS)
+            -# @team Foo
+
+            -# Some content
+          CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
+        end
+
+        it 'removes the annotation' do
+          current_ownership = CodeOwnership.for_file(filename)
+          expect(current_ownership&.name).to eq 'Foo'
+          expect(File.read(filename)).to eq <<~HAML
+            -# @team Foo
+
+            -# Some content
+          HAML
+
+          remove_file_annotation
+
+          new_ownership = CodeOwnership.for_file(filename)
+          expect(new_ownership).to eq nil
+          expected_output = <<~HAML
+            -# Some content
+          HAML
 
           expect(File.read(filename)).to eq expected_output
         end
