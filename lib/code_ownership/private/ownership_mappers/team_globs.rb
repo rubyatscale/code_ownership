@@ -14,16 +14,22 @@ module CodeOwnership
         @@map_files_to_owners = {} # rubocop:disable Style/ClassVars
 
         sig do
-          params(files: T::Array[String])
-          .returns(T::Hash[String, ::CodeTeams::Team])
+          returns(T::Hash[String, ::CodeTeams::Team])
         end
-        def map_files_to_owners(files)
+        def map_files_to_owners
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count.positive?
 
           @@map_files_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
               Dir.glob(glob).each do |filename|
                 map[filename] = team
+              end
+            end
+
+            # Remove anything that is unowned
+            TeamPlugins::Ownership.for(team).unowned_globs.each do |glob|
+              Dir.glob(glob).each do |filename|
+                map.delete(filename)
               end
             end
           end
@@ -63,6 +69,12 @@ module CodeOwnership
                 T.must(mapped_files[filename]) << MappingContext.new(glob: glob, team: team)
               end
             end
+            # Remove anything that is unowned
+            TeamPlugins::Ownership.for(team).unowned_globs.each do |glob|
+              Dir.glob(glob).each do |filename|
+                T.must(mapped_files.delete(filename))
+              end
+            end
           end
 
           overlaps = T.let([], T::Array[GlobOverlap])
@@ -81,10 +93,10 @@ module CodeOwnership
 
         sig do
           override.params(file: String)
-            .returns(T.nilable(::CodeTeams::Team))
+                  .returns(T.nilable(::CodeTeams::Team))
         end
         def map_file_to_owner(file)
-          map_files_to_owners([file])[file]
+          map_files_to_owners[file]
         end
 
         sig do
@@ -96,7 +108,7 @@ module CodeOwnership
 
         sig do
           override.params(files: T::Array[String])
-            .returns(T::Hash[String, ::CodeTeams::Team])
+                  .returns(T::Hash[String, ::CodeTeams::Team])
         end
         def globs_to_owner(files)
           CodeTeams.all.each_with_object({}) do |team, map|
