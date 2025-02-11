@@ -11,6 +11,11 @@ module CodeOwnership
         def owned_globs
           @team.raw_hash['owned_globs'] || []
         end
+
+        sig { returns(T::Array[String]) }
+        def unowned_globs
+          @team.raw_hash['unowned_globs'] || []
+        end
       end
     end
   end

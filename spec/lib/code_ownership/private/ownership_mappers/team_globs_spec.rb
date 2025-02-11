@@ -9,16 +9,26 @@ module CodeOwnership
           owned_globs:
             - app/services/bar_stuff/**/**
             - frontend/javascripts/bar_stuff/**/**
+            - '**/team_thing/**/*'
+          unowned_globs:
+            - shared/**/team_thing/**/*
         CONTENTS
 
         write_file('app/services/bar_stuff/thing.rb')
         write_file('app/services/bar_stuff/[test]/thing.rb')
         write_file('frontend/javascripts/bar_stuff/thing.jsx')
+        write_file('app/services/team_thing/thing.rb')
+        write_file('shared/config/team_thing/something.rb')
       end
 
       it 'can find the owner of ruby files in owned_globs' do
         expect(CodeOwnership.for_file('app/services/bar_stuff/thing.rb').name).to eq 'Bar'
         expect(CodeOwnership.for_file('app/services/bar_stuff/[test]/thing.rb').name).to eq 'Bar'
+        expect(CodeOwnership.for_file('app/services/team_thing/thing.rb').name).to eq 'Bar'
+      end
+
+      it 'does not find the owner of ruby files in unowned_globs' do
+        expect(CodeOwnership.for_file('shared/config/team_thing/something.rb')).to be_nil
       end
 
       it 'can find the owner of javascript files in owned_globs' do
@@ -27,6 +37,24 @@ module CodeOwnership
     end
 
     describe 'CodeOwnership.validate!' do
+      context 'has unowned globs' do
+        before do
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+            owned_globs:
+              - app/services/bar_stuff/**/**
+              - frontend/javascripts/bar_stuff/**/**
+              - '**/team_thing/**/*'
+            unowned_globs:
+              - shared/**/team_thing/**/*
+          CONTENTS
+        end
+
+        it 'considers the combination of owned_globs and unowned_globs' do
+          expect { CodeOwnership.validate! }.to_not raise_error
+        end
+      end
+
       context 'two teams own the same exact glob' do
         before do
           write_configuration
