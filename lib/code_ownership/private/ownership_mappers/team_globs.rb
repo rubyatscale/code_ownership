@@ -72,7 +72,7 @@ module CodeOwnership
             # Remove anything that is unowned
             TeamPlugins::Ownership.for(team).unowned_globs.each do |glob|
               Dir.glob(glob).each do |filename|
-                T.must(mapped_files.delete(filename))
+                mapped_files.reject! { |key, value| key == filename && value.any? { |context| context.team == team } }
               end
             end
           end
