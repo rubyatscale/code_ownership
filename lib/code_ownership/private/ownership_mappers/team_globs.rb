@@ -20,17 +20,15 @@ module CodeOwnership
           return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count.positive?
 
           @@map_files_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
-            TeamPlugins::Ownership.for(team).owned_globs.each do |glob|
-              Dir.glob(glob).each do |filename|
-                map[filename] = team
-              end
+            code_team = TeamPlugins::Ownership.for(team)
+
+            Dir.glob(code_team.owned_globs).each do |filename|
+              map[filename] = team
             end
 
-            # Remove anything that is unowned
-            TeamPlugins::Ownership.for(team).unowned_globs.each do |glob|
-              Dir.glob(glob).each do |filename|
-                map.delete(filename)
-              end
+            # Remove anything that is unowned by this team
+            Dir.glob(code_team.unowned_globs).each do |filename|
+              map.delete(filename)
             end
           end
         end
@@ -69,6 +67,7 @@ module CodeOwnership
                 T.must(mapped_files[filename]) << MappingContext.new(glob: glob, team: team)
               end
             end
+
             # Remove anything that is unowned
             TeamPlugins::Ownership.for(team).unowned_globs.each do |glob|
               Dir.glob(glob).each do |filename|
