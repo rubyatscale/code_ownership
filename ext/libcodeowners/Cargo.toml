@@ -12,3 +12,4 @@ crate-type = ["cdylib"]
 magnus = { version = "0.7.1" }
 serde = { version = "1.0.218", features = ["derive"] }
 serde_magnus = "0.9.0"
+codeowners = { path = "../../../codeowners-rs" }
