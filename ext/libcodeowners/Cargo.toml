@@ -1,0 +1,14 @@
+[package]
+name = "libcodeowners"
+version = "0.1.0"
+edition = "2021"
+authors = ["Perry Hertler <perry@hertler.org>"]
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+magnus = { version = "0.7.1" }
+serde = { version = "1.0.218", features = ["derive"] }
+serde_magnus = "0.9.0"

@@ -277,6 +277,11 @@ RSpec.describe CodeOwnership do
   describe '.for_team' do
     before { create_non_empty_application }
 
+    it 'delegates to libcodeowners' do
+      result = FastCodeowners.for_team("team1")
+      expect(result).to eq({output: ["success dog", "team1"], success: true})
+    end
+
     it 'prints out ownership information for the given team' do
       expect(CodeOwnership.for_team('Bar')).to eq <<~OWNERSHIP
         # Code Ownership Report for `Bar` Team

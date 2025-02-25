@@ -26,11 +26,12 @@ Gem::Specification.new do |spec|
   # Specify which files should be added to the gem when it is released.
   spec.files = Dir['README.md', 'lib/**/*', 'bin/**/*']
   spec.require_paths = ['lib']
+  spec.extensions = ['ext/libcodeowners/extconf.rb']
 
   spec.add_dependency 'code_teams', '~> 1.0'
   spec.add_dependency 'packs-specification'
   spec.add_dependency 'sorbet-runtime', '>= 0.5.11249'
-
+  spec.add_dependency 'rb_sys', '~> 0.9.91'
   spec.add_development_dependency 'debug'
   spec.add_development_dependency 'packwerk'
   spec.add_development_dependency 'railties'

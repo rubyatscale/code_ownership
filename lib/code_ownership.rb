@@ -12,6 +12,7 @@ require 'code_ownership/validator'
 require 'code_ownership/private'
 require 'code_ownership/cli'
 require 'code_ownership/configuration'
+require 'libcodeowners/libcodeowners'
 
 if defined?(Packwerk)
   require 'code_ownership/private/permit_pack_owner_top_level_key'
