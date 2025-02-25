@@ -27,21 +27,35 @@ module CodeOwnership
   requires_ancestor { Kernel }
   GlobsToOwningTeamMap = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
-  sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
-  def for_file(file)
+  sig { params(file: String, rust: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
+  def for_file(file, rust: false)
     @for_file ||= T.let(@for_file, T.nilable(T::Hash[String, T.nilable(CodeTeams::Team)]))
     @for_file ||= {}
 
     return nil if file.start_with?('./')
     return @for_file[file] if @for_file.key?(file)
 
-    Private.load_configuration!
+    if rust
+      result = T.let(RustCodeOwners.for_file(file), T.nilable(T::Hash[Symbol, String]))
+      return if result.nil?
 
-    owner = T.let(nil, T.nilable(CodeTeams::Team))
+      team_name = result[:team_name]
+      team_config_yml = result[:team_config_yml]
+      return if team_name.nil? || team_config_yml.nil?
 
-    Mapper.all.each do |mapper|
-      owner = mapper.map_file_to_owner(file)
-      break if owner # TODO: what if there are multiple owners? Should we respond with an error instead of the first match?
+      owner = T.let(Private.find_team!(
+        team_name,
+        team_config_yml
+      ), T.nilable(CodeTeams::Team))
+    else
+      Private.load_configuration!
+
+      owner = T.let(nil, T.nilable(CodeTeams::Team))
+
+      Mapper.all.each do |mapper|
+        owner = mapper.map_file_to_owner(file)
+        break if owner # TODO: what if there are multiple owners? Should we respond with an error instead of the first match?
+      end
     end
 
     @for_file[file] = owner
@@ -138,22 +152,22 @@ module CodeOwnership
     #   ./app/controllers/some_controller.rb:43:in `block (3 levels) in create'
     #
     backtrace_line = if RUBY_VERSION >= '3.4.0'
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          '(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    else
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          `(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    end
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           '(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     else
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           `(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     end
 
     backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)

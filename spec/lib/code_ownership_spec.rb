@@ -166,28 +166,48 @@ RSpec.describe CodeOwnership do
 
   # See tests for individual ownership_mappers to understand behavior for each mapper
   describe '.for_file' do
-    describe 'path formatting expectations' do
-      # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
-      it 'will not find the ownership of a file that is not a cleanpath' do
-        expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
-        expect(CodeOwnership.for_file('./packs/my_pack/owned_file.rb')).to eq nil
+    context 'with non-empty application' do
+      before { create_non_empty_application }
+
+      describe 'path formatting expectations' do
+        # All file paths must be clean paths relative to the root: https://apidock.com/ruby/Pathname/cleanpath
+        it 'will not find the ownership of a file that is not a cleanpath' do
+          expect(CodeOwnership.for_file('packs/my_pack/owned_file.rb')).to eq CodeTeams.find('Bar')
+          expect(CodeOwnership.for_file('./packs/my_pack/owned_file.rb')).to eq nil
+        end
+      end
+
+      context '.codeowner in a directory with [] characters' do
+        before do
+          write_file('app/javascript/[test]/.codeowner', <<~CONTENTS)
+            Bar
+          CONTENTS
+          write_file('app/javascript/[test]/test.js', '')
+        end
+
+        it 'properly assigns ownership' do
+          expect(CodeOwnership.for_file('app/javascript/[test]/test.js')).to eq CodeTeams.find('Bar')
+        end
       end
     end
 
-    context '.codeowner in a directory with [] characters' do
-      before do
-        write_file('app/javascript/[test]/.codeowner', <<~CONTENTS)
-          Bar
-        CONTENTS
-        write_file('app/javascript/[test]/test.js', '')
+    context 'rust codeowners' do
+      context 'when config is not found' do
+        it 'raises an error' do
+          expect { CodeOwnership.for_file('app/javascript/[test]/test.js', rust: true) }.to raise_error(RuntimeError)
+        end
       end
 
-      it 'properly assigns ownership' do
-        expect(CodeOwnership.for_file('app/javascript/[test]/test.js')).to eq CodeTeams.find('Bar')
+      context 'with non-empty application' do
+        before { create_non_empty_application }
+
+        context 'when no ownership is found' do
+          it 'properly assigns ownership' do
+            expect(CodeOwnership.for_file('app/madeup/file.rb', rust: true)).to be_nil
+          end
+        end
       end
     end
-
-    before { create_non_empty_application }
   end
 
   describe '.for_backtrace' do
@@ -276,11 +296,6 @@ RSpec.describe CodeOwnership do
 
   describe '.for_team' do
     before { create_non_empty_application }
-
-    it 'delegates to libcodeowners' do
-      result = FastCodeowners.for_team("team1")
-      expect(result).to eq({output: ["success dog", "team1"], success: true})
-    end
 
     it 'prints out ownership information for the given team' do
       expect(CodeOwnership.for_team('Bar')).to eq <<~OWNERSHIP
