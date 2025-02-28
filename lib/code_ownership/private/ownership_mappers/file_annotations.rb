@@ -73,19 +73,20 @@ module CodeOwnership
 
         sig { params(filename: String).returns(T.nilable(CodeTeams::Team)) }
         def file_annotation_based_owner(filename)
-          # If for a directory is named with an ownable extension, we need to skip
-          # so File.foreach doesn't blow up below. This was needed because Cypress
-          # screenshots are saved to a folder with the test suite filename.
-          return if File.directory?(filename)
-          return unless File.file?(filename)
-
           # The annotation should be on line 1 but as of this comment
           # there's no linter installed to enforce that. We therefore check the
           # first line (the Ruby VM makes a single `read(1)` call for 8KB),
           # and if the annotation isn't in the first two lines we assume it
           # doesn't exist.
 
-          line1 = File.foreach(filename).first
+          begin
+            line1 = File.foreach(filename).first
+          rescue Errno::EISDIR, Errno::ENOENT
+            # Ignore files that fail to read to avoid intermittent bugs.
+            # Ignoring directories is needed because, e.g., Cypress screenshots
+            # are saved to a folder with the test suite filename.
+            return
+          end
 
           return if !line1
 
