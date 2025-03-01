@@ -37,6 +37,28 @@ module CodeOwnership
     end
 
     describe '.for_file' do
+      context 'path is a directory' do
+        it 'returns nil' do
+          write_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          expect(CodeOwnership.for_file('config/teams')).to be_nil
+        end
+      end
+
+      context 'path does not exist' do
+        it 'returns nil' do
+          write_configuration
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          expect(CodeOwnership.for_file('config/teams/foo.yml')).to be_nil
+        end
+      end
+
       context 'ruby owned file' do
         before do
           write_configuration
