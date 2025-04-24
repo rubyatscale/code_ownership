@@ -73,6 +73,8 @@ name: My Team
 owned_globs:
   - app/services/stuff_belonging_to_my_team/**/**
   - app/controllers/other_stuff_belonging_to_my_team/**/**
+unowned_globs:
+  - app/controllers/other_stuff_belonging_to_my_team/that_one_weird_dir_we_dont_own/*
 ```
 
 ### Javascript Package Ownership
