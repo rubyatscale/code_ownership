@@ -1,0 +1,5 @@
+name: Foo
+github:
+  team: '@FooTeam'
+owned_globs:
+  - ruby/app/foo/**/*

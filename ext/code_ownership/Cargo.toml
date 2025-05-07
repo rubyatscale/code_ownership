@@ -1,0 +1,31 @@
+[package]
+name = "code_ownership"
+version = "0.1.0"
+edition = "2024"
+authors = ["Perry Hertler <perry.hertler@gusto.com>"]
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+rb-sys = { version = "0.9.111", features = [
+  "bindgen-rbimpls",
+  "bindgen-deprecated-types",
+  "stable-api-compiled-fallback",
+] }
+magnus = { version = "0.7.1" }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_magnus = "0.9.0"
+codeowners = { git = "https://github.com/rubyatscale/codeowners-rs.git", tag = "v0.2.4" }
+
+[dev-dependencies]
+rb-sys = { version = "0.9.111", features = [
+  "link-ruby",
+  "bindgen-rbimpls",
+  "bindgen-deprecated-types",
+  "stable-api-compiled-fallback",
+] }
+
+[build-dependencies]
+rb-sys-env = { version = "0.2.2" }

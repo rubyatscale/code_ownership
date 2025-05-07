@@ -1,0 +1,10 @@
+owned_globs:
+  - "**/*.{rb,tsx}"
+ruby_package_paths:
+  - ruby/packages/**/*
+javascript_package_paths:
+  - javascript/packages/**
+team_file_glob:
+  - config/teams/**/*.yml
+vendored_gems_path: gems
+unowned_globs:

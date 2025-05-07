@@ -7,6 +7,7 @@ require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
 require 'packs-specification'
+require 'code_ownership/version'
 require 'code_ownership/mapper'
 require 'code_ownership/validator'
 require 'code_ownership/private'
@@ -137,22 +138,22 @@ module CodeOwnership
     #   ./app/controllers/some_controller.rb:43:in `block (3 levels) in create'
     #
     backtrace_line = if RUBY_VERSION >= '3.4.0'
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          '(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    else
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          `(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    end
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           '(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     else
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           `(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     end
 
     backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)
