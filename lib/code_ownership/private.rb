@@ -44,22 +44,22 @@ module CodeOwnership
       @glob_cache = nil
     end
 
-    sig { params(files: T::Array[String], autocorrect: T::Boolean, stage_changes: T::Boolean).void }
-    def self.validate!(files:, autocorrect: true, stage_changes: true)
-      CodeownersFile.update_cache!(files) if CodeownersFile.use_codeowners_cache?
+    sig { params(autocorrect: T::Boolean, stage_changes: T::Boolean).void }
+    def self.validate!(autocorrect: true, stage_changes: true)
+      puts 'begin....'
+      result = if autocorrect
+                 # T.let(::RustCodeOwners.generate_and_validate, T.nilable(T::Hash[Symbol, String]))
+                 ::RustCodeOwners.generate_and_validate
+               else
+                 # T.let(::RustCodeOwners.validate, T.nilable(T::Hash[Symbol, String]))
+                 ::RustCodeOwners.validate
+               end
 
-      errors = Validator.all.flat_map do |validator|
-        validator.validation_errors(
-          files: files,
-          autocorrect: autocorrect,
-          stage_changes: stage_changes
-        )
-      end
-
-      if errors.any?
-        errors << 'See https://github.com/rubyatscale/code_ownership#README.md for more details'
-        raise InvalidCodeOwnershipConfigurationError.new(errors.join("\n")) # rubocop:disable Style/RaiseArgs
-      end
+      puts result
+      # if errors.any?
+      # errors << 'See https://github.com/rubyatscale/code_ownership#README.md for more details'
+      # raise InvalidCodeOwnershipConfigurationError.new(errors.join("\n"))
+      # end
     end
 
     # Returns a string version of the relative path to a Rails constant,

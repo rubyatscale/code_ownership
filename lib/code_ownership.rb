@@ -14,6 +14,13 @@ require 'code_ownership/private'
 require 'code_ownership/cli'
 require 'code_ownership/configuration'
 
+begin
+  RUBY_VERSION =~ /(\d+\.\d+)/
+  require "code_ownership/#{Regexp.last_match(1)}/code_ownership"
+rescue LoadError
+  require 'code_ownership/code_ownership'
+end
+
 if defined?(Packwerk)
   require 'code_ownership/private/permit_pack_owner_top_level_key'
 end
@@ -95,15 +102,7 @@ module CodeOwnership
     stage_changes: true,
     files: nil
   )
-    Private.load_configuration!
-
-    tracked_file_subset = if files
-                            files.select { |f| Private.file_tracked?(f) }
-                          else
-                            Private.tracked_files
-                          end
-
-    Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
+    Private.validate!(autocorrect: autocorrect, stage_changes: stage_changes)
   end
 
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the

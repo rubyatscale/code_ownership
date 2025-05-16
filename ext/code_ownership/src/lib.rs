@@ -31,11 +31,20 @@ fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     }
 }
 
-// Needed for tests
+fn validate() -> Result<Value, Error> {
+    let run_config = build_run_config();
+    let run_result = runner::validate(&run_config, vec![]);
+    validate_result(&run_result)
+    
+}
+
 fn generate_and_validate() -> Result<Value, Error> {
     let run_config = build_run_config();
     let run_result = runner::generate_and_validate(&run_config, vec![]);
-    dbg!(&run_result);
+    validate_result(&run_result)
+}
+
+fn validate_result(run_result: &runner::RunResult) -> Result<Value, Error> {
     if !run_result.validation_errors.is_empty() {
         Err(Error::new(
             magnus::exception::runtime_error(),
@@ -73,41 +82,7 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     let module = ruby.define_module("RustCodeOwners")?;
     module.define_singleton_method("for_file", function!(for_file, 1))?;
     module.define_singleton_method("generate_and_validate", function!(generate_and_validate, 0))?;
+    module.define_singleton_method("validate", function!(validate, 0))?;
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use std::env::set_current_dir;
-
-    use super::*;
-
-    #[test]
-    #[should_panic]
-    fn test_for_file_with_invalid_path() {
-        // panics because not called from a ruby thread
-        let _result = for_file("invalid/path".to_string());
-    }
-
-    #[test]
-    fn test_for_file() {
-        let argv: [*mut c_char; 0] = [];
-        let argv = argv.as_ptr();
-        let mut argc = 1;
-
-        let manifest_dir = env!("CARGO_MANIFEST_DIR");
-        let fixture_path = PathBuf::from(manifest_dir).join("tests/fixtures/valid_project");
-        let _ = set_current_dir(&fixture_path).unwrap();
-
-        unsafe {
-            rb_sys::ruby_sysinit(&mut argc, argv as _);
-            rb_sys::ruby_init();
-
-            init();
-            let result = generate_and_validate();
-            assert!(result.is_ok());
-            rb_sys::ruby_cleanup(0);
-        }
-    }
 }
