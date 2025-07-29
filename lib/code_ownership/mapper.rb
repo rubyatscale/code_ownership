@@ -21,7 +21,33 @@ module CodeOwnership
 
       sig { returns(T::Array[Mapper]) }
       def all
-        (@mappers || []).map(&:new)
+        mappers = @mappers || []
+
+        # Sort mappers by priority with file annotations last
+        sorted_mappers = mappers.sort_by do |mapper_class|
+          [priority_for_mapper_class(mapper_class)]
+        end
+
+        sorted_mappers.map(&:new)
+      end
+
+      private
+
+      sig { params(mapper_class: T::Class[Mapper]).returns(T.nilable(Integer)) }
+      def priority_for_mapper_class(mapper_class)
+        priority_hash[mapper_class]
+      end
+
+      sig { returns(T::Hash[T::Class[Mapper], Integer]) }
+      def priority_hash
+        {
+          Private::OwnershipMappers::FileAnnotations => 6,
+          Private::OwnershipMappers::DirectoryOwnership => 2,
+          Private::OwnershipMappers::PackageOwnership => 3,
+          Private::OwnershipMappers::JsPackageOwnership => 4,
+          Private::OwnershipMappers::TeamGlobs => 1,
+          Private::OwnershipMappers::TeamYmlOwnership => 5
+        }
       end
     end
 

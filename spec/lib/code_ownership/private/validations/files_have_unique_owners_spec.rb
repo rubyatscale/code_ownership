@@ -71,6 +71,46 @@ module CodeOwnership
         end
       end
 
+      context 'pack has ownership and file has annotation for different team' do
+        before do
+          write_configuration
+
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+          CONTENTS
+
+          write_file('config/teams/foo.yml', <<~CONTENTS)
+            name: Foo
+          CONTENTS
+
+          write_file('packs/my_pack/special_owner_file.rb', <<~CONTENTS)
+            # @team Foo
+            class SpecialOwnerFile; end
+          CONTENTS
+
+          write_file('packs/my_pack/normal_owner_file.rb', <<~CONTENTS)
+            class NormalOwnerFile; end
+          CONTENTS
+
+          write_file('packs/my_pack/package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+            owner: Bar
+          CONTENTS
+
+          write_file('package.yml', <<~CONTENTS)
+            enforce_dependency: true
+            enforce_privacy: true
+          CONTENTS
+        end
+
+        it 'allows file annotation to override pack ownership' do
+          expect(CodeOwnership.for_file('packs/my_pack/special_owner_file.rb').name).to eq 'Foo'
+          expect(CodeOwnership.for_file('packs/my_pack/normal_owner_file.rb').name).to eq 'Bar'
+          expect { CodeOwnership.validate! }.to_not raise_error
+        end
+      end
+
       context 'with mutliple directory ownership files' do
         before do
           write_configuration

@@ -82,10 +82,6 @@ module CodeOwnership
                 # https://help.github.com/en/articles/about-code-owners
 
 
-                # Annotations at the top of file
-                /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
-                /packs/my_pack/owned_file.rb @MyOrg/bar-team
-
                 # Team-specific owned globs
                 /app/services/bar_stuff/** @MyOrg/bar-team
                 /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
@@ -103,6 +99,10 @@ module CodeOwnership
                 # Team YML ownership
                 /config/teams/bar.yml @MyOrg/bar-team
                 /config/teams/foo.yml @MyOrg/foo-team
+
+                # Annotations at the top of file
+                /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+                /packs/my_pack/owned_file.rb @MyOrg/bar-team
               EXPECTED
             end
           end
