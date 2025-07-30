@@ -43,10 +43,6 @@ module CodeOwnership
               # https://help.github.com/en/articles/about-code-owners
 
 
-              # Annotations at the top of file
-              /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
-              /packs/my_pack/owned_file.rb @MyOrg/bar-team
-
               # Team-specific owned globs
               /app/services/bar_stuff/** @MyOrg/bar-team
               /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
@@ -64,6 +60,10 @@ module CodeOwnership
               # Team YML ownership
               /config/teams/bar.yml @MyOrg/bar-team
               /config/teams/foo.yml @MyOrg/foo-team
+
+              # Annotations at the top of file
+              /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+              /packs/my_pack/owned_file.rb @MyOrg/bar-team
             EXPECTED
           end
 
@@ -167,10 +167,6 @@ module CodeOwnership
                 # https://help.github.com/en/articles/about-code-owners
 
 
-                # Annotations at the top of file
-                # /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
-                # /packs/my_pack/owned_file.rb @MyOrg/bar-team
-
                 # Team-specific owned globs
                 # /app/services/bar_stuff/** @MyOrg/bar-team
                 # /frontend/javascripts/bar_stuff/** @MyOrg/bar-team
@@ -188,6 +184,10 @@ module CodeOwnership
                 # Team YML ownership
                 # /config/teams/bar.yml @MyOrg/bar-team
                 /config/teams/foo.yml @MyOrg/foo-team
+
+                # Annotations at the top of file
+                # /frontend/javascripts/packages/my_package/owned_file.jsx @MyOrg/bar-team
+                # /packs/my_pack/owned_file.rb @MyOrg/bar-team
               EXPECTED
             end
           end
@@ -608,9 +608,9 @@ module CodeOwnership
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file
 
                 CODEOWNERS should contain the following lines, but does not:
-                - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
                 - "# Team YML ownership"
                 - "/config/teams/bar.yml @MyOrg/bar-team"
+                - "/packs/my_pack/owned_file.rb @MyOrg/bar-team"
 
                 CODEOWNERS should not contain the following lines, but it does:
                 - "/packs/my_pack/owned_file.rb @MyOrg/this-team-does-not-exist"

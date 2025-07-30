@@ -280,10 +280,6 @@ RSpec.describe CodeOwnership do
     it 'prints out ownership information for the given team' do
       expect(CodeOwnership.for_team('Bar')).to eq <<~OWNERSHIP
         # Code Ownership Report for `Bar` Team
-        ## Annotations at the top of file
-        - frontend/javascripts/packages/my_package/owned_file.jsx
-        - packs/my_pack/owned_file.rb
-
         ## Team-specific owned globs
         - app/services/bar_stuff/**
         - frontend/javascripts/bar_stuff/**
@@ -299,6 +295,10 @@ RSpec.describe CodeOwnership do
 
         ## Team YML ownership
         - config/teams/bar.yml
+
+        ## Annotations at the top of file
+        - frontend/javascripts/packages/my_package/owned_file.jsx
+        - packs/my_pack/owned_file.rb
       OWNERSHIP
     end
   end

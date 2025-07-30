@@ -15,9 +15,6 @@ module CodeOwnership
       it 'prints out ownership information for the given team' do
         expect(CodeOwnership.for_team('Bar')).to eq <<~OWNERSHIP
           # Code Ownership Report for `Bar` Team
-          ## Annotations at the top of file
-          - packs/my_pack/owned_file.rb
-
           ## Team-specific owned globs
           This team owns nothing in this category.
 
@@ -32,6 +29,9 @@ module CodeOwnership
 
           ## Team YML ownership
           - config/teams/bar.yml
+
+          ## Annotations at the top of file
+          - packs/my_pack/owned_file.rb
         OWNERSHIP
       end
     end
