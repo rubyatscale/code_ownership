@@ -128,8 +128,6 @@ module CodeOwnership
       end
     end
 
-
-
     describe '.remove_file_annotation!' do
       subject(:remove_file_annotation) do
         CodeOwnership.remove_file_annotation!(filename)

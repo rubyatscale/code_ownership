@@ -120,4 +120,4 @@ Style/HashSyntax:
 
 Gemspec/DevelopmentDependencies:
   Enabled: true
-  EnforcedStyle: gemspec
+  EnforcedStyle: Gemfile

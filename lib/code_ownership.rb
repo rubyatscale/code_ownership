@@ -2,19 +2,17 @@
 
 # typed: strict
 
-require 'set'
 require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
 require 'packs-specification'
-require 'code_ownership/mapper'
-require 'code_ownership/validator'
-require 'code_ownership/private'
-require 'code_ownership/cli'
-require 'code_ownership/configuration'
+require 'zeitwerk'
+
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 if defined?(Packwerk)
-  require 'code_ownership/private/permit_pack_owner_top_level_key'
+  require 'code_ownership/private/pack_ownership_validator'
 end
 
 module CodeOwnership
@@ -137,22 +135,22 @@ module CodeOwnership
     #   ./app/controllers/some_controller.rb:43:in `block (3 levels) in create'
     #
     backtrace_line = if RUBY_VERSION >= '3.4.0'
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          '(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    else
-      %r{\A(#{Pathname.pwd}/|\./)?
-          (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
-          :
-          (?<line>\d+)      # Matches '43'
-          :in\s
-          `(?<function>.*)' # Matches "`block (3 levels) in create'"
-        \z}x
-    end
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           '(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     else
+                       %r{\A(#{Pathname.pwd}/|\./)?
+                           (?<file>.+)       # Matches 'app/controllers/some_controller.rb'
+                           :
+                           (?<line>\d+)      # Matches '43'
+                           :in\s
+                           `(?<function>.*)' # Matches "`block (3 levels) in create'"
+                         \z}x
+                     end
 
     backtrace.lazy.filter_map do |line|
       match = line.match(backtrace_line)

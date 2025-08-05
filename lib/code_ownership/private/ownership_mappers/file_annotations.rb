@@ -18,7 +18,7 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        TEAM_PATTERN = T.let(%r{\A(?:#|//|-#) @team (?<team>.*)\Z}.freeze, Regexp)
+        TEAM_PATTERN = T.let(%r{\A(?:#|//|-#) @team (?<team>.*)\Z}, Regexp)
         DESCRIPTION = 'Annotations at the top of file'
 
         sig do

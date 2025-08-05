@@ -8,6 +8,7 @@ module CodeOwnership
     module ExtensionLoader
       class << self
         extend T::Sig
+
         sig { params(require_directive: String).void }
         def load(require_directive)
           # We want to transform the require directive to behave differently

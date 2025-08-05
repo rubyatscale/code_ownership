@@ -3,6 +3,7 @@
 module CodeOwnership
   class Configuration < T::Struct
     extend T::Sig
+
     DEFAULT_JS_PACKAGE_PATHS = T.let(['**/'], T::Array[String])
 
     const :owned_globs, T::Array[String]
@@ -31,7 +32,7 @@ module CodeOwnership
         skip_codeowners_validation: config_hash.fetch('skip_codeowners_validation', false),
         raw_hash: config_hash,
         require_github_teams: config_hash.fetch('require_github_teams', false),
-        codeowners_path: config_hash.fetch('codeowners_path', '.github'),
+        codeowners_path: config_hash.fetch('codeowners_path', '.github')
       )
     end
 
