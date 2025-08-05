@@ -22,8 +22,8 @@
 # - Extra or orphaned files that don't follow naming patterns
 # - Namespace violations (constants defined in wrong namespace for their location)
 
-RSpec.describe "zeitwerk autoloader" do
-  it "werks (successfully loads the gem)" do
+RSpec.describe 'zeitwerk autoloader' do
+  it 'werks (successfully loads the gem)' do
     Zeitwerk::Loader.eager_load_namespace(CodeOwnership)
   rescue => error
     # Enhance the error message with more specific information
@@ -35,10 +35,10 @@ RSpec.describe "zeitwerk autoloader" do
 
   def build_enhanced_error_message(error)
     message_parts = [
-      "Zeitwerk eager loading failed with the following error:",
-      "",
+      'Zeitwerk eager loading failed with the following error:',
+      '',
       "Original Error: #{error.class}: #{error.message}",
-      "",
+      '',
     ]
 
     # Add backtrace information to help identify the problematic file
@@ -48,28 +48,28 @@ RSpec.describe "zeitwerk autoloader" do
       end
 
       if gem_related_trace.any?
-        message_parts << "Relevant backtrace:"
+        message_parts << 'Relevant backtrace:'
         gem_related_trace.first(5).each do |line|
           message_parts << "  #{line}"
         end
-        message_parts << ""
+        message_parts << ''
       end
     end
 
     # Try to identify which file might be causing the issue
     if /(?:wrong constant name|uninitialized constant|expected.*to define)/i.match?(error.message)
-      message_parts << "This error typically indicates:"
+      message_parts << 'This error typically indicates:'
       message_parts << "- A file name doesn't match its constant name"
-      message_parts << "- A constant is defined in the wrong namespace"
+      message_parts << '- A constant is defined in the wrong namespace'
       message_parts << "- A file exists but doesn't define the expected constant"
-      message_parts << ""
+      message_parts << ''
     end
 
     # Add helpful debugging information
-    message_parts << "To debug this issue:"
-    message_parts << "1. Check that all files in lib/ follow zeitwerk naming conventions"
-    message_parts << "2. Ensure each file defines a constant matching its file path"
-    message_parts << "3. Verify modules/classes are in the correct namespace"
+    message_parts << 'To debug this issue:'
+    message_parts << '1. Check that all files in lib/ follow zeitwerk naming conventions'
+    message_parts << '2. Ensure each file defines a constant matching its file path'
+    message_parts << '3. Verify modules/classes are in the correct namespace'
 
     message_parts.join("\n")
   end

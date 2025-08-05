@@ -2,7 +2,6 @@
 
 # typed: strict
 
-require 'set'
 require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
@@ -17,7 +16,7 @@ if defined?(Packwerk)
 end
 
 module CodeOwnership
-  module_function
+  extend self
 
   extend T::Sig
   extend T::Helpers

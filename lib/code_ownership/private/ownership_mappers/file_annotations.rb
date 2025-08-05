@@ -18,7 +18,7 @@ module CodeOwnership
         extend T::Sig
         include Mapper
 
-        TEAM_PATTERN = T.let(%r{\A(?:#|//|-#) @team (?<team>.*)\Z}.freeze, Regexp)
+        TEAM_PATTERN = T.let(%r{\A(?:#|//|-#) @team (?<team>.*)\Z}, Regexp)
         DESCRIPTION = 'Annotations at the top of file'
 
         sig do
@@ -93,11 +93,13 @@ module CodeOwnership
           begin
             team = line1[TEAM_PATTERN, :team]
           rescue ArgumentError => e
+            # rubocop:disable Gusto/NoRescueErrorMessageChecking
             if e.message.include?('invalid byte sequence')
               team = nil
             else
               raise
             end
+            # rubocop:enable Gusto/NoRescueErrorMessageChecking
           end
 
           return unless team
@@ -128,7 +130,8 @@ module CodeOwnership
         end
 
         sig { override.void }
-        def bust_caches!; end
+        def bust_caches!
+        end
 
         sig { params(filename: String).returns(String) }
         def escaped_path_for_codeowners_file(filename)

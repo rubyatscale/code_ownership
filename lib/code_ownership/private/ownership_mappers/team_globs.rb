@@ -17,7 +17,7 @@ module CodeOwnership
           returns(T::Hash[String, ::CodeTeams::Team])
         end
         def map_files_to_owners
-          return @@map_files_to_owners if @@map_files_to_owners&.keys && @@map_files_to_owners.keys.count.positive?
+          return @@map_files_to_owners if @@map_files_to_owners&.keys&.any?
 
           @@map_files_to_owners = CodeTeams.all.each_with_object({}) do |team, map| # rubocop:disable Style/ClassVars
             code_team = TeamPlugins::Ownership.for(team)

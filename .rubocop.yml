@@ -27,6 +27,18 @@ AllCops:
 Gemspec/RequireMFA:
   Enabled: false
 
+# Allow extend self pattern
+Style/ModuleFunction:
+  Enabled: false
+
+# Allow expect_any_instance_of in tests for specific testing patterns
+RSpec/AnyInstance:
+  Enabled: false
+
+# Allow after(:all) for necessary cleanup
+RSpec/BeforeAfterAll:
+  Enabled: false
+
 # This leads to code that is not very readable at times (very long lines)
 Layout/ArgumentAlignment:
   Enabled: false
@@ -123,6 +135,10 @@ Style/NegatedIf:
 # Sometimes we want to more explicitly list out a condition
 Style/RedundantCondition:
   Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+  Enabled: true
 
 # This cop is annoying with typed configuration
 Style/TrivialAccessors:

@@ -64,10 +64,10 @@ module CodeOwnership
             # 1) It allows the CODEOWNERS file to be used as a cache for validations
             # 2) It allows users to specifically see what their team will not be notified about.
             entry = if ignored_teams.include?(code_team.name)
-                      "# /#{path} #{team_mapping}"
-                    else
-                      "/#{path} #{team_mapping}"
-                    end
+              "# /#{path} #{team_mapping}"
+            else
+              "/#{path} #{team_mapping}"
+            end
             ownership_entries << entry
           end
 
@@ -99,7 +99,7 @@ module CodeOwnership
           *header.split("\n"),
           '', # For line between header and codeowners_file_lines
           *codeowners_file_lines,
-          '' # For end-of-file newline
+          '', # For end-of-file newline
         ]
       end
 
@@ -156,7 +156,7 @@ module CodeOwnership
             # The codeowners file stores paths relative to the root of directory
             # Since a `/` means root of the file system from the perspective of ruby,
             # we remove that beginning slash so we can correctly glob the files out.
-            normalized_line = line.gsub(/^# /, '').gsub(%r{^/}, '')
+            normalized_line = line.delete_prefix('# ').delete_prefix('/')
             split_line = normalized_line.split
             # Most lines will be in the format: /path/to/file my-github-team
             # This will skip over lines that are not of the correct form

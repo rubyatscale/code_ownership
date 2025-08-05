@@ -56,12 +56,12 @@ module CodeOwnership
       parser.parse!(args)
 
       files = if options[:diff]
-                ENV.fetch('CODEOWNERS_GIT_STAGED_FILES') { `git diff --staged --name-only` }.split("\n").select do |file|
-                  File.exist?(file)
-                end
-              else
-                nil
-              end
+        ENV.fetch('CODEOWNERS_GIT_STAGED_FILES') { %x(git diff --staged --name-only) }.split("\n").select do |file|
+          File.exist?(file)
+        end
+      else
+        nil
+      end
 
       CodeOwnership.validate!(
         files: files,
@@ -107,7 +107,7 @@ module CodeOwnership
       if options[:json]
         json = {
           team_name: team_name,
-          team_yml: team_yml
+          team_yml: team_yml,
         }
 
         puts json.to_json
@@ -121,7 +121,7 @@ module CodeOwnership
 
     def self.for_team(argv)
       parser = OptionParser.new do |opts|
-        opts.banner = 'Usage: bin/codeownership for_team \'Team Name\''
+        opts.banner = "Usage: bin/codeownership for_team 'Team Name'"
 
         opts.on('--help', 'Shows this prompt') do
           puts opts

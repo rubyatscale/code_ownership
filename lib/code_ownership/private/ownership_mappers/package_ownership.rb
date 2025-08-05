@@ -66,7 +66,8 @@ module CodeOwnership
         end
 
         sig { override.void }
-        def bust_caches!; end
+        def bust_caches!
+        end
       end
     end
   end

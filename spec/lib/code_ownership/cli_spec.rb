@@ -14,8 +14,8 @@ RSpec.describe CodeOwnership::Cli do
     context 'when run without arguments' do
       it 'runs validations with the right defaults' do
         expect(CodeOwnership).to receive(:validate!) do |args|
-          expect(args[:autocorrect]).to eq true
-          expect(args[:stage_changes]).to eq true
+          expect(args[:autocorrect]).to be true
+          expect(args[:stage_changes]).to be true
           expect(args[:files]).to be_nil
         end
         subject
@@ -89,7 +89,7 @@ RSpec.describe CodeOwnership::Cli do
         it 'outputs JSONified information to the console' do
           json = {
             team_name: 'My Team',
-            team_yml: 'config/teams/my_team.yml'
+            team_yml: 'config/teams/my_team.yml',
           }
           expect(CodeOwnership::Cli).to receive(:puts).with(json.to_json)
           subject

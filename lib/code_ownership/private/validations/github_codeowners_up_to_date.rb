@@ -22,7 +22,7 @@ module CodeOwnership
             if autocorrect
               CodeownersFile.write!
               if stage_changes
-                `git add #{CodeownersFile.path}`
+                %x(git add #{CodeownersFile.path})
               end
             # If there is no current file or its empty, display a shorter message.
             elsif actual_content_lines == ['']
@@ -34,33 +34,33 @@ module CodeOwnership
               extra_lines = actual_content_lines - expected_content_lines
 
               missing_lines_text = if missing_lines.any?
-                                     <<~COMMENT
-                                       CODEOWNERS should contain the following lines, but does not:
-                                       #{missing_lines.map { |line| "- \"#{line}\"" }.join("\n")}
-                                     COMMENT
-                                   end
+                <<~COMMENT
+                  CODEOWNERS should contain the following lines, but does not:
+                  #{missing_lines.map { |line| "- \"#{line}\"" }.join("\n")}
+                COMMENT
+              end
 
               extra_lines_text = if extra_lines.any?
-                                   <<~COMMENT
-                                     CODEOWNERS should not contain the following lines, but it does:
-                                     #{extra_lines.map { |line| "- \"#{line}\"" }.join("\n")}
-                                   COMMENT
-                                 end
+                <<~COMMENT
+                  CODEOWNERS should not contain the following lines, but it does:
+                  #{extra_lines.map { |line| "- \"#{line}\"" }.join("\n")}
+                COMMENT
+              end
 
               diff_text = if missing_lines_text && extra_lines_text
-                            "#{missing_lines_text}\n#{extra_lines_text}".chomp
-                          elsif missing_lines_text
-                            missing_lines_text
-                          elsif extra_lines_text
-                            extra_lines_text
-                          else
-                            <<~TEXT
-                              There may be extra lines, or lines are out of order.
-                              You can try to regenerate the CODEOWNERS file from scratch:
-                              1) `rm .github/CODEOWNERS`
-                              2) `bin/codeownership validate`
-                            TEXT
-                          end
+                "#{missing_lines_text}\n#{extra_lines_text}".chomp
+              elsif missing_lines_text
+                missing_lines_text
+              elsif extra_lines_text
+                extra_lines_text
+              else
+                <<~TEXT
+                  There may be extra lines, or lines are out of order.
+                  You can try to regenerate the CODEOWNERS file from scratch:
+                  1) `rm .github/CODEOWNERS`
+                  2) `bin/codeownership validate`
+                TEXT
+              end
 
               errors << <<~CODEOWNERS_ERROR
                 CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file

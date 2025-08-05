@@ -47,10 +47,10 @@ module CodeOwnership
             .glob(File.join('**/', CODEOWNERS_DIRECTORY_FILE_NAME))
             .map(&:cleanpath)
             .each_with_object({}) do |pathname, res|
-            owner = owner_for_codeowners_file(pathname)
-            glob = glob_for_codeowners_file(pathname)
-            res[glob] = owner
-          end
+              owner = owner_for_codeowners_file(pathname)
+              glob = glob_for_codeowners_file(pathname)
+              res[glob] = owner
+            end
         end
 
         sig { override.returns(String) }

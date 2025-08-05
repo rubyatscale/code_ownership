@@ -16,7 +16,7 @@ module CodeOwnership
 
       sig { override.returns(T::Array[String]) }
       def permitted_keys
-        %w[owner]
+        %w(owner)
       end
     end
   end

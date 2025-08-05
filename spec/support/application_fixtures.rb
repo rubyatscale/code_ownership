@@ -1,11 +1,11 @@
-RSpec.shared_context 'application fixtures' do
+RSpec.shared_context 'with application fixtures' do
   let(:codeowners_path) { Pathname.pwd.join('.github/CODEOWNERS') }
 
   def write_configuration(owned_globs: nil, **kwargs)
     owned_globs ||= ['{app,components,config,frontend,lib,packs,spec}/**/*.{rb,rake,js,jsx,ts,tsx,json,yml}']
     config = {
       'owned_globs' => owned_globs,
-      'unowned_globs' => ['config/code_ownership.yml']
+      'unowned_globs' => ['config/code_ownership.yml'],
     }.merge(kwargs)
     write_file('config/code_ownership.yml', config.to_yaml)
   end
@@ -106,8 +106,8 @@ RSpec.shared_context 'application fixtures' do
     # Some of the tests use the `SequoiaTree` constant. Since the implementation leverages:
     # `path = Object.const_source_location(klass.to_s)&.first`, we want to make sure that
     # we re-require the constant each time, since `RSpecTempfiles` changes where the file lives with each test
-    Object.send(:remove_const, :MyFile) if defined? MyFile # :
-    Object.send(:remove_const, :MyError) if defined? MyError # :
+    stub_const('MyFile', nil) if defined? MyFile # :
+    stub_const('MyError', nil) if defined? MyError # :
     require Pathname.pwd.join('app/my_file')
   end
 end

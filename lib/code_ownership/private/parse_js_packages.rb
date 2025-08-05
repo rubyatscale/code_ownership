@@ -23,10 +23,10 @@ module CodeOwnership
           package_loaded_json = JSON.parse(pathname.read)
 
           package_name = if pathname.dirname == Pathname.new('.')
-                           ROOT_PACKAGE_NAME
-                         else
-                           pathname.dirname.cleanpath.to_s
-                         end
+            ROOT_PACKAGE_NAME
+          else
+            pathname.dirname.cleanpath.to_s
+          end
 
           new(
             name: package_name,

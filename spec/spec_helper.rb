@@ -17,7 +17,7 @@ RSpec.configure do |config|
     c.syntax = :expect
   end
 
-  config.include_context 'application fixtures'
+  config.include_context 'with application fixtures'
 
   config.before do |c|
     allow_any_instance_of(CodeOwnership.const_get(:Private)::Validations::GithubCodeownersUpToDate).to receive(:`)
