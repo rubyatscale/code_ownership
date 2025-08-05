@@ -1,23 +1,5 @@
-# frozen_string_literal: true
-
 # typed: strict
-
-require 'code_ownership/private/extension_loader'
-require 'code_ownership/private/team_plugins/ownership'
-require 'code_ownership/private/team_plugins/github'
-require 'code_ownership/private/codeowners_file'
-require 'code_ownership/private/parse_js_packages'
-require 'code_ownership/private/glob_cache'
-require 'code_ownership/private/owner_assigner'
-require 'code_ownership/private/validations/files_have_owners'
-require 'code_ownership/private/validations/github_codeowners_up_to_date'
-require 'code_ownership/private/validations/files_have_unique_owners'
-require 'code_ownership/private/ownership_mappers/file_annotations'
-require 'code_ownership/private/ownership_mappers/team_globs'
-require 'code_ownership/private/ownership_mappers/directory_ownership'
-require 'code_ownership/private/ownership_mappers/package_ownership'
-require 'code_ownership/private/ownership_mappers/js_package_ownership'
-require 'code_ownership/private/ownership_mappers/team_yml_ownership'
+# frozen_string_literal: true
 
 module CodeOwnership
   module Private
@@ -117,10 +99,10 @@ module CodeOwnership
     def self.glob_cache
       @glob_cache ||= T.let(@glob_cache, T.nilable(GlobCache))
       @glob_cache ||= if CodeownersFile.use_codeowners_cache?
-                        CodeownersFile.to_glob_cache
-                      else
-                        Mapper.to_glob_cache
-                      end
+        CodeownersFile.to_glob_cache
+      else
+        Mapper.to_glob_cache
+      end
     end
   end
 

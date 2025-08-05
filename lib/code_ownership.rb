@@ -7,14 +7,13 @@ require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
 require 'packs-specification'
-require 'code_ownership/mapper'
-require 'code_ownership/validator'
-require 'code_ownership/private'
-require 'code_ownership/cli'
-require 'code_ownership/configuration'
+require 'zeitwerk'
+
+loader = Zeitwerk::Loader.for_gem
+loader.setup
 
 if defined?(Packwerk)
-  require 'code_ownership/private/permit_pack_owner_top_level_key'
+  require 'code_ownership/private/pack_ownership_validator'
 end
 
 module CodeOwnership
@@ -97,10 +96,10 @@ module CodeOwnership
     Private.load_configuration!
 
     tracked_file_subset = if files
-                            files.select { |f| Private.file_tracked?(f) }
-                          else
-                            Private.tracked_files
-                          end
+      files.select { |f| Private.file_tracked?(f) }
+    else
+      Private.tracked_files
+    end
 
     Private.validate!(files: tracked_file_subset, autocorrect: autocorrect, stage_changes: stage_changes)
   end
@@ -162,7 +161,7 @@ module CodeOwnership
 
       [
         CodeOwnership.for_file(file),
-        file
+        file,
       ]
     end
   end
