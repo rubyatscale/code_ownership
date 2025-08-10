@@ -14,7 +14,7 @@ pub struct Team {
 fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     let run_config = build_run_config();
 
-    match runner::team_for_file_from_codeowners(&run_config, &file_path) {
+    match runner::team_for_file(&run_config, &file_path) {
         Ok(Some(team_rs)) => {
             let team = Team {
                 team_name: team_rs.name,
