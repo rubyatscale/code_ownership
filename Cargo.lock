@@ -201,7 +201,7 @@ dependencies = [
 [[package]]
 name = "codeowners"
 version = "0.2.6"
-source = "git+https://github.com/rubyatscale/codeowners-rs.git?branch=ph%2Fcleanup-for-file#a5017cb8263c5a26e7eb17c4568a5fff0a878635"
+source = "git+https://github.com/rubyatscale/codeowners-rs.git?rev=6646311#664631181527b456835bfbd50495ee637a1dedd2"
 dependencies = [
  "clap",
  "clap_derive",

@@ -15,5 +15,8 @@ module RustCodeOwners
 
     def for_team(team)
     end
+
+    def version
+    end
   end
 end

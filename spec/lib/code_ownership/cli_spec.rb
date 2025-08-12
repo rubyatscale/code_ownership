@@ -247,6 +247,15 @@ RSpec.describe CodeOwnership::Cli do
     end
   end
 
+  describe 'version' do
+    let(:argv) { ['version'] }
+
+    it 'outputs the version' do
+      expect(CodeOwnership::Cli).to receive(:puts).with(CodeOwnership.version.join("\n"))
+      subject
+    end
+  end
+
   describe 'using unknown command' do
     let(:argv) { ['some_command'] }
 

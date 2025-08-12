@@ -212,4 +212,10 @@ RSpec.describe CodeOwnership do
       end
     end
   end
+
+  describe '.version' do
+    it 'returns the version' do
+      expect(described_class.version).to eq ["code_ownership version: #{CodeOwnership::VERSION}", "codeowners-rs version: #{::RustCodeOwners.version}"]
+    end
+  end
 end

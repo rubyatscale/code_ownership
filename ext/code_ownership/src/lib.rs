@@ -37,6 +37,10 @@ fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     }
 }
 
+fn version() -> String {
+   runner::version()
+}
+
 fn validate() -> Result<Value, Error> {
     let run_config = build_run_config();
     let run_result = runner::validate(&run_config, vec![]);
@@ -88,6 +92,7 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     module.define_singleton_method("generate_and_validate", function!(generate_and_validate, 1))?;
     module.define_singleton_method("validate", function!(validate, 0))?;
     module.define_singleton_method("for_team", function!(for_team, 1))?;
+    module.define_singleton_method("version", function!(version, 0))?;
 
     Ok(())
 }

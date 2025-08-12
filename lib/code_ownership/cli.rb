@@ -16,6 +16,8 @@ module CodeOwnership
         for_file(argv)
       elsif command == 'for_team'
         for_team(argv)
+      elsif command == 'version'
+        version
       elsif [nil, 'help'].include?(command)
         puts <<~USAGE
           Usage: #{EXECUTABLE} <subcommand>
@@ -70,6 +72,10 @@ module CodeOwnership
         autocorrect: !options[:skip_autocorrect],
         stage_changes: !options[:skip_stage]
       )
+    end
+
+    def self.version
+      puts CodeOwnership.version.join("\n")
     end
 
     # For now, this just returns team ownership
