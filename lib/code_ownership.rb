@@ -8,9 +8,9 @@ require 'sorbet-runtime'
 require 'json'
 require 'packs-specification'
 require 'code_ownership/version'
-require 'code_ownership/file_path_finder'
-require 'code_ownership/file_path_team_cache'
-require 'code_ownership/team_finder'
+require 'code_ownership/private/file_path_finder'
+require 'code_ownership/private/file_path_team_cache'
+require 'code_ownership/private/team_finder'
 require 'code_ownership/cli'
 require 'code_ownership/mapper'
 
@@ -22,7 +22,7 @@ rescue LoadError
 end
 
 if defined?(Packwerk)
-  require 'code_ownership/permit_pack_owner_top_level_key'
+  require 'code_ownership/private/permit_pack_owner_top_level_key'
 end
 
 module CodeOwnership
@@ -36,7 +36,7 @@ module CodeOwnership
 
   sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)
-    TeamFinder.for_file(file)
+    Private::TeamFinder.for_file(file)
   end
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }
@@ -71,24 +71,24 @@ module CodeOwnership
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
   def for_backtrace(backtrace, excluded_teams: [])
-    TeamFinder.for_backtrace(backtrace, excluded_teams: excluded_teams)
+    Private::TeamFinder.for_backtrace(backtrace, excluded_teams: excluded_teams)
   end
 
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first owned file in it, useful for figuring out which file is being blamed.
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
   def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
-    TeamFinder.first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)
+    Private::TeamFinder.first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)
   end
 
   sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
-    TeamFinder.for_class(klass)
+    Private::TeamFinder.for_class(klass)
   end
 
   sig { params(package: Packs::Pack).returns(T.nilable(::CodeTeams::Team)) }
   def for_package(package)
-    TeamFinder.for_package(package)
+    Private::TeamFinder.for_package(package)
   end
 
   # Generally, you should not ever need to do this, because once your ruby process loads, cached content should not change.
@@ -97,6 +97,6 @@ module CodeOwnership
   # has different ownership and tracked files.
   sig { void }
   def self.bust_caches!
-    FilePathTeamCache.bust_cache!
+    Private::FilePathTeamCache.bust_cache!
   end
 end

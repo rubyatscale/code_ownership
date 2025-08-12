@@ -64,7 +64,7 @@ RSpec.describe CodeOwnership do
     let(:file_path) { 'packs/my_pack/owned_file.rb' }
 
     before do
-      allow(CodeOwnership::FilePathFinder).to receive(:path_from_klass).and_return(file_path)
+      allow(CodeOwnership::Private::FilePathFinder).to receive(:path_from_klass).and_return(file_path)
     end
 
     context 'when the klass path is found' do
@@ -74,7 +74,7 @@ RSpec.describe CodeOwnership do
 
       it 'calls for_file with the correct file path' do
         subject
-        expect(CodeOwnership::FilePathFinder).to have_received(:path_from_klass).with(klass)
+        expect(CodeOwnership::Private::FilePathFinder).to have_received(:path_from_klass).with(klass)
       end
 
       it 'returns the correct team' do

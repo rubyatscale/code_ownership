@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe CodeOwnership::FilePathTeamCache do
+RSpec.describe CodeOwnership::Private::FilePathTeamCache do
   let(:file_path) { 'app/javascript/[test]/test.js' }
   let(:codes_team) { instance_double(CodeTeams::Team) }
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe CodeOwnership::FilePathFinder do
+RSpec.describe CodeOwnership::Private::FilePathFinder do
   class TestClass; end # rubocop:disable Lint/ConstantDefinitionInBlock, Lint/EmptyClass
 
   describe '.path_from_klass' do
@@ -14,7 +14,7 @@ RSpec.describe CodeOwnership::FilePathFinder do
 
     context 'when the klass is a class' do
       it 'returns the path to the class' do
-        expect(subject).to include('spec/lib/code_ownership/file_path_finder_spec.rb')
+        expect(subject).to include('spec/lib/code_ownership/private/file_path_finder_spec.rb')
       end
     end
 
