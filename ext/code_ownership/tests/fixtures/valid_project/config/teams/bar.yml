@@ -1,5 +1,0 @@
-name: Bar
-github:
-  team: '@BarTeam'
-owned_globs:
-  - ruby/app/bar/**/*

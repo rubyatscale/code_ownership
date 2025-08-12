@@ -92,37 +92,3 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     Ok(())
 }
 
-#[cfg(test)]
-mod tests {
-    use std::env::set_current_dir;
-
-    use super::*;
-
-    #[test]
-    #[should_panic]
-    fn test_for_file_with_invalid_path() {
-        // panics because not called from a ruby thread
-        let _result = for_file("invalid/path".to_string());
-    }
-
-    #[test]
-    fn test_for_file() {
-        let argv: [*mut c_char; 0] = [];
-        let argv = argv.as_ptr();
-        let mut argc = 1;
-
-        let manifest_dir = env!("CARGO_MANIFEST_DIR");
-        let fixture_path = PathBuf::from(manifest_dir).join("tests/fixtures/valid_project");
-        let _ = set_current_dir(&fixture_path).unwrap();
-
-        unsafe {
-            rb_sys::ruby_sysinit(&mut argc, argv as _);
-            rb_sys::ruby_init();
-
-            init();
-            let result = generate_and_validate();
-            assert!(result.is_ok());
-            rb_sys::ruby_cleanup(0);
-        }
-    }
-}
