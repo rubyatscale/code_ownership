@@ -38,18 +38,13 @@ module CodeOwnership
     TeamFinder.for_file(file)
   end
 
-  sig { params(team: T.any(CodeTeams::Team, String)).returns(String) }
+  sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }
   def for_team(team)
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ::RustCodeOwners.for_team(team.name)
   end
 
   class InvalidCodeOwnershipConfigurationError < StandardError
-  end
-
-  sig { params(filename: String).void }
-  def self.remove_file_annotation!(filename)
-    Private::OwnershipMappers::FileAnnotations.new.remove_file_annotation!(filename)
   end
 
   sig do
