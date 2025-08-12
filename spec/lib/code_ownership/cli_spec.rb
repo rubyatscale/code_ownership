@@ -61,6 +61,40 @@ RSpec.describe CodeOwnership::Cli do
         end
       end
     end
+
+    context 'with --skip-autocorrect' do
+      let(:argv) { ['validate', '--skip-autocorrect'] }
+
+      it 'passes autocorrect: false' do
+        expect(CodeOwnership).to receive(:validate!) do |args|
+          expect(args[:autocorrect]).to eq false
+          expect(args[:stage_changes]).to eq true
+        end
+        subject
+      end
+    end
+
+    context 'with --skip-stage' do
+      let(:argv) { ['validate', '--skip-stage'] }
+
+      it 'passes stage_changes: false' do
+        expect(CodeOwnership).to receive(:validate!) do |args|
+          expect(args[:autocorrect]).to eq true
+          expect(args[:stage_changes]).to eq false
+        end
+        subject
+      end
+    end
+
+    context 'with --help' do
+      let(:argv) { ['validate', '--help'] }
+
+      it 'shows help and exits' do
+        expect(CodeOwnership).not_to receive(:validate!)
+        expect(CodeOwnership::Cli).to receive(:puts).at_least(:once)
+        expect { subject }.to raise_error(SystemExit)
+      end
+    end
   end
 
   context 'for_team' do
@@ -81,6 +115,31 @@ RSpec.describe CodeOwnership::Cli do
     it 'outputs the team info in human readable format' do
       expect(CodeOwnership::Cli).to receive(:puts).with('# Code Ownership Report for `My Team` Team')
       subject
+    end
+
+    context 'with no team provided' do
+      let(:argv) { ['for_team'] }
+
+      it 'raises argument error' do
+        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class::EXECUTABLE} for_team --help` for more info")
+      end
+    end
+
+    context 'with multiple teams provided' do
+      let(:argv) { %w[for_team A B] }
+
+      it 'raises argument error' do
+        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class::EXECUTABLE} for_team --help` for more info")
+      end
+    end
+
+    context 'with --help' do
+      let(:argv) { ['for_team', '--help'] }
+
+      it 'shows help and exits' do
+        expect(CodeOwnership::Cli).to receive(:puts).at_least(:once)
+        expect { subject }.to raise_error(SystemExit)
+      end
     end
   end
 
@@ -162,6 +221,28 @@ RSpec.describe CodeOwnership::Cli do
         it 'outputs the team info in human readable format' do
           expect { subject }.to raise_error "Please pass in one file. Use `#{described_class::EXECUTABLE} for_file --help` for more info"
         end
+      end
+    end
+
+    context 'when file is unowned' do
+      let(:argv) { ['for_file', 'app/services/unowned.rb'] }
+
+      it 'prints Unowned' do
+        allow(CodeOwnership).to receive(:for_file).and_return(nil)
+        expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
+          Team: Unowned
+          Team YML: Unowned
+        MSG
+        subject
+      end
+    end
+
+    context 'with --help' do
+      let(:argv) { ['for_file', '--help'] }
+
+      it 'shows help and exits' do
+        expect(CodeOwnership::Cli).to receive(:puts).at_least(:once)
+        expect { subject }.to raise_error(SystemExit)
       end
     end
   end

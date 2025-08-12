@@ -36,4 +36,48 @@ RSpec.describe CodeOwnership::Private::FilePathFinder do
       end
     end
   end
+
+  describe '.from_backtrace' do
+    subject(:files) { described_class.from_backtrace(backtrace).to_a }
+
+    context 'when backtrace is nil' do
+      let(:backtrace) { nil }
+
+      it 'returns an empty array' do
+        expect(files).to eq([])
+      end
+    end
+
+    context 'when backtrace is empty' do
+      let(:backtrace) { [] }
+
+      it 'returns an empty array' do
+        expect(files).to eq([])
+      end
+    end
+
+    context 'on Ruby < 3.4 backtrace format (backticks)' do
+      let(:backtrace) do
+        ["./app/models/user.rb:12:in `save'", "app/controllers/some_controller.rb:43:in `block (2 levels) in create'"]
+      end
+
+      it 'extracts file paths' do
+        expect(files).to include('app/models/user.rb', 'app/controllers/some_controller.rb')
+      end
+    end
+
+    context 'on Ruby >= 3.4 backtrace format (single quotes)' do
+      let(:backtrace) do
+        ["./app/models/user.rb:12:in 'save'", "app/controllers/some_controller.rb:43:in 'block (2 levels) in create'"]
+      end
+
+      it 'extracts file paths' do
+        if RUBY_VERSION >= '3.4.0'
+          expect(files).to include('app/models/user.rb', 'app/controllers/some_controller.rb')
+        else
+          skip 'Ruby version < 3.4 does not use single quote backtrace format'
+        end
+      end
+    end
+  end
 end

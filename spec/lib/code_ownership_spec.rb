@@ -127,6 +127,22 @@ RSpec.describe CodeOwnership do
         expect(subject).to be_nil
       end
     end
+
+    context 'with unknown owner' do
+      let(:raw_hash) { { 'owner' => 'Does Not Exist' } }
+
+      it 'raises helpful error' do
+        expect { subject }.to raise_error(StandardError, /Could not find team with name:/)
+      end
+    end
+
+    context 'with empty owner string' do
+      let(:raw_hash) { { 'owner' => '' } }
+
+      it 'raises helpful error' do
+        expect { subject }.to raise_error(StandardError, /Could not find team with name:/)
+      end
+    end
   end
 
   describe '.for_backtrace' do
@@ -149,6 +165,12 @@ RSpec.describe CodeOwnership do
           team_to_exclude = CodeTeams.find('Bar')
           expect(described_class.for_backtrace(ex.backtrace, excluded_teams: [team_to_exclude])).to eq CodeTeams.find('Foo')
         end
+      end
+    end
+
+    context 'with nil backtrace' do
+      it 'returns nil' do
+        expect(described_class.for_backtrace(nil)).to be_nil
       end
     end
   end
@@ -181,6 +203,12 @@ RSpec.describe CodeOwnership do
         expect { raise 'bang!' }.to raise_error do |ex|
           expect(described_class.first_owned_file_for_backtrace(ex.backtrace)).to be_nil
         end
+      end
+    end
+
+    context 'with nil backtrace' do
+      it 'returns nil' do
+        expect(described_class.first_owned_file_for_backtrace(nil)).to be_nil
       end
     end
   end
