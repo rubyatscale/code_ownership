@@ -2,6 +2,8 @@
 
 # typed: strict
 
+# deprecated
+# This file only exists to temporarily support the old mapper interface, but it doesn't do anything
 module CodeOwnership
   module Mapper
     extend T::Sig
@@ -53,13 +55,5 @@ module CodeOwnership
 
     sig { abstract.returns(String) }
     def description; end
-
-    sig { abstract.void }
-    def bust_caches!; end
-
-    sig { returns(Private::GlobCache) }
-    def self.to_glob_cache
-      Private::GlobCache.new
-    end
   end
 end
