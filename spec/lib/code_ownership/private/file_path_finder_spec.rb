@@ -62,7 +62,11 @@ RSpec.describe CodeOwnership::Private::FilePathFinder do
       end
 
       it 'extracts file paths' do
-        expect(files).to include('app/models/user.rb', 'app/controllers/some_controller.rb')
+        if RUBY_VERSION < '3.4.0'
+          expect(files).to include('app/models/user.rb', 'app/controllers/some_controller.rb')
+        else
+          skip 'Ruby version >= 3.4 uses single quote backtrace format'
+        end
       end
     end
 
