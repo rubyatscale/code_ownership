@@ -7,10 +7,13 @@ module RustCodeOwners
     def for_file(file)
     end
 
-    def generate_and_validate
+    def generate_and_validate(skip_stage)
     end
 
     def validate
+    end
+
+    def for_team(team)
     end
   end
 end

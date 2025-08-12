@@ -20,14 +20,26 @@ RSpec.configure do |config|
   config.include_context 'application fixtures'
 
   config.before do |c|
-    allow_any_instance_of(CodeOwnership.const_get(:Private)::Validations::GithubCodeownersUpToDate).to receive(:`)
-    allow(CodeOwnership::Cli).to receive(:`)
-    codeowners_path.delete if codeowners_path.exist?
-
     unless c.metadata[:do_not_bust_cache]
       CodeOwnership.bust_caches!
       CodeTeams.bust_caches!
       allow(CodeTeams::Plugin).to receive(:registry).and_return({})
+    end
+  end
+
+  config.around do |example|
+    if example.metadata[:skip_chdir_to_tmpdir]
+      example.run
+    else
+      begin
+        prefix = [File.basename($0), Process.pid].join('-') # rubocop:disable Style/SpecialGlobalVars
+        tmpdir = Dir.mktmpdir(prefix)
+        Dir.chdir(tmpdir) do
+          example.run
+        end
+      ensure
+        FileUtils.rm_rf(tmpdir)
+      end
     end
   end
 end

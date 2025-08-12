@@ -10,6 +10,13 @@ RSpec.shared_context 'application fixtures' do
     write_file('config/code_ownership.yml', config.to_yaml)
   end
 
+  def write_file(path, content = '')
+    pathname = Pathname.pwd.join(path)
+    FileUtils.mkdir_p(pathname.dirname)
+    pathname.write(content)
+    path
+  end
+
   let(:create_non_empty_application) do
     write_configuration
 
@@ -19,6 +26,7 @@ RSpec.shared_context 'application fixtures' do
 
     write_file('packs/my_pack/owned_file.rb', <<~CONTENTS)
       # @team Bar
+      class OwnedFile; end
     CONTENTS
 
     write_file('directory/owner/.codeowner', <<~CONTENTS)
@@ -97,10 +105,14 @@ RSpec.shared_context 'application fixtures' do
 
     write_file('config/teams/foo.yml', <<~CONTENTS)
       name: Foo
+      github:
+        team: '@MyOrg/foo-team'
     CONTENTS
 
     write_file('config/teams/bar.yml', <<~CONTENTS)
       name: Bar
+      github:
+        team: '@MyOrg/bar-team'
     CONTENTS
 
     # Some of the tests use the `SequoiaTree` constant. Since the implementation leverages:

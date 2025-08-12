@@ -6,6 +6,8 @@ require 'fileutils'
 
 module CodeOwnership
   class Cli
+    EXECUTABLE = 'bin/codeownership'
+
     def self.run!(argv)
       command = argv.shift
       if command == 'validate'
@@ -16,7 +18,7 @@ module CodeOwnership
         for_team(argv)
       elsif [nil, 'help'].include?(command)
         puts <<~USAGE
-          Usage: bin/codeownership <subcommand>
+          Usage: #{EXECUTABLE} <subcommand>
 
           Subcommands:
             validate - run all validations
@@ -25,7 +27,7 @@ module CodeOwnership
             help  - display help information about code_ownership
         USAGE
       else
-        puts "'#{command}' is not a code_ownership command. See `bin/codeownership help`."
+        puts "'#{command}' is not a code_ownership command. See `#{EXECUTABLE} help`."
       end
     end
 
@@ -33,7 +35,7 @@ module CodeOwnership
       options = {}
 
       parser = OptionParser.new do |opts|
-        opts.banner = 'Usage: bin/codeownership validate [options]'
+        opts.banner = "Usage: #{EXECUTABLE} validate [options]"
 
         opts.on('--skip-autocorrect', 'Skip automatically correcting any errors, such as the .github/CODEOWNERS file') do
           options[:skip_autocorrect] = true
@@ -81,7 +83,7 @@ module CodeOwnership
       files = argv.reject { |arg| arg.start_with?('--') }
 
       parser = OptionParser.new do |opts|
-        opts.banner = 'Usage: bin/codeownership for_file [options]'
+        opts.banner = "Usage: #{EXECUTABLE} for_file [options]"
 
         opts.on('--json', 'Output as JSON') do
           options[:json] = true
@@ -96,7 +98,7 @@ module CodeOwnership
       parser.parse!(args)
 
       if files.count != 1
-        raise 'Please pass in one file. Use `bin/codeownership for_file --help` for more info'
+        raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
       end
 
       team = CodeOwnership.for_file(files.first)
@@ -121,7 +123,7 @@ module CodeOwnership
 
     def self.for_team(argv)
       parser = OptionParser.new do |opts|
-        opts.banner = 'Usage: bin/codeownership for_team \'Team Name\''
+        opts.banner = "Usage: #{EXECUTABLE} for_team 'Team Name'"
 
         opts.on('--help', 'Shows this prompt') do
           puts opts
@@ -133,12 +135,10 @@ module CodeOwnership
       parser.parse!(args)
 
       if teams.count != 1
-        raise 'Please pass in one team. Use `bin/codeownership for_team --help` for more info'
+        raise "Please pass in one team. Use `#{EXECUTABLE} for_team --help` for more info"
       end
 
-      puts CodeOwnership.for_team(teams.first)
+      puts CodeOwnership.for_team(teams.first).join("\n")
     end
-
-    private_class_method :validate!
   end
 end
