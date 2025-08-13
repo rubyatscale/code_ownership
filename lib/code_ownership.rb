@@ -12,7 +12,6 @@ require 'code_ownership/private/file_path_finder'
 require 'code_ownership/private/file_path_team_cache'
 require 'code_ownership/private/team_finder'
 require 'code_ownership/cli'
-require 'code_ownership/mapper'
 
 begin
   RUBY_VERSION =~ /(\d+\.\d+)/
