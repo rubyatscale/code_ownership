@@ -6,6 +6,8 @@
 /pkg/
 /spec/reports/
 /tmp/
+/target/
+/vendor
 
 Gemfile.lock
 

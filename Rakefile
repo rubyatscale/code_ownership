@@ -1,8 +1,7 @@
-# typed: ignore
+# frozen_string_literal: true
 
-require 'bundler/gem_tasks'
-require 'rspec/core/rake_task'
+GEMSPEC = Gem::Specification.load('code_ownership.gemspec')
 
-RSpec::Core::RakeTask.new(:spec)
+task build: 'pkg:ruby'
 
-task default: :spec
+task default: %w[env:dev compile spec]

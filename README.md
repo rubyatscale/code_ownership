@@ -105,17 +105,6 @@ This defaults `**/`, which makes it look for `package.json` files across your ap
 js_package_paths: []
 ```
 
-### Custom Ownership
-To enable custom ownership, you can inject your own custom classes into `code_ownership`.
-To do this, first create a class that adheres to the `CodeOwnership::Mapper` and/or `CodeOwnership::Validator` interface.
-Then, in `config/code_ownership.yml`, you can require that file:
-```yml
-require:
-  - ./lib/my_extension.rb
-```
-
-Now, `bin/codeownership validate` will automatically include your new mapper and/or validator. See [`spec/lib/code_ownership/private/extension_loader_spec.rb](spec/lib/code_ownership/private/extension_loader_spec.rb) for an example of what this looks like.
-
 ## Usage: Reading CodeOwnership
 ### `for_file`
 `CodeOwnership.for_file`, given a relative path to a file returns a `CodeTeams::Team` if there is a team that owns the file, `nil` otherwise.
@@ -201,3 +190,12 @@ bin/codeownership validate
 ## Development
 
 Please add to `CHANGELOG.md` and this `README.md` when you make make changes.
+
+## Running specs
+```sh
+bundle install
+bundle exec rake
+```
+
+## Creating a new release
+Simply [create a new release](https://github.com/rubyatscale/code_ownership/releases/new) with github. The release tag must match the gem version
