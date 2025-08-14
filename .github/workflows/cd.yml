@@ -89,7 +89,7 @@
     
           - name: Ensure version matches the tag
             run: |
-              GEM_VERSION=$(grep -Eo "[0-9]+\.[0-9]+\.[0-9]+" lib/fast_code_owners/version.rb | head -n 1)
+              GEM_VERSION=$(grep -Eo "[0-9]+\.[0-9]+\.[0-9]+[-0-9]*" lib/code_ownership/version.rb | head -n 1)
               if [ "v$GEM_VERSION" != "${{ github.ref_name }}" ]; then
                 echo "Gem version does not match tag"
                 echo "  v$GEM_VERSION != ${{ github.ref_name }}"
