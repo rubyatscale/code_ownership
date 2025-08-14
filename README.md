@@ -190,3 +190,12 @@ bin/codeownership validate
 ## Development
 
 Please add to `CHANGELOG.md` and this `README.md` when you make make changes.
+
+## Running specs
+```sh
+bundle install
+bundle exec rake
+```
+
+## Creating a new release
+Simply [create a new release](https://github.com/rubyatscale/code_ownership/releases/new) with github. The release tag must match the gem version
