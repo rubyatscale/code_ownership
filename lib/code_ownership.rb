@@ -44,6 +44,11 @@ module CodeOwnership
     Private::TeamFinder.for_file(file)
   end
 
+  sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
+  def for_file_verbose(file)
+    Private::TeamFinder.for_file_verbose(file)
+  end
+
   sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }
   def for_team(team)
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)

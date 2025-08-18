@@ -95,6 +95,10 @@ module CodeOwnership
           options[:json] = true
         end
 
+        opts.on('--verbose', 'Output verbose information including reason for team ownership') do
+          options[:verbose] = true
+        end
+
         opts.on('--help', 'Shows this prompt') do
           puts opts
           exit
@@ -107,12 +111,30 @@ module CodeOwnership
         raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
       end
 
-      team = CodeOwnership.for_file(files.first)
+      if options[:verbose]
+        team_for_file_verbose(files.first, json: options[:json])
+      else
+        team_for_file(files.first, json: options[:json])
+      end
+    end
+
+    def self.team_for_file_verbose(file, json: false)
+      team = CodeOwnership.for_file_verbose(file)
+
+      if json
+        puts team.to_json
+      else
+        puts team.inspect
+      end
+    end
+
+    def self.team_for_file(file, json: false)
+      team = CodeOwnership.for_file(file)
 
       team_name = team&.name || 'Unowned'
       team_yml = team&.config_yml || 'Unowned'
 
-      if options[:json]
+      if json
         json = {
           team_name: team_name,
           team_yml: team_yml

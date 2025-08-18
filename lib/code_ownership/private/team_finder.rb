@@ -30,6 +30,11 @@ module CodeOwnership
         FilePathTeamCache.get(file_path)
       end
 
+      sig { params(file_path: String).returns(T.nilable(T::Hash[Symbol, String])) }
+      def for_file_verbose(file_path)
+        RustCodeOwners.for_file(file_path)
+      end
+
       sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
       def for_class(klass)
         file_path = FilePathFinder.path_from_klass(klass)

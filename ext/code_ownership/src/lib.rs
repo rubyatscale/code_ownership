@@ -9,6 +9,7 @@ use serde_magnus::serialize;
 pub struct Team {
     pub team_name: String,
     pub team_config_yml: String,
+    pub sources: Vec<String>,
 }
 
 fn for_team(team_name: String) -> Result<Value, Error> {
@@ -20,11 +21,12 @@ fn for_team(team_name: String) -> Result<Value, Error> {
 fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     let run_config = build_run_config();
 
-    match runner::team_for_file(&run_config, &file_path) {
-        Ok(Some(team_rs)) => {
+    match runner::file_owner_for_file(&run_config, &file_path) {
+        Ok(Some(file_owner)) => {
             let team = Team {
-                team_name: team_rs.name,
-                team_config_yml: team_rs.path.to_string_lossy().to_string(),
+                team_name: file_owner.team.name,
+                team_config_yml: file_owner.team.path.to_string_lossy().to_string(),
+                sources: file_owner.sources.iter().map(|s| s.to_string()).collect(),
             };
             let serialized: Value = serialize(&team)?;
             Ok(Some(serialized))
