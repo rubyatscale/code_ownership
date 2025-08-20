@@ -18,7 +18,7 @@ module CodeOwnership
 
         return FilePathTeamCache.get(file_path) if FilePathTeamCache.cached?(file_path)
 
-        result = T.let(RustCodeOwners.for_file(file_path), T.nilable(T::Hash[Symbol, String]))
+        result = T.let(for_file_verbose(file_path), T.nilable(T::Hash[Symbol, String]))
         return if result.nil?
 
         if result[:team_name].nil?
@@ -28,6 +28,11 @@ module CodeOwnership
         end
 
         FilePathTeamCache.get(file_path)
+      end
+
+      sig { params(file_path: String).returns(T.nilable(T::Hash[Symbol, String])) }
+      def for_file_verbose(file_path)
+        RustCodeOwners.for_file(file_path)
       end
 
       sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }

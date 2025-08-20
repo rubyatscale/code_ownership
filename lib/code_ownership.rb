@@ -11,6 +11,7 @@ require 'code_ownership/version'
 require 'code_ownership/private/file_path_finder'
 require 'code_ownership/private/file_path_team_cache'
 require 'code_ownership/private/team_finder'
+require 'code_ownership/private/permit_pack_owner_top_level_key'
 require 'code_ownership/cli'
 
 begin
@@ -42,6 +43,11 @@ module CodeOwnership
   sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)
     Private::TeamFinder.for_file(file)
+  end
+
+  sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
+  def for_file_verbose(file)
+    Private::TeamFinder.for_file_verbose(file)
   end
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }

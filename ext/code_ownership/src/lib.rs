@@ -9,6 +9,7 @@ use serde_magnus::serialize;
 pub struct Team {
     pub team_name: String,
     pub team_config_yml: String,
+    pub reasons: Vec<String>,
 }
 
 fn for_team(team_name: String) -> Result<Value, Error> {
@@ -20,16 +21,24 @@ fn for_team(team_name: String) -> Result<Value, Error> {
 fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     let run_config = build_run_config();
 
-    match runner::team_for_file(&run_config, &file_path) {
-        Ok(Some(team_rs)) => {
-            let team = Team {
-                team_name: team_rs.name,
-                team_config_yml: team_rs.path.to_string_lossy().to_string(),
-            };
-            let serialized: Value = serialize(&team)?;
-            Ok(Some(serialized))
+    match runner::file_owners_for_file(&run_config, &file_path) {
+        Ok(owners) => {
+            if let Some(first_owner) = owners.first() {
+                let team = Team {
+                    team_name: first_owner.team.name.clone(),
+                    team_config_yml: first_owner.team.path.to_string_lossy().to_string(),
+                    reasons: first_owner
+                        .sources
+                        .iter()
+                        .map(|source| source.to_string())
+                        .collect(),
+                };
+                let serialized: Value = serialize(&team)?;
+                Ok(Some(serialized))
+            } else {
+                Ok(None)
+            }
         }
-        Ok(None) => Ok(None),
         Err(e) => Err(Error::new(
             magnus::exception::runtime_error(),
             e.to_string(),
@@ -38,7 +47,7 @@ fn for_file(file_path: String) -> Result<Option<Value>, Error> {
 }
 
 fn version() -> String {
-   runner::version()
+    runner::version()
 }
 
 fn validate() -> Result<Value, Error> {
@@ -96,4 +105,3 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
 
     Ok(())
 }
-

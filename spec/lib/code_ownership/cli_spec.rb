@@ -1,5 +1,5 @@
 RSpec.describe CodeOwnership::Cli do
-  subject { CodeOwnership::Cli.run!(argv) }
+  subject { described_class.run!(argv) }
 
   describe 'validate' do
     let(:argv) { ['validate'] }

@@ -6,7 +6,7 @@ require 'fileutils'
 
 module CodeOwnership
   class Cli
-    EXECUTABLE = 'bin/codeownership'
+    EXECUTABLE = 'bin/codeownership'.freeze
 
     def self.run!(argv)
       command = argv.shift
@@ -95,6 +95,10 @@ module CodeOwnership
           options[:json] = true
         end
 
+        opts.on('--verbose', 'Output verbose information') do
+          options[:verbose] = true
+        end
+
         opts.on('--help', 'Shows this prompt') do
           puts opts
           exit
@@ -107,12 +111,42 @@ module CodeOwnership
         raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
       end
 
-      team = CodeOwnership.for_file(files.first)
+      if options[:verbose]
+        do_for_file_verbose(file: files.first, json: options[:json])
+      else
+        do_for_file(file: files.first, json: options[:json])
+      end
+    end
 
+    def self.do_for_file_verbose(file:, json:)
+      verbose = CodeOwnership.for_file_verbose(file)
+      name = (verbose&[:name] || 'Unowned')
+      config_yml = (verbose&[:config_yml] || 'Unowned'
+      reasons = (verbose&[:reasons] || ''
+
+      if json
+        json = {
+          name: name,
+          config_yml: config_yml,
+          reasons: reasons
+        }
+
+        puts json.to_json
+      else
+        puts <<~MSG
+          Team: #{verbose_name}
+          Team YML: #{verbose_yml}
+          Reasons: "\n#{reasons.join("\n-")}"
+        MSG
+      end
+    end
+
+    def self.do_for_file(file:, json:)
+      team = CodeOwnership.for_file(file)
       team_name = team&.name || 'Unowned'
       team_yml = team&.config_yml || 'Unowned'
 
-      if options[:json]
+      if json
         json = {
           team_name: team_name,
           team_yml: team_yml
