@@ -95,6 +95,10 @@ module CodeOwnership
           options[:json] = true
         end
 
+        opts.on('--verbose', 'Output verbose information') do
+          options[:verbose] = true
+        end
+
         opts.on('--help', 'Shows this prompt') do
           puts opts
           exit
@@ -107,23 +111,53 @@ module CodeOwnership
         raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
       end
 
-      team = CodeOwnership.for_file(files.first)
+      if options[:verbose]
+        for_file_verbose(file: files.first, json: options[:json])
+      else
+        for_file_terse(file: files.first, json: options[:json])
+      end
+    end
+
+    def self.for_file_terse(file:, json:)
+      team = CodeOwnership.for_file(file)
 
       team_name = team&.name || 'Unowned'
       team_yml = team&.config_yml || 'Unowned'
 
-      if options[:json]
-        json = {
+      if json
+        json_output = {
           team_name: team_name,
           team_yml: team_yml
         }
 
-        puts json.to_json
+        puts json_output.to_json
       else
         puts <<~MSG
           Team: #{team_name}
           Team YML: #{team_yml}
         MSG
+      end
+    end
+
+    def self.for_file_verbose(file:, json:)
+      verbose = CodeOwnership.for_file_verbose(file) || {team_name: 'Unowned', team_config_yml: 'Unowned', reasons: []}
+
+      if json
+        json = {
+          team_name: verbose[:team_name],
+          team_yml: verbose[:team_config_yml],
+          reasons: verbose[:reasons]
+        }
+
+        puts json.to_json
+      else
+        messages = ["Team: #{verbose[:team_name]}", "Team YML: #{verbose[:team_config_yml]}"]
+        if verbose[:reasons].any?
+          messages << "Reasons:\n- #{verbose[:reasons].join("\n-")}"
+        end
+        messages.last << "\n"
+
+        puts messages.join("\n")
       end
     end
 
