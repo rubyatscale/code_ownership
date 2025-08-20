@@ -11,6 +11,7 @@ require 'code_ownership/version'
 require 'code_ownership/private/file_path_finder'
 require 'code_ownership/private/file_path_team_cache'
 require 'code_ownership/private/team_finder'
+require 'code_ownership/private/for_file_output_builder'
 require 'code_ownership/cli'
 
 begin
