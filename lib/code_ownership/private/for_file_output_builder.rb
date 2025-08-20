@@ -47,7 +47,7 @@ module CodeOwnership
         {
           team_name: result[:team_name],
           team_yml: result[:team_config_yml],
-          reasons: result[:reasons]
+          description: result[:reasons]
         }
       end
 
@@ -68,15 +68,15 @@ module CodeOwnership
       sig { params(result_hash: T::Hash[Symbol, T.untyped]).returns(String) }
       def build_message_for(result_hash)
         messages = ["Team: #{result_hash[:team_name]}", "Team YML: #{result_hash[:team_yml]}"]
-        reasons_list = T.let(Array(result_hash[:reasons]), T::Array[String])
-        messages << build_reasons_message(reasons_list) unless reasons_list.empty?
+        description_list = T.let(Array(result_hash[:description]), T::Array[String])
+        messages << build_description_message(description_list) unless description_list.empty?
         messages.last << "\n"
         messages.join("\n")
       end
 
       sig { params(reasons: T::Array[String]).returns(String) }
-      def build_reasons_message(reasons)
-        "Reasons:\n- #{reasons.join("\n-")}"
+      def build_description_message(reasons)
+        "Description:\n- #{reasons.join("\n-")}"
       end
     end
   end
