@@ -183,7 +183,7 @@ RSpec.describe CodeOwnership::Cli do
           expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
             Team: My Team
             Team YML: config/teams/my_team.yml
-            Description:
+            Reasons:
             - Owner specified in Team YML as an owned_glob `app/**/*.rb`
           MSG
           subject
@@ -220,17 +220,17 @@ RSpec.describe CodeOwnership::Cli do
           subject
         end
 
-        context 'when run with --verbose' do
+        context 'when run with multiple files' do
           let(:argv) { ['for_file', '--json', '--verbose', 'app/services/my_file.rb'] }
           it 'outputs JSONified information to the console' do
             json = {
               team_name: 'My Team',
               team_yml: 'config/teams/my_team.yml',
-              description: ['Owner specified in Team YML as an owned_glob `app/**/*.rb`']
+              reasons: ['Owner specified in Team YML as an owned_glob `app/**/*.rb`']
             }
             expect(CodeOwnership::Cli).to receive(:puts).with(json.to_json)
             subject
-          end
+          end  
         end
       end
 
