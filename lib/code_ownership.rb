@@ -45,6 +45,13 @@ module CodeOwnership
     Private::TeamFinder.for_file(file)
   end
 
+  sig { params(files: T::Array[String]).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
+  def team_names_for_files(files)
+    ::RustCodeOwners.team_names_for_files(files).transform_values do |team|
+      team ? CodeTeams.find(team[:team_name]) : nil
+    end
+  end
+
   sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
   def for_file_verbose(file)
     ::RustCodeOwners.for_file(file)
@@ -54,9 +61,6 @@ module CodeOwnership
   def for_team(team)
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ::RustCodeOwners.for_team(team.name)
-  end
-
-  class InvalidCodeOwnershipConfigurationError < StandardError
   end
 
   sig do
