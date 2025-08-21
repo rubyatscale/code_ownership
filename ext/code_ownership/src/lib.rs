@@ -18,7 +18,7 @@ fn for_team(team_name: String) -> Result<Value, Error> {
     validate_result(&team)
 }
 
-fn team_names_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
+fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
     let run_config = build_run_config();
     let path_teams = runner::teams_for_files_from_codeowners(&run_config, &file_paths);
     match path_teams {
@@ -126,7 +126,7 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     module.define_singleton_method("validate", function!(validate, 0))?;
     module.define_singleton_method("for_team", function!(for_team, 1))?;
     module.define_singleton_method("version", function!(version, 0))?;
-    module.define_singleton_method("team_names_for_files", function!(team_names_for_files, 1))?;
+    module.define_singleton_method("teams_for_files", function!(teams_for_files, 1))?;
 
     Ok(())
 }

@@ -30,6 +30,16 @@ module CodeOwnership
         FilePathTeamCache.get(file_path)
       end
 
+      sig { params(files: T::Array[String]).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
+      def teams_for_files(files)
+        ::RustCodeOwners.teams_for_files(files).each_with_object({}) do |path_team, hash|
+          file_path, team = path_team
+          found_team = team ? CodeTeams.find(team[:team_name]) : nil
+          FilePathTeamCache.set(file_path, found_team)
+          hash[file_path] = found_team
+        end
+      end
+
       sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
       def for_class(klass)
         file_path = FilePathFinder.path_from_klass(klass)

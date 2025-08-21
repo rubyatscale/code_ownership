@@ -5,8 +5,8 @@ RSpec.describe CodeOwnership do
     expect(CodeOwnership::VERSION).not_to be nil
   end
 
-  describe '.team_names_for_files' do
-    subject { CodeOwnership.team_names_for_files(files) }
+  describe '.teams_for_files' do
+    subject { CodeOwnership.teams_for_files(files) }
     let(:files) { ['app/services/my_file.rb'] }
 
     context 'when config is not found' do
@@ -42,12 +42,22 @@ RSpec.describe CodeOwnership do
         it 'returns the correct team' do
           expect(subject).to eq({ 'packs/my_pack/owned_file.rb' => CodeTeams.find('Bar') })
         end
+
+        context 'subsequent for_file utilizes cached team' do
+          let(:files) { ['packs/my_pack/owned_file.rb', 'packs/my_pack/owned_file2.rb'] }
+          it 'returns the correct team' do
+            subject # caches paths -> teams
+            allow(RustCodeOwners).to receive(:for_file)
+            expect(described_class.for_file('packs/my_pack/owned_file.rb')).to eq(CodeTeams.find('Bar'))
+            expect(RustCodeOwners).to_not have_received(:for_file)
+          end
+        end
       end
 
       context 'when ownership is found but team is not found' do
         let(:file_path) { ['packs/my_pack/owned_file.rb'] }
         before do
-          allow(RustCodeOwners).to receive(:team_names_for_files).and_return({ file_path.first => {team_name: 'Made Up Team'} })
+          allow(RustCodeOwners).to receive(:teams_for_files).and_return({ file_path.first => {team_name: 'Made Up Team'} })
         end
 
         it 'returns nil' do
