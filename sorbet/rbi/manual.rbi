@@ -19,7 +19,7 @@ module RustCodeOwners
     def version
     end
 
-    def team_names_for_files(files)
+    def teams_for_files(files)
     end
   end
 end

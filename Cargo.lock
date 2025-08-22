@@ -200,8 +200,8 @@ dependencies = [
 
 [[package]]
 name = "codeowners"
-version = "0.2.15"
-source = "git+https://github.com/rubyatscale/codeowners-rs.git?tag=v0.2.15#37027e3d4402d17bf0f623dc88c93868ef874611"
+version = "0.2.16"
+source = "git+https://github.com/rubyatscale/codeowners-rs.git?tag=v0.2.16#9cee8f0e3245dcc6ecf52f4eed6d89408a3665af"
 dependencies = [
  "clap",
  "clap_derive",
