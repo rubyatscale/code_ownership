@@ -40,13 +40,25 @@ module CodeOwnership
      "codeowners-rs version: #{::RustCodeOwners.version}"]
   end
 
+  # Returns the team that owns the given file based on the CODEOWNERS file.
+  # This is much faster and can be safely used when the CODEOWNERS files is up to date.
+  # Examples of reliable usage:
+  # - running in CI pipeline
+  # - running on the server
+  # Examples of unreliable usage:
+  # - running in IDE when files are changing and the CODEOWNERS file is not getting updated
+  sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
+  def for_file_from_codeowners(file)
+    teams_for_files_from_codeowners([file]).values.first
+  end
+
   sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
   def for_file(file)
     Private::TeamFinder.for_file(file)
   end
 
   sig { params(files: T::Array[String]).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
-  def teams_for_files(files)
+  def teams_for_files_from_codeowners(files)
     Private::TeamFinder.teams_for_files(files)
   end
 
