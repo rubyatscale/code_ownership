@@ -10,21 +10,22 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rb-sys = { version = "0.9.111", features = [
-  "bindgen-rbimpls",
-  "bindgen-deprecated-types",
-  "stable-api-compiled-fallback",
+    "bindgen-rbimpls",
+    "bindgen-deprecated-types",
+    "stable-api-compiled-fallback",
 ] }
 magnus = { version = "0.7.1" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_magnus = "0.9.0"
-codeowners = { git = "https://github.com/rubyatscale/codeowners-rs.git", tag = "v0.2.17" }
+# codeowners = { git = "https://github.com/rubyatscale/codeowners-rs.git", tag = "v0.2.17" }
+codeowners = { path = "../../../codeowners-rs" }
 
 [dev-dependencies]
 rb-sys = { version = "0.9.117", features = [
-  "link-ruby",
-  "bindgen-rbimpls",
-  "bindgen-deprecated-types",
-  "stable-api-compiled-fallback",
+    "link-ruby",
+    "bindgen-rbimpls",
+    "bindgen-deprecated-types",
+    "stable-api-compiled-fallback",
 ] }
 
 [build-dependencies]
