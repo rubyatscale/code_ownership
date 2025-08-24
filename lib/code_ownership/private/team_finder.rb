@@ -12,8 +12,8 @@ module CodeOwnership
 
       requires_ancestor { Kernel }
 
-      sig { params(file_path: String).returns(T.nilable(CodeTeams::Team)) }
-      def for_file(file_path)
+      sig { params(file_path: String, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
+      def for_file(file_path, allow_raise: false)
         return nil if file_path.start_with?('./')
 
         return FilePathTeamCache.get(file_path) if FilePathTeamCache.cached?(file_path)
@@ -24,17 +24,17 @@ module CodeOwnership
         if result[:team_name].nil?
           FilePathTeamCache.set(file_path, nil)
         else
-          FilePathTeamCache.set(file_path, T.let(find_team!(T.must(result[:team_name])), T.nilable(CodeTeams::Team)))
+          FilePathTeamCache.set(file_path, T.let(find_team!(T.must(result[:team_name]), allow_raise: allow_raise), T.nilable(CodeTeams::Team)))
         end
 
         FilePathTeamCache.get(file_path)
       end
 
-      sig { params(files: T::Array[String]).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
-      def teams_for_files(files)
+      sig { params(files: T::Array[String], allow_raise: T::Boolean).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
+      def teams_for_files(files, allow_raise: false)
         ::RustCodeOwners.teams_for_files(files).each_with_object({}) do |path_team, hash|
           file_path, team = path_team
-          found_team = team ? CodeTeams.find(team[:team_name]) : nil
+          found_team = team ? find_team!(team[:team_name], allow_raise: allow_raise) : nil
           FilePathTeamCache.set(file_path, found_team)
           hash[file_path] = found_team
         end
@@ -53,7 +53,7 @@ module CodeOwnership
         owner_name = package.raw_hash['owner'] || package.metadata['owner']
         return nil if owner_name.nil?
 
-        find_team!(owner_name)
+        find_team!(owner_name, allow_raise: true)
       end
 
       sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
@@ -73,10 +73,14 @@ module CodeOwnership
         nil
       end
 
-      sig { params(team_name: String).returns(CodeTeams::Team) }
-      def find_team!(team_name)
-        CodeTeams.find(team_name) ||
+      sig { params(team_name: String, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
+      def find_team!(team_name, allow_raise: false)
+        team = CodeTeams.find(team_name)
+        if team.nil? && allow_raise
           raise(StandardError, "Could not find team with name: `#{team_name}`. Make sure the team is one of `#{CodeTeams.all.map(&:name).sort}`")
+        end
+
+        team
       end
 
       private_class_method(:find_team!)

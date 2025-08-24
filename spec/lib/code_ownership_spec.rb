@@ -64,11 +64,22 @@ RSpec.describe CodeOwnership do
           expect(subject).to eq({ 'packs/my_pack/owned_file.rb' => nil })
         end
       end
+
+      context 'when ownership is found but team is not found and allow_raise is true' do
+        let(:files) { ['packs/my_pack/owned_file.rb'] }
+        before do
+          allow(RustCodeOwners).to receive(:teams_for_files).and_return({ files.first => { team_name: 'Made Up Team' } })
+        end
+
+        it 'raises an error' do
+          expect { CodeOwnership.teams_for_files_from_codeowners(files, allow_raise: true) }.to raise_error(StandardError, /Could not find team with name:/)
+        end
+      end
     end
   end
 
   describe '.for_file_from_codeowners' do
-    subject { CodeOwnership.for_file_from_codeowners(file_path) }
+    subject { CodeOwnership.for_file(file_path, from_codeowners: true) }
 
     context 'when config is not found' do
       let(:file_path) { 'app/javascript/[test]/test.js' }
@@ -124,6 +135,17 @@ RSpec.describe CodeOwnership do
           expect(subject).to be_nil
         end
       end
+
+      context 'when ownership is found but team is not found and allow_raise is true' do
+        let(:file_path) { 'packs/my_pack/owned_file.rb' }
+        before do
+          allow(RustCodeOwners).to receive(:teams_for_files).and_return({ file_path => { team_name: 'Made Up Team' } })
+        end
+
+        it 'raises an error' do
+          expect { CodeOwnership.for_file(file_path, from_codeowners: true, allow_raise: true) }.to raise_error(StandardError, /Could not find team with name:/)
+        end
+      end
     end
   end
 
@@ -139,6 +161,8 @@ RSpec.describe CodeOwnership do
     context 'with non-empty application' do
       before do
         create_non_empty_application
+        # codeowners-rs is matching files against the codeowners file for default path
+        RustCodeOwners.generate_and_validate(false)
       end
 
       context 'when no ownership is found' do
@@ -165,11 +189,25 @@ RSpec.describe CodeOwnership do
       context 'when ownership is found but team is not found' do
         let(:file_path) { 'packs/my_pack/owned_file.rb' }
         before do
-          allow(RustCodeOwners).to receive(:for_file).and_return({ team_name: 'Made Up Team' })
+          allow(RustCodeOwners).to receive(:teams_for_files).and_return({ file_path => { team_name: 'Made Up Team' } })
         end
 
-        it 'raises an error' do
-          expect { subject }.to raise_error(StandardError, /Could not find team with name: `Made Up Team`. Make sure the team is one of/)
+        it 'returns nil by default' do
+          expect(subject).to be_nil
+        end
+      end
+
+      context 'when ownership is found but team is not found and allow_raise is true' do
+        let(:file_path) { 'packs/my_pack/owned_file.rb' }
+
+        it 'raises an error when using from_codeowners path' do
+          allow(RustCodeOwners).to receive(:teams_for_files).and_return({ file_path => { team_name: 'Made Up Team' } })
+          expect { CodeOwnership.for_file(file_path, allow_raise: true) }.to raise_error(StandardError, /Could not find team with name:/)
+        end
+
+        it 'raises an error when using single-file path' do
+          allow(RustCodeOwners).to receive(:for_file).and_return({ team_name: 'Made Up Team' })
+          expect { CodeOwnership.for_file(file_path, from_codeowners: false, allow_raise: true) }.to raise_error(StandardError, /Could not find team with name:/)
         end
       end
     end
