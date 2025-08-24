@@ -11,6 +11,7 @@ require 'code_ownership/version'
 require 'code_ownership/private/file_path_finder'
 require 'code_ownership/private/file_path_team_cache'
 require 'code_ownership/private/team_finder'
+require 'code_ownership/private/for_file_output_builder'
 require 'code_ownership/cli'
 
 begin
@@ -39,18 +40,29 @@ module CodeOwnership
      "codeowners-rs version: #{::RustCodeOwners.version}"]
   end
 
-  sig { params(file: String).returns(T.nilable(CodeTeams::Team)) }
-  def for_file(file)
-    Private::TeamFinder.for_file(file)
+  sig { params(file: String, from_codeowners: T::Boolean, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
+  def for_file(file, from_codeowners: true, allow_raise: false)
+    if from_codeowners
+      teams_for_files_from_codeowners([file], allow_raise: allow_raise).values.first
+    else
+      Private::TeamFinder.for_file(file, allow_raise: allow_raise)
+    end
+  end
+
+  sig { params(files: T::Array[String], allow_raise: T::Boolean).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
+  def teams_for_files_from_codeowners(files, allow_raise: false)
+    Private::TeamFinder.teams_for_files(files, allow_raise: allow_raise)
+  end
+
+  sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
+  def for_file_verbose(file)
+    ::RustCodeOwners.for_file(file)
   end
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }
   def for_team(team)
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ::RustCodeOwners.for_team(team.name)
-  end
-
-  class InvalidCodeOwnershipConfigurationError < StandardError
   end
 
   sig do

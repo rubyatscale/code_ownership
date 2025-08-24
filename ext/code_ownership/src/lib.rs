@@ -1,4 +1,4 @@
-use std::{env, path::PathBuf};
+use std::{collections::HashMap, env, path::PathBuf};
 
 use codeowners::runner::{self, RunConfig};
 use magnus::{Error, Ruby, Value, function, prelude::*};
@@ -9,6 +9,7 @@ use serde_magnus::serialize;
 pub struct Team {
     pub team_name: String,
     pub team_config_yml: String,
+    pub reasons: Vec<String>,
 }
 
 fn for_team(team_name: String) -> Result<Value, Error> {
@@ -17,19 +18,51 @@ fn for_team(team_name: String) -> Result<Value, Error> {
     validate_result(&team)
 }
 
+fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
+    let run_config = build_run_config();
+    let path_teams = runner::teams_for_files_from_codeowners(&run_config, &file_paths);
+    match path_teams {
+        Ok(path_teams) => {
+            let mut teams_map: HashMap<String, Option<Team>> = HashMap::new();
+            for (path, team) in path_teams {
+                if let Some(found_team) = team {
+                    teams_map.insert(path, Some(Team {
+                        team_name: found_team.name.to_string(),
+                        team_config_yml: found_team.name.to_string(),
+                        reasons: vec![],
+                    }));
+                } else {
+                    teams_map.insert(path, None);
+                }
+            }
+            let serialized: Value = serialize(&teams_map)?;
+            Ok(serialized)
+        }
+        Err(e) => Err(Error::new(magnus::exception::runtime_error(), e.to_string())),
+    }
+}
+
 fn for_file(file_path: String) -> Result<Option<Value>, Error> {
     let run_config = build_run_config();
 
-    match runner::team_for_file(&run_config, &file_path) {
-        Ok(Some(team_rs)) => {
+    match runner::file_owner_for_file(&run_config, &file_path) {
+        Ok(owner) => {
+            if let Some(owner) = owner {
             let team = Team {
-                team_name: team_rs.name,
-                team_config_yml: team_rs.path.to_string_lossy().to_string(),
+                team_name: owner.team.name,
+                team_config_yml: owner.team_config_file_path.to_string(),
+                reasons: owner
+                .sources
+                .iter()
+                .map(|source| source.to_string())
+                .collect(),
             };
             let serialized: Value = serialize(&team)?;
             Ok(Some(serialized))
+            } else {
+                Ok(None)
+            }
         }
-        Ok(None) => Ok(None),
         Err(e) => Err(Error::new(
             magnus::exception::runtime_error(),
             e.to_string(),
@@ -93,6 +126,7 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     module.define_singleton_method("validate", function!(validate, 0))?;
     module.define_singleton_method("for_team", function!(for_team, 1))?;
     module.define_singleton_method("version", function!(version, 0))?;
+    module.define_singleton_method("teams_for_files", function!(teams_for_files, 1))?;
 
     Ok(())
 }
