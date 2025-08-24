@@ -53,7 +53,7 @@ module CodeOwnership
 
       sig { returns(T::Hash[Symbol, T.untyped]) }
       def build_terse
-        team = CodeOwnership.for_file(@file_path)
+        team = CodeOwnership.for_file(@file_path, from_codeowners: false, allow_raise: true)
 
         if team.nil?
           UNOWNED_OUTPUT
