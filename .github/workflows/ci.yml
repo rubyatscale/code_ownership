@@ -16,31 +16,28 @@ jobs:
         uses: oxidize-rb/actions/fetch-ci-data@v1
         with:
           stable-ruby-versions: |
-              # See https://github.com/bytecodealliance/wasmtime-rb/issues/286
-              # for details.
-              exclude: [head]
+            # See https://github.com/bytecodealliance/wasmtime-rb/issues/286
+            # for details.
+            exclude: [head]
   rspec:
-      runs-on: ${{ matrix.os }}
-      needs: ci-data
-      strategy:
-        fail-fast: false
-        matrix:
-          os: ["ubuntu-latest", "macos-latest"]
-          ruby: ${{ fromJSON(needs.ci-data.outputs.result).stable-ruby-versions }}
-      steps:
-        - uses: actions/checkout@v4
-        - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
-          with:
-            ruby-version: ${{ matrix.ruby }}
-            bundler-cache: true
-            cargo-cache: true
-            cache-version: v5
-  
-        - name: Compile rust ext
-          run: bundle exec rake compile:release
-  
-        - name: Run ruby tests
-          run: bundle exec rake spec
+    runs-on: ${{ matrix.os }}
+    needs: ci-data
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
+        ruby: ${{ fromJSON(needs.ci-data.outputs.result).stable-ruby-versions }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+          cargo-cache: true
+      - name: Compile andRun ruby tests
+        run: bundle exec rake
+      - name: Compile rust ext
+        run: bundle exec rake compile:release
   static_type_check:
     name: "Type Check"
     runs-on: ubuntu-latest
