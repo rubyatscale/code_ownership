@@ -95,6 +95,10 @@ module CodeOwnership
           options[:json] = true
         end
 
+        opts.on('--verbose', 'Output verbose information') do
+          options[:verbose] = true
+        end
+
         opts.on('--help', 'Shows this prompt') do
           puts opts
           exit
@@ -107,24 +111,7 @@ module CodeOwnership
         raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
       end
 
-      team = CodeOwnership.for_file(files.first)
-
-      team_name = team&.name || 'Unowned'
-      team_yml = team&.config_yml || 'Unowned'
-
-      if options[:json]
-        json = {
-          team_name: team_name,
-          team_yml: team_yml
-        }
-
-        puts json.to_json
-      else
-        puts <<~MSG
-          Team: #{team_name}
-          Team YML: #{team_yml}
-        MSG
-      end
+      puts CodeOwnership::Private::ForFileOutputBuilder.build(file_path: files.first, json: !!options[:json], verbose: !!options[:verbose])
     end
 
     def self.for_team(argv)

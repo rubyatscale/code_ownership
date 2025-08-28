@@ -176,6 +176,20 @@ RSpec.describe CodeOwnership::Cli do
         end
       end
 
+      context 'when run with --verbose' do
+        let(:argv) { ['for_file', 'app/services/my_file.rb', '--verbose'] }
+
+        it 'outputs the team info in human readable format' do
+          expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
+            Team: My Team
+            Team YML: config/teams/my_team.yml
+            Description:
+            - Owner specified in Team YML as an owned_glob `app/**/*.rb`
+          MSG
+          subject
+        end
+      end
+
       context 'when run with no files' do
         let(:argv) { ['for_file'] }
 
@@ -204,6 +218,19 @@ RSpec.describe CodeOwnership::Cli do
           }
           expect(CodeOwnership::Cli).to receive(:puts).with(json.to_json)
           subject
+        end
+
+        context 'when run with --verbose' do
+          let(:argv) { ['for_file', '--json', '--verbose', 'app/services/my_file.rb'] }
+          it 'outputs JSONified information to the console' do
+            json = {
+              team_name: 'My Team',
+              team_yml: 'config/teams/my_team.yml',
+              description: ['Owner specified in Team YML as an owned_glob `app/**/*.rb`']
+            }
+            expect(CodeOwnership::Cli).to receive(:puts).with(json.to_json)
+            subject
+          end
         end
       end
 
@@ -234,6 +261,19 @@ RSpec.describe CodeOwnership::Cli do
           Team YML: Unowned
         MSG
         subject
+      end
+
+      context 'when run with --verbose' do
+        let(:argv) { ['for_file', 'app/services/unowned.rb', '--verbose'] }
+
+        it 'prints Unowned' do
+          allow(CodeOwnership).to receive(:for_file_verbose).and_return(nil)
+          expect(CodeOwnership::Cli).to receive(:puts).with(<<~MSG)
+            Team: Unowned
+            Team YML: Unowned
+          MSG
+          subject
+        end
       end
     end
 
