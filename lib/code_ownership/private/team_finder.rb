@@ -32,12 +32,29 @@ module CodeOwnership
 
       sig { params(files: T::Array[String], allow_raise: T::Boolean).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
       def teams_for_files(files, allow_raise: false)
-        ::RustCodeOwners.teams_for_files(files).each_with_object({}) do |path_team, hash|
+        result = {}
+
+        # Collect cached results and identify non-cached files
+        not_cached_files = []
+        files.each do |file_path|
+          if FilePathTeamCache.cached?(file_path)
+            result[file_path] = FilePathTeamCache.get(file_path)
+          else
+            not_cached_files << file_path
+          end
+        end
+
+        return result if not_cached_files.empty?
+
+        # Process non-cached files
+        ::RustCodeOwners.teams_for_files(not_cached_files).each do |path_team|
           file_path, team = path_team
           found_team = team ? find_team!(team[:team_name], allow_raise: allow_raise) : nil
           FilePathTeamCache.set(file_path, found_team)
-          hash[file_path] = found_team
+          result[file_path] = found_team
         end
+
+        result
       end
 
       sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
