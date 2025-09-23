@@ -184,6 +184,15 @@ RSpec.describe CodeOwnership do
         it 'returns the correct team' do
           expect(subject).to eq CodeTeams.find('Bar')
         end
+
+        context 'when ownership is cached' do
+          it 'returns the correct team' do
+            expect(subject).to eq CodeTeams.find('Bar')
+            allow(RustCodeOwners).to receive(:teams_for_files)
+            expect(CodeOwnership.for_file(file_path)).to eq CodeTeams.find('Bar')
+            expect(RustCodeOwners).not_to have_received(:teams_for_files)
+          end
+        end
       end
 
       context 'when ownership is found but team is not found' do
