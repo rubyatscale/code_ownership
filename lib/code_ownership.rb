@@ -233,9 +233,9 @@ module CodeOwnership
     files: nil
   )
     if autocorrect
-      ::RustCodeOwners.generate_and_validate(!stage_changes)
+      ::RustCodeOwners.generate_and_validate(files, !stage_changes)
     else
-      ::RustCodeOwners.validate
+      ::RustCodeOwners.validate(files)
     end
   end
 
