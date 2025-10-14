@@ -20,7 +20,7 @@ RSpec.describe CodeOwnership do
       before do
         create_non_empty_application
         # codeowners-rs is matching files against the codeowners file
-        RustCodeOwners.generate_and_validate(false)
+        RustCodeOwners.generate_and_validate(nil, false)
       end
 
       context 'when no ownership is found' do
@@ -92,7 +92,7 @@ RSpec.describe CodeOwnership do
       before do
         create_non_empty_application
         # codeowners-rs is matching files against the codeowners file
-        RustCodeOwners.generate_and_validate(false)
+        RustCodeOwners.generate_and_validate(nil, false)
       end
 
       context 'when no ownership is found' do
@@ -162,7 +162,7 @@ RSpec.describe CodeOwnership do
       before do
         create_non_empty_application
         # codeowners-rs is matching files against the codeowners file for default path
-        RustCodeOwners.generate_and_validate(false)
+        RustCodeOwners.generate_and_validate(nil, false)
       end
 
       context 'when no ownership is found' do
