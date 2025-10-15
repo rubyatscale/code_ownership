@@ -9,7 +9,6 @@ Gem::Specification.new do |spec|
   spec.description   = 'A gem to help engineering teams declare ownership of code'
   spec.homepage      = 'https://github.com/rubyatscale/code_ownership'
   spec.license       = 'MIT'
-  spec.required_ruby_version = '>= 2.6'
 
   if spec.respond_to?(:metadata)
     spec.metadata['homepage_uri'] = spec.homepage
@@ -22,7 +21,7 @@ Gem::Specification.new do |spec|
           'public gem pushes.'
   end
 
-  spec.required_ruby_version = '>= 3.1'
+  spec.required_ruby_version = '>= 3.2'
 
   # https://guides.rubygems.org/make-your-own-gem/#adding-an-executable
   # and
