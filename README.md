@@ -183,8 +183,15 @@ You can call the validation function with the Ruby API
 CodeOwnership.validate!
 ```
 or the CLI
-```
+```bash
+# Validate all files
 bin/codeownership validate
+
+# Validate specific files
+bin/codeownership validate path/to/file1.rb path/to/file2.rb
+
+# Validate only staged files
+bin/codeownership validate --diff
 ```
 
 ## Development

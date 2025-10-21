@@ -45,6 +45,49 @@ RSpec.describe CodeOwnership::Cli do
       end
     end
 
+    context 'with explicit file arguments' do
+      let(:argv) { ['validate', 'app/services/my_file.rb', 'frontend/javascripts/my_file.jsx'] }
+
+      it 'validates only the specified files' do
+        expect(CodeOwnership).to receive(:validate!) do |args|
+          expect(args[:files]).to match_array(['app/services/my_file.rb', 'frontend/javascripts/my_file.jsx'])
+          expect(args[:autocorrect]).to eq true
+          expect(args[:stage_changes]).to eq true
+        end
+        subject
+      end
+
+      context 'with options' do
+        let(:argv) { ['validate', '--skip-autocorrect', '--skip-stage', 'app/services/my_file.rb'] }
+
+        it 'passes the options correctly' do
+          expect(CodeOwnership).to receive(:validate!) do |args|
+            expect(args[:files]).to eq(['app/services/my_file.rb'])
+            expect(args[:autocorrect]).to eq false
+            expect(args[:stage_changes]).to eq false
+          end
+          subject
+        end
+      end
+
+      context 'when combined with --diff flag' do
+        let(:argv) { ['validate', '--diff', 'app/services/my_file.rb'] }
+
+        before do
+          allow(ENV).to receive(:fetch).and_call_original
+          allow(ENV).to receive(:fetch).with('CODEOWNERS_GIT_STAGED_FILES').and_return('other_file.rb')
+        end
+
+        it 'prioritizes explicit files over git diff and warns the user' do
+          expect($stderr).to receive(:puts).with("Warning: Ignoring --diff flag because explicit files were provided")
+          expect(CodeOwnership).to receive(:validate!) do |args|
+            expect(args[:files]).to eq(['app/services/my_file.rb'])
+          end
+          subject
+        end
+      end
+    end
+
     context 'with --diff argument' do
       let(:argv) { ['validate', '--diff'] }
 

@@ -37,7 +37,7 @@ module CodeOwnership
       options = {}
 
       parser = OptionParser.new do |opts|
-        opts.banner = "Usage: #{EXECUTABLE} validate [options]"
+        opts.banner = "Usage: #{EXECUTABLE} validate [options] [files...]"
 
         opts.on('--skip-autocorrect', 'Skip automatically correcting any errors, such as the .github/CODEOWNERS file') do
           options[:skip_autocorrect] = true
@@ -59,11 +59,22 @@ module CodeOwnership
       args = parser.order!(argv)
       parser.parse!(args)
 
-      files = if options[:diff]
+      # Collect any remaining arguments as file paths
+      specified_files = argv.reject { |arg| arg.start_with?('--') }
+
+      files = if !specified_files.empty?
+                # Files explicitly provided on command line
+                if options[:diff]
+                  $stderr.puts "Warning: Ignoring --diff flag because explicit files were provided"
+                end
+                specified_files.select { |file| File.exist?(file) }
+              elsif options[:diff]
+                # Staged files from git
                 ENV.fetch('CODEOWNERS_GIT_STAGED_FILES') { `git diff --staged --name-only` }.split("\n").select do |file|
                   File.exist?(file)
                 end
               else
+                # No files specified, validate all
                 nil
               end
 
