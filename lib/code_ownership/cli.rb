@@ -65,7 +65,7 @@ module CodeOwnership
       files = if !specified_files.empty?
                 # Files explicitly provided on command line
                 if options[:diff]
-                  $stderr.puts "Warning: Ignoring --diff flag because explicit files were provided"
+                  warn 'Warning: Ignoring --diff flag because explicit files were provided'
                 end
                 specified_files.select { |file| File.exist?(file) }
               elsif options[:diff]

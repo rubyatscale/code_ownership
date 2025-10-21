@@ -79,7 +79,7 @@ RSpec.describe CodeOwnership::Cli do
         end
 
         it 'prioritizes explicit files over git diff and warns the user' do
-          expect($stderr).to receive(:puts).with("Warning: Ignoring --diff flag because explicit files were provided")
+          expect($stderr).to receive(:puts).with('Warning: Ignoring --diff flag because explicit files were provided')
           expect(CodeOwnership).to receive(:validate!) do |args|
             expect(args[:files]).to eq(['app/services/my_file.rb'])
           end
