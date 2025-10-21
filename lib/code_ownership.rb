@@ -2,7 +2,6 @@
 
 # typed: strict
 
-require 'set'
 require 'code_teams'
 require 'sorbet-runtime'
 require 'json'

@@ -6,6 +6,7 @@ module CodeOwnership
   module Private
     class ForFileOutputBuilder
       extend T::Sig
+
       private_class_method :new
 
       sig { params(file_path: String, json: T::Boolean, verbose: T::Boolean).void }
