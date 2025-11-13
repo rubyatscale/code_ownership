@@ -238,6 +238,57 @@ module CodeOwnership
     end
   end
 
+  # Removes the file annotation (e.g., "# @team TeamName") from a file.
+  #
+  # This method removes the ownership annotation from the first line of a file,
+  # which is typically used to declare team ownership at the file level.
+  # The annotation can be in the form of:
+  # - Ruby comments: # @team TeamName
+  # - JavaScript/TypeScript comments: // @team TeamName
+  # - YAML comments: -# @team TeamName
+  #
+  # If the file does not have an annotation or the annotation doesn't match a valid team,
+  # this method does nothing.
+  #
+  # @param filename [String] The path to the file from which to remove the annotation.
+  #                          Can be relative or absolute.
+  #
+  # @return [void]
+  #
+  # @example Remove annotation from a Ruby file
+  #   # Before: File contains "# @team Platform\nclass User; end"
+  #   CodeOwnership.remove_file_annotation!('app/models/user.rb')
+  #   # After: File contains "class User; end"
+  #
+  # @example Remove annotation from a JavaScript file
+  #   # Before: File contains "// @team Frontend\nexport default function() {}"
+  #   CodeOwnership.remove_file_annotation!('app/javascript/component.js')
+  #   # After: File contains "export default function() {}"
+  #
+  # @note This method modifies the file in place.
+  # @note Leading newlines after the annotation are also removed to maintain clean formatting.
+  #
+  sig { params(filename: String).void }
+  def remove_file_annotation!(filename)
+    filepath = Pathname.new(filename)
+
+    begin
+      content = filepath.read
+    rescue Errno::EISDIR, Errno::ENOENT
+      # Ignore files that fail to read (directories, missing files, etc.)
+      return
+    end
+
+    # Remove the team annotation and any trailing newlines after it
+    team_pattern = %r{\A(?:#|//|-#) @team .*\n+}
+    new_content = content.sub(team_pattern, '')
+
+    filepath.write(new_content) if new_content != content
+  rescue ArgumentError => e
+    # Handle invalid byte sequences gracefully
+    raise unless e.message.include?('invalid byte sequence')
+  end
+
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
