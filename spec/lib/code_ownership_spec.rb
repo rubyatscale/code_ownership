@@ -385,4 +385,174 @@ RSpec.describe CodeOwnership do
       expect(described_class.version).to eq ["code_ownership version: #{CodeOwnership::VERSION}", "codeowners-rs version: #{RustCodeOwners.version}"]
     end
   end
+
+  describe '.remove_file_annotation!' do
+    subject(:remove_file_annotation) do
+      CodeOwnership.remove_file_annotation!(filename)
+      # Getting the owner gets stored in the cache, so after we remove the file annotation we want to bust the cache
+      CodeOwnership.bust_caches!
+    end
+
+    before do
+      write_file('config/teams/foo.yml', <<~CONTENTS)
+        name: Foo
+        github:
+          team: '@MyOrg/foo-team'
+      CONTENTS
+      write_configuration
+    end
+
+    context 'ruby file has no annotation' do
+      let(:filename) { 'app/my_file.rb' }
+
+      before do
+        write_file(filename, <<~CONTENTS)
+          # Empty file
+        CONTENTS
+      end
+
+      it 'has no effect' do
+        expect(File.read(filename)).to eq "# Empty file\n"
+
+        remove_file_annotation
+
+        expect(File.read(filename)).to eq "# Empty file\n"
+      end
+    end
+
+    context 'ruby file has annotation' do
+      let(:filename) { 'app/my_file.rb' }
+
+      before do
+        write_file(filename, <<~CONTENTS)
+          # @team Foo
+
+          # Some content
+        CONTENTS
+
+        RustCodeOwners.generate_and_validate(nil, false)
+      end
+
+      it 'removes the annotation' do
+        current_ownership = CodeOwnership.for_file(filename, from_codeowners: false)
+        expect(current_ownership&.name).to eq 'Foo'
+        expect(File.read(filename)).to eq <<~RUBY
+          # @team Foo
+
+          # Some content
+        RUBY
+
+        remove_file_annotation
+
+        new_ownership = CodeOwnership.for_file(filename, from_codeowners: false)
+        expect(new_ownership).to eq nil
+        expected_output = <<~RUBY
+          # Some content
+        RUBY
+
+        expect(File.read(filename)).to eq expected_output
+      end
+    end
+
+    context 'javascript file has annotation' do
+      let(:filename) { 'app/my_file.jsx' }
+
+      before do
+        write_file(filename, <<~CONTENTS)
+          // @team Foo
+
+          // Some content
+        CONTENTS
+
+        RustCodeOwners.generate_and_validate(nil, false)
+      end
+
+      it 'removes the annotation' do
+        current_ownership = CodeOwnership.for_file(filename, from_codeowners: false)
+        expect(current_ownership&.name).to eq 'Foo'
+        expect(File.read(filename)).to eq <<~JAVASCRIPT
+          // @team Foo
+
+          // Some content
+        JAVASCRIPT
+
+        remove_file_annotation
+
+        new_ownership = CodeOwnership.for_file(filename, from_codeowners: false)
+        expect(new_ownership).to eq nil
+        expected_output = <<~JAVASCRIPT
+          // Some content
+        JAVASCRIPT
+
+        expect(File.read(filename)).to eq expected_output
+      end
+    end
+
+    context "haml has annotation (only verifies file is changed, the curren implementation doesn't verify haml files)" do
+      let(:filename) { 'app/views/my_file.html.haml' }
+
+      before do
+        write_file(filename, <<~CONTENTS)
+          -# @team Foo
+
+          -# Some content
+        CONTENTS
+      end
+
+      it 'removes the annotation' do
+        expect(File.read(filename)).to eq <<~HAML
+          -# @team Foo
+
+          -# Some content
+        HAML
+
+        remove_file_annotation
+
+        expected_output = <<~HAML
+          -# Some content
+        HAML
+
+        expect(File.read(filename)).to eq expected_output
+      end
+    end
+
+    context 'file has new lines after the annotation' do
+      let(:filename) { 'app/my_file.rb' }
+
+      before do
+        write_file(filename, <<~CONTENTS)
+          # @team Foo
+
+
+          # Some content
+
+
+          # Some other content
+        CONTENTS
+      end
+
+      it 'removes the annotation and the leading new lines' do
+        expect(File.read(filename)).to eq <<~RUBY
+          # @team Foo
+
+
+          # Some content
+
+
+          # Some other content
+        RUBY
+
+        remove_file_annotation
+
+        expected_output = <<~RUBY
+          # Some content
+
+
+          # Some other content
+        RUBY
+
+        expect(File.read(filename)).to eq expected_output
+      end
+    end
+  end
 end
