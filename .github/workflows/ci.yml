@@ -16,9 +16,9 @@ jobs:
         uses: oxidize-rb/actions/fetch-ci-data@v1
         with:
           stable-ruby-versions: |
-            # See https://github.com/bytecodealliance/wasmtime-rb/issues/286
-            # for details.
-            exclude: [head]
+            # Explicitly include all Ruby versions we want to support
+            # to ensure binaries are built for each version
+            only: ['3.2', '3.3', '3.4']
   rspec:
     runs-on: ${{ matrix.os }}
     needs: ci-data
