@@ -195,6 +195,23 @@ RSpec.describe CodeOwnership do
         end
       end
 
+      context 'when ownership is found via metadata.owner in package.yml' do
+        let(:file_path) { 'packs/metadata_owner_pack/some_file.rb' }
+
+        before do
+          write_file('packs/metadata_owner_pack/package.yml', <<~CONTENTS)
+            metadata:
+              owner: Foo
+          CONTENTS
+          write_file(file_path, '# some content')
+          RustCodeOwners.generate_and_validate(nil, false)
+        end
+
+        it 'returns the correct team' do
+          expect(subject).to eq CodeTeams.find('Foo')
+        end
+      end
+
       context 'when ownership is found but team is not found' do
         let(:file_path) { 'packs/my_pack/owned_file.rb' }
         before do
