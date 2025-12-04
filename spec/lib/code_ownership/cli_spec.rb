@@ -1,6 +1,55 @@
 RSpec.describe CodeOwnership::Cli do
   subject { CodeOwnership::Cli.run!(argv) }
 
+  describe 'generate' do
+    let(:argv) { ['generate'] }
+
+    before do
+      write_configuration
+      write_file('app/services/my_file.rb')
+    end
+
+    context 'when run without arguments' do
+      it 'runs generate with the right defaults' do
+        expect(CodeOwnership).to receive(:generate!) do |args|
+          expect(args[:stage_changes]).to eq true
+        end
+        subject
+      end
+    end
+
+    context 'with --skip-stage' do
+      let(:argv) { ['generate', '--skip-stage'] }
+
+      it 'passes stage_changes: false' do
+        expect(CodeOwnership).to receive(:generate!) do |args|
+          expect(args[:stage_changes]).to eq false
+        end
+        subject
+      end
+    end
+
+    context 'with --help' do
+      let(:argv) { ['generate', '--help'] }
+
+      it 'shows help and exits' do
+        expect(CodeOwnership).not_to receive(:generate!)
+        expect(CodeOwnership::Cli).to receive(:puts).at_least(:once)
+        expect { subject }.to raise_error(SystemExit)
+      end
+    end
+
+    context 'when CodeOwnership.generate! raises an error' do
+      before do
+        allow(CodeOwnership).to receive(:generate!).and_raise(RuntimeError, 'Failed to generate')
+      end
+
+      it 'propagates the error' do
+        expect { subject }.to raise_error(RuntimeError, 'Failed to generate')
+      end
+    end
+  end
+
   describe 'validate' do
     let(:argv) { ['validate'] }
     let(:owned_globs) { nil }
@@ -121,7 +170,7 @@ RSpec.describe CodeOwnership::Cli do
       let(:argv) { ['for_team'] }
 
       it 'raises argument error' do
-        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class::EXECUTABLE} for_team --help` for more info")
+        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class.executable} for_team --help` for more info")
       end
     end
 
@@ -129,7 +178,7 @@ RSpec.describe CodeOwnership::Cli do
       let(:argv) { %w[for_team A B] }
 
       it 'raises argument error' do
-        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class::EXECUTABLE} for_team --help` for more info")
+        expect { subject }.to raise_error("Please pass in one team. Use `#{described_class.executable} for_team --help` for more info")
       end
     end
 
@@ -194,7 +243,7 @@ RSpec.describe CodeOwnership::Cli do
         let(:argv) { ['for_file'] }
 
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class::EXECUTABLE} for_file --help` for more info"
+          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class.executable} for_file --help` for more info"
         end
       end
 
@@ -202,7 +251,7 @@ RSpec.describe CodeOwnership::Cli do
         let(:argv) { ['for_file', 'app/services/my_file.rb', 'app/services/my_file2.rb'] }
 
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class::EXECUTABLE} for_file --help` for more info"
+          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class.executable} for_file --help` for more info"
         end
       end
     end
@@ -238,7 +287,7 @@ RSpec.describe CodeOwnership::Cli do
         let(:argv) { ['for_file', '--json'] }
 
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class::EXECUTABLE} for_file --help` for more info"
+          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class.executable} for_file --help` for more info"
         end
       end
 
@@ -246,7 +295,7 @@ RSpec.describe CodeOwnership::Cli do
         let(:argv) { ['for_file', 'app/services/my_file.rb', 'app/services/my_file2.rb'] }
 
         it 'outputs the team info in human readable format' do
-          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class::EXECUTABLE} for_file --help` for more info"
+          expect { subject }.to raise_error "Please pass in one file. Use `#{described_class.executable} for_file --help` for more info"
         end
       end
     end
@@ -300,7 +349,7 @@ RSpec.describe CodeOwnership::Cli do
     let(:argv) { ['some_command'] }
 
     it 'outputs help text' do
-      expect(CodeOwnership::Cli).to receive(:puts).with("'some_command' is not a code_ownership command. See `#{described_class::EXECUTABLE} help`.")
+      expect(CodeOwnership::Cli).to receive(:puts).with("'some_command' is not a code_ownership command. See `#{described_class.executable} help`.")
       subject
     end
   end
@@ -310,10 +359,11 @@ RSpec.describe CodeOwnership::Cli do
 
     it 'outputs help text' do
       expected = <<~EXPECTED
-        Usage: #{described_class::EXECUTABLE} <subcommand>
+        Usage: #{described_class.executable} <subcommand>
 
         Subcommands:
           validate - run all validations
+          generate - generate the CODEOWNERS file
           for_file - find code ownership for a single file
           for_team - find code ownership information for a team
           help  - display help information about code_ownership

@@ -12,7 +12,7 @@ module CodeOwnership
 
       # Returns a string version of the relative path to a Rails constant,
       # or nil if it can't find anything
-      sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(String)) }
+      sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(String)) }
       def path_from_klass(klass)
         if klass
           path = Object.const_source_location(klass.to_s)&.first

@@ -6,12 +6,16 @@ require 'fileutils'
 
 module CodeOwnership
   class Cli
-    EXECUTABLE = 'bin/codeownership'
+    def self.executable
+      $PROGRAM_NAME
+    end
 
     def self.run!(argv)
       command = argv.shift
       if command == 'validate'
         validate!(argv)
+      elsif command == 'generate'
+        generate(argv)
       elsif command == 'for_file'
         for_file(argv)
       elsif command == 'for_team'
@@ -20,16 +24,17 @@ module CodeOwnership
         version
       elsif [nil, 'help'].include?(command)
         puts <<~USAGE
-          Usage: #{EXECUTABLE} <subcommand>
+          Usage: #{executable} <subcommand>
 
           Subcommands:
             validate - run all validations
+            generate - generate the CODEOWNERS file
             for_file - find code ownership for a single file
             for_team - find code ownership information for a team
             help  - display help information about code_ownership
         USAGE
       else
-        puts "'#{command}' is not a code_ownership command. See `#{EXECUTABLE} help`."
+        puts "'#{command}' is not a code_ownership command. See `#{executable} help`."
       end
     end
 
@@ -37,7 +42,7 @@ module CodeOwnership
       options = {}
 
       parser = OptionParser.new do |opts|
-        opts.banner = "Usage: #{EXECUTABLE} validate [options]"
+        opts.banner = "Usage: #{executable} validate [options]"
 
         opts.on('--skip-autocorrect', 'Skip automatically correcting any errors, such as the .github/CODEOWNERS file') do
           options[:skip_autocorrect] = true
@@ -74,6 +79,29 @@ module CodeOwnership
       )
     end
 
+    def self.generate(argv)
+      options = {}
+
+      parser = OptionParser.new do |opts|
+        opts.banner = "Usage: #{executable} generate [options]"
+
+        opts.on('-s', '--skip-stage', 'Skips staging the CODEOWNERS file') do
+          options[:skip_stage] = true
+        end
+
+        opts.on('--help', 'Shows this prompt') do
+          puts opts
+          exit
+        end
+      end
+      args = parser.order!(argv)
+      parser.parse!(args)
+
+      CodeOwnership.generate!(
+        stage_changes: !options[:skip_stage]
+      )
+    end
+
     def self.version
       puts CodeOwnership.version.join("\n")
     end
@@ -89,7 +117,7 @@ module CodeOwnership
       files = argv.reject { |arg| arg.start_with?('--') }
 
       parser = OptionParser.new do |opts|
-        opts.banner = "Usage: #{EXECUTABLE} for_file [options]"
+        opts.banner = "Usage: #{executable} for_file [options]"
 
         opts.on('--json', 'Output as JSON') do
           options[:json] = true
@@ -108,7 +136,7 @@ module CodeOwnership
       parser.parse!(args)
 
       if files.count != 1
-        raise "Please pass in one file. Use `#{EXECUTABLE} for_file --help` for more info"
+        raise "Please pass in one file. Use `#{executable} for_file --help` for more info"
       end
 
       puts CodeOwnership::Private::ForFileOutputBuilder.build(file_path: files.first, json: !!options[:json], verbose: !!options[:verbose])
@@ -116,7 +144,7 @@ module CodeOwnership
 
     def self.for_team(argv)
       parser = OptionParser.new do |opts|
-        opts.banner = "Usage: #{EXECUTABLE} for_team 'Team Name'"
+        opts.banner = "Usage: #{executable} for_team 'Team Name'"
 
         opts.on('--help', 'Shows this prompt') do
           puts opts
@@ -128,7 +156,7 @@ module CodeOwnership
       parser.parse!(args)
 
       if teams.count != 1
-        raise "Please pass in one team. Use `#{EXECUTABLE} for_team --help` for more info"
+        raise "Please pass in one team. Use `#{executable} for_team --help` for more info"
       end
 
       puts CodeOwnership.for_team(teams.first).join("\n")

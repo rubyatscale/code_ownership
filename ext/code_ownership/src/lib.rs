@@ -12,25 +12,28 @@ pub struct Team {
     pub reasons: Vec<String>,
 }
 
-fn for_team(team_name: String) -> Result<Value, Error> {
-    let run_config = build_run_config();
+fn for_team(ruby: &Ruby, team_name: String) -> Result<Value, Error> {
+    let run_config = build_run_config(ruby)?;
     let team = runner::for_team(&run_config, &team_name);
     validate_result(&team)
 }
 
-fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
-    let run_config = build_run_config();
+fn teams_for_files(ruby: &Ruby, file_paths: Vec<String>) -> Result<Value, Error> {
+    let run_config = build_run_config(ruby)?;
     let path_teams = runner::teams_for_files_from_codeowners(&run_config, &file_paths);
     match path_teams {
         Ok(path_teams) => {
             let mut teams_map: HashMap<String, Option<Team>> = HashMap::new();
             for (path, team) in path_teams {
                 if let Some(found_team) = team {
-                    teams_map.insert(path, Some(Team {
-                        team_name: found_team.name.to_string(),
-                        team_config_yml: found_team.name.to_string(),
-                        reasons: vec![],
-                    }));
+                    teams_map.insert(
+                        path,
+                        Some(Team {
+                            team_name: found_team.name.to_string(),
+                            team_config_yml: found_team.name.to_string(),
+                            reasons: vec![],
+                        }),
+                    );
                 } else {
                     teams_map.insert(path, None);
                 }
@@ -38,27 +41,30 @@ fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
             let serialized: Value = serialize(&teams_map)?;
             Ok(serialized)
         }
-        Err(e) => Err(Error::new(magnus::exception::runtime_error(), e.to_string())),
+        Err(e) => Err(Error::new(
+            magnus::exception::runtime_error(),
+            e.to_string(),
+        )),
     }
 }
 
-fn for_file(file_path: String) -> Result<Option<Value>, Error> {
-    let run_config = build_run_config();
+fn for_file(ruby: &Ruby, file_path: String) -> Result<Option<Value>, Error> {
+    let run_config = build_run_config(ruby)?;
 
     match runner::file_owner_for_file(&run_config, &file_path) {
         Ok(owner) => {
             if let Some(owner) = owner {
-            let team = Team {
-                team_name: owner.team.name,
-                team_config_yml: owner.team_config_file_path.to_string(),
-                reasons: owner
-                .sources
-                .iter()
-                .map(|source| source.to_string())
-                .collect(),
-            };
-            let serialized: Value = serialize(&team)?;
-            Ok(Some(serialized))
+                let team = Team {
+                    team_name: owner.team.name,
+                    team_config_yml: owner.team_config_file_path.to_string(),
+                    reasons: owner
+                        .sources
+                        .iter()
+                        .map(|source| source.to_string())
+                        .collect(),
+                };
+                let serialized: Value = serialize(&team)?;
+                Ok(Some(serialized))
             } else {
                 Ok(None)
             }
@@ -71,20 +77,30 @@ fn for_file(file_path: String) -> Result<Option<Value>, Error> {
 }
 
 fn version() -> String {
-   runner::version()
+    runner::version()
 }
 
-fn validate(files: Option<Vec<String>>) -> Result<Value, Error> {
-    let run_config = build_run_config();
+fn validate(ruby: &Ruby, files: Option<Vec<String>>) -> Result<Value, Error> {
+    let run_config = build_run_config(ruby)?;
     let files_vec = files.unwrap_or_default();
     let run_result = runner::validate(&run_config, files_vec);
     validate_result(&run_result)
 }
 
-fn generate_and_validate(files: Option<Vec<String>>, skip_stage: bool) -> Result<Value, Error> {
-    let run_config = build_run_config();
+fn generate_and_validate(
+    ruby: &Ruby,
+    files: Option<Vec<String>>,
+    skip_stage: bool,
+) -> Result<Value, Error> {
+    let run_config = build_run_config(ruby)?;
     let files_vec = files.unwrap_or_default();
     let run_result = runner::generate_and_validate(&run_config, files_vec, skip_stage);
+    validate_result(&run_result)
+}
+
+fn generate(ruby: &Ruby, skip_stage: bool) -> Result<Value, Error> {
+    let run_config = build_run_config(ruby)?;
+    let run_result = runner::generate(&run_config, skip_stage);
     validate_result(&run_result)
 }
 
@@ -104,7 +120,7 @@ fn validate_result(run_result: &runner::RunResult) -> Result<Value, Error> {
         Ok(serialized)
     }
 }
-fn build_run_config() -> RunConfig {
+fn build_run_config(ruby: &Ruby) -> Result<RunConfig, Error> {
     let project_root = match env::current_dir() {
         Ok(path) => path,
         _ => PathBuf::from("."),
@@ -112,18 +128,24 @@ fn build_run_config() -> RunConfig {
     let codeowners_file_path = project_root.join(".github/CODEOWNERS");
     let config_path = project_root.join("config/code_ownership.yml");
 
-    RunConfig {
+    // Get $PROGRAM_NAME from Ruby
+    let program_name: String = ruby.eval("$PROGRAM_NAME")?;
+    let executable_path = Some(PathBuf::from(program_name));
+
+    Ok(RunConfig {
         project_root,
         codeowners_file_path,
         config_path,
         no_cache: false,
-    }
+        executable_path,
+    })
 }
 
 #[magnus::init]
 fn init(ruby: &Ruby) -> Result<(), Error> {
     let module = ruby.define_module("RustCodeOwners")?;
     module.define_singleton_method("for_file", function!(for_file, 1))?;
+    module.define_singleton_method("generate", function!(generate, 1))?;
     module.define_singleton_method("generate_and_validate", function!(generate_and_validate, 2))?;
     module.define_singleton_method("validate", function!(validate, 1))?;
     module.define_singleton_method("for_team", function!(for_team, 1))?;

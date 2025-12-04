@@ -385,4 +385,60 @@ RSpec.describe CodeOwnership do
       expect(described_class.version).to eq ["code_ownership version: #{CodeOwnership::VERSION}", "codeowners-rs version: #{RustCodeOwners.version}"]
     end
   end
+
+  describe '.generate!' do
+    before do
+      create_non_empty_application
+      allow(RustCodeOwners).to receive(:generate)
+    end
+
+    context 'with default parameters' do
+      it 'calls RustCodeOwners.generate with skip_stage: false' do
+        described_class.generate!
+        expect(RustCodeOwners).to have_received(:generate).with(false)
+      end
+    end
+
+    context 'with stage_changes: true' do
+      it 'calls RustCodeOwners.generate with skip_stage: false' do
+        described_class.generate!(stage_changes: true)
+        expect(RustCodeOwners).to have_received(:generate).with(false)
+      end
+    end
+
+    context 'with stage_changes: false' do
+      it 'calls RustCodeOwners.generate with skip_stage: true' do
+        described_class.generate!(stage_changes: false)
+        expect(RustCodeOwners).to have_received(:generate).with(true)
+      end
+    end
+
+    context 'when RustCodeOwners.generate raises an error' do
+      before do
+        allow(RustCodeOwners).to receive(:generate).and_raise(RuntimeError, 'Failed to generate CODEOWNERS')
+      end
+
+      it 'propagates the error' do
+        expect { described_class.generate! }.to raise_error(RuntimeError, 'Failed to generate CODEOWNERS')
+      end
+    end
+
+    context 'integration test' do
+      before do
+        allow(RustCodeOwners).to receive(:generate).and_call_original
+      end
+
+      it 'generates a CODEOWNERS file' do
+        described_class.generate!(stage_changes: false)
+        expect(codeowners_path).to exist
+      end
+
+      it 'generates CODEOWNERS with expected content' do
+        described_class.generate!(stage_changes: false)
+        content = codeowners_path.read
+        expect(content).to include('@MyOrg/bar-team')
+        expect(content).to include('@MyOrg/foo-team')
+      end
+    end
+  end
 end

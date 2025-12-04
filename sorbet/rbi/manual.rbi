@@ -10,6 +10,9 @@ module RustCodeOwners
     def generate_and_validate(files, skip_stage)
     end
 
+    def generate(skip_stage)
+    end
+
     def validate(files)
     end
 

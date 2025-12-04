@@ -2,7 +2,6 @@
 
 # typed: strict
 
-require 'set'
 require 'code_teams'
 require 'sorbet-runtime'
 require 'json'
@@ -239,6 +238,59 @@ module CodeOwnership
     end
   end
 
+  # Generates the .github/CODEOWNERS file based on current ownership rules.
+  #
+  # This method creates or updates the CODEOWNERS file by analyzing all ownership
+  # configurations (package ownership, directory globs, file annotations, etc.) and
+  # generating the corresponding GitHub CODEOWNERS format. Unlike `validate!`, this
+  # method does not perform any validation checks - it only generates the file.
+  #
+  # The generated CODEOWNERS file will:
+  # - Include patterns for all files with assigned ownership
+  # - Be formatted according to GitHub's CODEOWNERS specification
+  # - Map team names to their GitHub team handles (if configured)
+  # - Optionally be staged for git commit
+  #
+  # @param stage_changes [Boolean] Whether to stage the CODEOWNERS file after generation (default: true)
+  #                                When true, automatically stages the file with `git add`
+  #                                When false, writes the file but doesn't stage it
+  #
+  # @return [void]
+  #
+  # @raise [RuntimeError] Raises an error if:
+  #                       - Unable to write to .github/CODEOWNERS
+  #                       - Unable to stage changes (when stage_changes is true)
+  #                       - Team configuration is invalid
+  #
+  # @example Generate and stage CODEOWNERS file
+  #   CodeOwnership.generate!
+  #   # Creates/updates .github/CODEOWNERS and stages it
+  #
+  # @example Generate without staging
+  #   CodeOwnership.generate!(stage_changes: false)
+  #   # Creates/updates .github/CODEOWNERS but doesn't stage it
+  #
+  # @note This method is useful when you want to regenerate CODEOWNERS without
+  #       running validations, such as in CI/CD pipelines or when you know your
+  #       configuration is correct.
+  #
+  # @note For most use cases, prefer `validate!` which both generates and validates
+  #       the ownership configuration to catch potential issues.
+  #
+  # @see #validate! for generation with validation
+  # @see https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners for CODEOWNERS format
+  #
+  sig do
+    params(
+      stage_changes: T::Boolean
+    ).void
+  end
+  def generate!(
+    stage_changes: true
+  )
+    ::RustCodeOwners.generate(!stage_changes)
+  end
+
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
@@ -253,7 +305,7 @@ module CodeOwnership
     Private::TeamFinder.first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)
   end
 
-  sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
+  sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(::CodeTeams::Team)) }
   def for_class(klass)
     Private::TeamFinder.for_class(klass)
   end

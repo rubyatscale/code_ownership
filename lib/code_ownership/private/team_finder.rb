@@ -57,7 +57,7 @@ module CodeOwnership
         result
       end
 
-      sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
+      sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(::CodeTeams::Team)) }
       def for_class(klass)
         file_path = FilePathFinder.path_from_klass(klass)
         return nil if file_path.nil?
