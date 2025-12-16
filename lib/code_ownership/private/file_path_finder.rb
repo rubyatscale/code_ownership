@@ -1,19 +1,15 @@
 # frozen_string_literal: true
-
 # typed: strict
 
 module CodeOwnership
   module Private
     module FilePathFinder
-      module_function
-
       extend T::Sig
-      extend T::Helpers
 
       # Returns a string version of the relative path to a Rails constant,
       # or nil if it can't find anything
-      sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(String)) }
-      def path_from_klass(klass)
+      sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(String)) }
+      def self.path_from_klass(klass)
         if klass
           path = Object.const_source_location(klass.to_s)&.first
           (path && Pathname.new(path).relative_path_from(Pathname.pwd).to_s) || nil
@@ -23,7 +19,7 @@ module CodeOwnership
       end
 
       sig { params(backtrace: T.nilable(T::Array[String])).returns(T::Enumerable[String]) }
-      def from_backtrace(backtrace)
+      def self.from_backtrace(backtrace)
         return [] unless backtrace
 
         # The pattern for a backtrace hasn't changed in forever and is considered

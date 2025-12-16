@@ -88,6 +88,10 @@ Style/Documentation:
 Style/EmptyElse:
   Enabled: false
 
+# This interacts poorly with typed code
+Style/ModuleFunction:
+  EnforcedStyle: forbidden
+
 # Sometimes we want to more explicitly list out a condition
 Style/RedundantCondition:
   Enabled: false
