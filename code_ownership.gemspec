@@ -37,7 +37,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'code_teams', '~> 1.0'
   spec.add_dependency 'packs-specification'
-  spec.add_dependency 'sorbet-runtime', '>= 0.5.11249'
+  spec.add_dependency 'sorbet-runtime', '>= 0.6.12763'
 
   spec.add_development_dependency 'debug'
   spec.add_development_dependency 'packwerk'

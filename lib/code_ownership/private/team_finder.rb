@@ -1,19 +1,13 @@
 # frozen_string_literal: true
-
 # typed: strict
 
 module CodeOwnership
   module Private
     module TeamFinder
-      module_function
-
       extend T::Sig
-      extend T::Helpers
-
-      requires_ancestor { Kernel }
 
       sig { params(file_path: String, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
-      def for_file(file_path, allow_raise: false)
+      def self.for_file(file_path, allow_raise: false)
         return nil if file_path.start_with?('./')
 
         return FilePathTeamCache.get(file_path) if FilePathTeamCache.cached?(file_path)
@@ -31,7 +25,7 @@ module CodeOwnership
       end
 
       sig { params(files: T::Array[String], allow_raise: T::Boolean).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
-      def teams_for_files(files, allow_raise: false)
+      def self.teams_for_files(files, allow_raise: false)
         result = {}
 
         # Collect cached results and identify non-cached files
@@ -57,8 +51,8 @@ module CodeOwnership
         result
       end
 
-      sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
-      def for_class(klass)
+      sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(::CodeTeams::Team)) }
+      def self.for_class(klass)
         file_path = FilePathFinder.path_from_klass(klass)
         return nil if file_path.nil?
 
@@ -66,7 +60,7 @@ module CodeOwnership
       end
 
       sig { params(package: Packs::Pack).returns(T.nilable(::CodeTeams::Team)) }
-      def for_package(package)
+      def self.for_package(package)
         owner_name = package.raw_hash['owner'] || package.metadata['owner']
         return nil if owner_name.nil?
 
@@ -74,12 +68,12 @@ module CodeOwnership
       end
 
       sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
-      def for_backtrace(backtrace, excluded_teams: [])
+      def self.for_backtrace(backtrace, excluded_teams: [])
         first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)&.first
       end
 
       sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
-      def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
+      def self.first_owned_file_for_backtrace(backtrace, excluded_teams: [])
         FilePathFinder.from_backtrace(backtrace).each do |file|
           team = for_file(file)
           if team && !excluded_teams.include?(team)
@@ -91,7 +85,7 @@ module CodeOwnership
       end
 
       sig { params(team_name: String, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
-      def find_team!(team_name, allow_raise: false)
+      def self.find_team!(team_name, allow_raise: false)
         team = CodeTeams.find(team_name)
         if team.nil? && allow_raise
           raise(StandardError, "Could not find team with name: `#{team_name}`. Make sure the team is one of `#{CodeTeams.all.map(&:name).sort}`")

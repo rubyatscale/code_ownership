@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-
 # typed: strict
 
 require 'code_teams'
@@ -25,17 +24,13 @@ if defined?(Packwerk)
 end
 
 module CodeOwnership
-  module_function
-
   extend T::Sig
-  extend T::Helpers
 
-  requires_ancestor { Kernel }
   GlobsToOwningTeamMap = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
   # Returns the version of the code_ownership gem and the codeowners-rs gem.
   sig { returns(T::Array[String]) }
-  def version
+  def self.version
     ["code_ownership version: #{VERSION}",
      "codeowners-rs version: #{::RustCodeOwners.version}"]
   end
@@ -65,7 +60,7 @@ module CodeOwnership
   #   # => raises exception if no owner found
   #
   sig { params(file: String, from_codeowners: T::Boolean, allow_raise: T::Boolean).returns(T.nilable(CodeTeams::Team)) }
-  def for_file(file, from_codeowners: true, allow_raise: false)
+  def self.for_file(file, from_codeowners: true, allow_raise: false)
     if from_codeowners
       teams_for_files_from_codeowners([file], allow_raise: allow_raise).values.first
     else
@@ -116,7 +111,7 @@ module CodeOwnership
   # @see #validate! for ensuring CODEOWNERS file is up-to-date
   #
   sig { params(files: T::Array[String], allow_raise: T::Boolean).returns(T::Hash[String, T.nilable(CodeTeams::Team)]) }
-  def teams_for_files_from_codeowners(files, allow_raise: false)
+  def self.teams_for_files_from_codeowners(files, allow_raise: false)
     Private::TeamFinder.teams_for_files(files, allow_raise: allow_raise)
   end
 
@@ -160,12 +155,12 @@ module CodeOwnership
   # @see CLI#for_file for the command-line interface that uses this method
   #
   sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
-  def for_file_verbose(file)
+  def self.for_file_verbose(file)
     ::RustCodeOwners.for_file(file)
   end
 
   sig { params(team: T.any(CodeTeams::Team, String)).returns(T::Array[String]) }
-  def for_team(team)
+  def self.for_team(team)
     team = T.must(CodeTeams.find(team)) if team.is_a?(String)
     ::RustCodeOwners.for_team(team.name)
   end
@@ -226,7 +221,7 @@ module CodeOwnership
       files: T.nilable(T::Array[String])
     ).void
   end
-  def validate!(
+  def self.validate!(
     autocorrect: true,
     stage_changes: true,
     files: nil
@@ -269,7 +264,7 @@ module CodeOwnership
   # @note Leading newlines after the annotation are also removed to maintain clean formatting.
   #
   sig { params(filename: String).void }
-  def remove_file_annotation!(filename)
+  def self.remove_file_annotation!(filename)
     filepath = Pathname.new(filename)
 
     begin
@@ -292,24 +287,24 @@ module CodeOwnership
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first line that corresponds to a file with assigned ownership
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable(::CodeTeams::Team)) }
-  def for_backtrace(backtrace, excluded_teams: [])
+  def self.for_backtrace(backtrace, excluded_teams: [])
     Private::TeamFinder.for_backtrace(backtrace, excluded_teams: excluded_teams)
   end
 
   # Given a backtrace from either `Exception#backtrace` or `caller`, find the
   # first owned file in it, useful for figuring out which file is being blamed.
   sig { params(backtrace: T.nilable(T::Array[String]), excluded_teams: T::Array[::CodeTeams::Team]).returns(T.nilable([::CodeTeams::Team, String])) }
-  def first_owned_file_for_backtrace(backtrace, excluded_teams: [])
+  def self.first_owned_file_for_backtrace(backtrace, excluded_teams: [])
     Private::TeamFinder.first_owned_file_for_backtrace(backtrace, excluded_teams: excluded_teams)
   end
 
-  sig { params(klass: T.nilable(T.any(T::Class[T.anything], Module))).returns(T.nilable(::CodeTeams::Team)) }
-  def for_class(klass)
+  sig { params(klass: T.nilable(T.any(T::Class[T.anything], T::Module[T.anything]))).returns(T.nilable(::CodeTeams::Team)) }
+  def self.for_class(klass)
     Private::TeamFinder.for_class(klass)
   end
 
   sig { params(package: Packs::Pack).returns(T.nilable(::CodeTeams::Team)) }
-  def for_package(package)
+  def self.for_package(package)
     Private::TeamFinder.for_package(package)
   end
 

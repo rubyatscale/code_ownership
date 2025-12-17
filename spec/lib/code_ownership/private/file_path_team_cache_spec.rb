@@ -4,6 +4,10 @@ RSpec.describe CodeOwnership::Private::FilePathTeamCache do
   let(:file_path) { 'app/javascript/[test]/test.js' }
   let(:codes_team) { instance_double(CodeTeams::Team) }
 
+  before do
+    allow(codes_team).to receive(:is_a?).with(CodeTeams::Team).and_return(true)
+  end
+
   describe '.get' do
     subject { described_class.get(file_path) }
 
