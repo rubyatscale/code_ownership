@@ -18,7 +18,7 @@ jobs:
           stable-ruby-versions: |
             # Explicitly include all Ruby versions we want to support
             # to ensure binaries are built for each version
-            only: ['3.2', '3.3', '3.4']
+            only: ['3.2', '3.3', '3.4', '4.0']
   rspec:
     runs-on: ${{ matrix.os }}
     needs: ci-data
