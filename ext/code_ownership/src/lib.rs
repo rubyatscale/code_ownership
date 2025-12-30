@@ -12,13 +12,13 @@ pub struct Team {
     pub reasons: Vec<String>,
 }
 
-fn for_team(team_name: String) -> Result<Value, Error> {
+fn for_team(ruby: &Ruby, team_name: String) -> Result<Value, Error> {
     let run_config = build_run_config();
     let team = runner::for_team(&run_config, &team_name);
-    validate_result(&team)
+    validate_result(ruby, &team)
 }
 
-fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
+fn teams_for_files(ruby: &Ruby, file_paths: Vec<String>) -> Result<Value, Error> {
     let run_config = build_run_config();
     let path_teams = runner::teams_for_files_from_codeowners(&run_config, &file_paths);
     match path_teams {
@@ -35,14 +35,14 @@ fn teams_for_files(file_paths: Vec<String>) -> Result<Value, Error> {
                     teams_map.insert(path, None);
                 }
             }
-            let serialized: Value = serialize(&teams_map)?;
+            let serialized: Value = serialize(ruby, &teams_map)?;
             Ok(serialized)
         }
-        Err(e) => Err(Error::new(magnus::exception::runtime_error(), e.to_string())),
+        Err(e) => Err(Error::new(ruby.exception_runtime_error(), e.to_string())),
     }
 }
 
-fn for_file(file_path: String) -> Result<Option<Value>, Error> {
+fn for_file(ruby: &Ruby, file_path: String) -> Result<Option<Value>, Error> {
     let run_config = build_run_config();
 
     match runner::file_owner_for_file(&run_config, &file_path) {
@@ -57,14 +57,14 @@ fn for_file(file_path: String) -> Result<Option<Value>, Error> {
                 .map(|source| source.to_string())
                 .collect(),
             };
-            let serialized: Value = serialize(&team)?;
+            let serialized: Value = serialize(ruby, &team)?;
             Ok(Some(serialized))
             } else {
                 Ok(None)
             }
         }
         Err(e) => Err(Error::new(
-            magnus::exception::runtime_error(),
+            ruby.exception_runtime_error(),
             e.to_string(),
         )),
     }
@@ -74,33 +74,33 @@ fn version() -> String {
    runner::version()
 }
 
-fn validate(files: Option<Vec<String>>) -> Result<Value, Error> {
+fn validate(ruby: &Ruby, files: Option<Vec<String>>) -> Result<Value, Error> {
     let run_config = build_run_config();
     let files_vec = files.unwrap_or_default();
     let run_result = runner::validate(&run_config, files_vec);
-    validate_result(&run_result)
+    validate_result(ruby, &run_result)
 }
 
-fn generate_and_validate(files: Option<Vec<String>>, skip_stage: bool) -> Result<Value, Error> {
+fn generate_and_validate(ruby: &Ruby, files: Option<Vec<String>>, skip_stage: bool) -> Result<Value, Error> {
     let run_config = build_run_config();
     let files_vec = files.unwrap_or_default();
     let run_result = runner::generate_and_validate(&run_config, files_vec, skip_stage);
-    validate_result(&run_result)
+    validate_result(ruby, &run_result)
 }
 
-fn validate_result(run_result: &runner::RunResult) -> Result<Value, Error> {
+fn validate_result(ruby: &Ruby, run_result: &runner::RunResult) -> Result<Value, Error> {
     if !run_result.validation_errors.is_empty() {
         Err(Error::new(
-            magnus::exception::runtime_error(),
+            ruby.exception_runtime_error(),
             run_result.validation_errors.join("\n"),
         ))
     } else if !run_result.io_errors.is_empty() {
         Err(Error::new(
-            magnus::exception::runtime_error(),
+            ruby.exception_runtime_error(),
             run_result.io_errors.join("\n"),
         ))
     } else {
-        let serialized: Value = serialize(&run_result.info_messages)?;
+        let serialized: Value = serialize(ruby, &run_result.info_messages)?;
         Ok(serialized)
     }
 }
