@@ -1,9 +1,0 @@
-name: Label issues as "triage"
-
-on:
-  issues:
-    types:
-      - opened
-jobs:
-  call-workflow-from-shared-config:
-    uses: rubyatscale/shared-config/.github/workflows/triage.yml@main
