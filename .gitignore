@@ -9,6 +9,9 @@
 /target/
 /vendor
 
+# Locally-built native extensions (installed into versioned directories)
+/lib/code_ownership/*/
+
 Gemfile.lock
 
 # rspec failure tracking
