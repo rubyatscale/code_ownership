@@ -1,3 +1,5 @@
 --dir=.
 --ignore=/spec
+--ignore=/tmp
+--ignore=/target
 --ignore=/vendor/bundle
