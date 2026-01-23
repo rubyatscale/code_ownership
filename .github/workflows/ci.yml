@@ -40,6 +40,22 @@ jobs:
         run: bundle exec rake
       - name: Compile rust ext
         run: bundle exec rake compile:release
+
+  rspec_ruby_version_file:
+    name: "RSpec (ruby-version-file)"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        with:
+          ruby-version-file: .ruby-version
+          rustup-toolchain: stable
+          bundler-cache: true
+          cargo-cache: false
+      - name: Run ruby tests
+        run: bundle exec rake
+      - name: Compile rust ext
+        run: bundle exec rake compile:release
   static_type_check:
     name: "Type Check"
     runs-on: ubuntu-latest
@@ -49,7 +65,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version: 3.3
+          ruby-version-file: .ruby-version
       - name: Run static type checks
         run: bundle exec srb tc
   notify_on_failure:
