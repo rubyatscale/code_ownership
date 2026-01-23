@@ -2,5 +2,5 @@
 # frozen_string_literal: true
 
 module CodeOwnership
-  VERSION = '2.1.0'
+  VERSION = '2.1.1'
 end
