@@ -10,7 +10,9 @@
 /vendor
 
 # Locally-built native extensions (installed into versioned directories)
-/lib/code_ownership/*/
+# Keep this narrowly scoped so we don't accidentally ignore real Ruby source dirs
+# like lib/code_ownership/private/.
+/lib/code_ownership/[0-9]*.[0-9]*/
 
 Gemfile.lock
 
