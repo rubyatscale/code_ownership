@@ -12,6 +12,8 @@ AllCops:
   NewCops: enable
   Exclude:
     - vendor/bundle/**/**
+    - tmp/**/**
+    - target/**/**
   TargetRubyVersion: 3.2
 
 Metrics/ParameterLists:

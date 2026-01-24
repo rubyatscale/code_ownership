@@ -9,6 +9,11 @@
 /target/
 /vendor
 
+# Locally-built native extensions (installed into versioned directories)
+# Keep this narrowly scoped so we don't accidentally ignore real Ruby source dirs
+# like lib/code_ownership/private/.
+/lib/code_ownership/[0-9]*.[0-9]*/
+
 Gemfile.lock
 
 # rspec failure tracking

@@ -43,7 +43,7 @@
   
         - uses: ruby/setup-ruby@v1
           with:
-            ruby-version: "3.4"
+            ruby-version-file: .ruby-version
 
         - uses: oxidize-rb/actions/cross-gem@v1
           id: cross-gem
@@ -88,7 +88,7 @@
   
         - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
           with:
-            ruby-version: "3.4"
+            ruby-version-file: .ruby-version
             bundler-cache: true
             cargo-cache: false
   
