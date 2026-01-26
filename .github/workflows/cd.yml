@@ -43,7 +43,7 @@
   
         - uses: ruby/setup-ruby@v1
           with:
-            ruby-version-file: .ruby-version
+            ruby-version: '4.0'
 
         - uses: oxidize-rb/actions/cross-gem@v1
           id: cross-gem
