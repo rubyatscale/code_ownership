@@ -73,7 +73,7 @@
             ruby -e "require 'code_ownership'; puts 'Version: ' + CodeOwnership::VERSION"
             
             # Run a simple functionality test
-            ruby -e "require 'code_ownership'; CodeOwnership.file_owner_team_names('lib/code_ownership.rb')" || true
+            ruby -e "require 'code_ownership'; puts CodeOwnership.for_file('lib/code_ownership.rb').inspect"
             
             echo "✅ Successfully tested ${{ matrix.ruby-platform }} gem"
   
