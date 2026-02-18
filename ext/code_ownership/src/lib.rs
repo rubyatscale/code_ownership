@@ -109,14 +109,14 @@ fn build_run_config() -> RunConfig {
         Ok(path) => path,
         _ => PathBuf::from("."),
     };
-    let codeowners_file_path = project_root.join(".github/CODEOWNERS");
     let config_path = project_root.join("config/code_ownership.yml");
 
     RunConfig {
         project_root,
-        codeowners_file_path,
+        codeowners_file_path: None,
         config_path,
         no_cache: false,
+        executable_name: None,
     }
 }
 
