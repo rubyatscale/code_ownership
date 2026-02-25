@@ -17,7 +17,7 @@ rb-sys = { version = "0.9.111", features = [
 magnus = { version = "0.8" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_magnus = "0.10"
-codeowners = { git = "https://github.com/rubyatscale/codeowners-rs.git", tag = "v0.3.0" }
+codeowners = { git = "https://github.com/rubyatscale/codeowners-rs.git", branch = "main" }
 
 [dev-dependencies]
 rb-sys = { version = "0.9.117", features = [
