@@ -115,7 +115,7 @@ js_package_paths:
 This defaults `**/`, which makes it look for `package.json` files across your application.
 
 > [!NOTE]
-> Javscript package ownership does not respect `unowned_globs`. If you wish to disable usage of this feature you can set `js_package_paths` to an empty list.
+> JavaScript package ownership does not respect `unowned_globs`. If you wish to disable usage of this feature you can set `js_package_paths` to an empty list.
 
 ```yml
 js_package_paths: []
