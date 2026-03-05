@@ -10,7 +10,7 @@ There is also a [companion VSCode Extension](https://github.com/rubyatscale/code
 
 ## Getting started
 
-To get started there's a few things you should do.
+To get started there are a few things you should do.
 
 1. Create a `config/code_ownership.yml` file and declare where your files live. Here's a sample to start with:
 
@@ -42,7 +42,7 @@ There are five ways to declare code ownership using this gem:
 
 ### Directory-Based Ownership
 
-Directory based ownership allows for all files in that directory and all its sub-directories to be owned by one team. To define this, add a `.codeowner` file inside that directory with the name of the team as the contents of that file.
+Directory-based ownership allows for all files in that directory and all its sub-directories to be owned by one team. To define this, add a `.codeowner` file inside that directory with the name of the team as the contents of that file.
 
 ```
 Team
@@ -58,7 +58,7 @@ File annotations are a last resort if there is no clear home for your code. File
 
 ### Package-Based Ownership
 
-Package based ownership integrates [`packwerk`](https://github.com/Shopify/packwerk) and has ownership defined per package. To define that all files within a package are owned by one team, configure your `package.yml` like this:
+Package-based ownership integrates [`packwerk`](https://github.com/Shopify/packwerk) and has ownership defined per package. To define that all files within a package are owned by one team, configure your `package.yml` like this:
 
 ```yml
 enforce_dependency: true
@@ -92,7 +92,7 @@ unowned_globs:
 
 ### Javascript Package Ownership
 
-Javascript package based ownership allows you to specify an ownership key in a `package.json`. To use this, configure your `package.json` like this:
+JavaScript package-based ownership allows you to specify an ownership key in a `package.json`. To use this, configure your `package.json` like this:
 
 ```json
 {
@@ -112,10 +112,10 @@ js_package_paths:
   - frontend/other_location_for_packages/*
 ```
 
-This defaults `**/`, which makes it look for `package.json` files across your application.
+This defaults to `**/`, which makes it look for `package.json` files across your application.
 
 > [!NOTE]
-> Javscript package ownership does not respect `unowned_globs`. If you wish to disable usage of this feature you can set `js_package_paths` to an empty list.
+> JavaScript package ownership does not respect `unowned_globs`. If you wish to disable usage of this feature you can set `js_package_paths` to an empty list.
 
 ```yml
 js_package_paths: []
@@ -184,7 +184,7 @@ If `codeowners_path` is set in `code_ownership.yml` codeowners will use that pat
 CodeOwnership comes with a validation function to ensure the following things are true:
 
 1. Only one mechanism is defining file ownership. That is -- you can't have a file annotation on a file owned via package-based or glob-based ownership. This helps make ownership behavior more clear by avoiding concerns about precedence.
-2. All teams referenced as an owner for any file or package is a valid team (i.e. it's in the list of `CodeTeams.all`).
+2. All teams referenced as an owner for any file or package are valid teams (i.e. they're in the list of `CodeTeams.all`).
 3. All files have ownership. You can specify in `unowned_globs` to represent a TODO list of files to add ownership to.
 4. The `.github/CODEOWNERS` file is up to date. This is automatically corrected and staged unless specified otherwise with `bin/codeownership validate --skip-autocorrect --skip-stage`. You can turn this validation off by setting `skip_codeowners_validation: true` in `config/code_ownership.yml`.
 
@@ -223,7 +223,7 @@ codeownership validate --diff
 
 ## Development
 
-Please add to `CHANGELOG.md` and this `README.md` when you make make changes.
+Please add to `CHANGELOG.md` and this `README.md` when you make changes.
 
 ## Running specs
 

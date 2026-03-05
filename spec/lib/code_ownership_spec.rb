@@ -488,7 +488,7 @@ RSpec.describe CodeOwnership do
       end
     end
 
-    context "haml has annotation (only verifies file is changed, the curren implementation doesn't verify haml files)" do
+    context "haml has annotation (only verifies file is changed, the current implementation doesn't verify haml files)" do
       let(:filename) { 'app/views/my_file.html.haml' }
 
       before do
