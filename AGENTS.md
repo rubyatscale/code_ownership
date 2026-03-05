@@ -1,5 +1,3 @@
-# AGENTS.md
-
 This file provides guidance to AI coding agents when working with code in this repository.
 
 ## What this project is
@@ -32,4 +30,4 @@ bundle exec srb tc
 
 - `lib/code_ownership.rb` — public API: `CodeOwnership.for_file`, `CodeOwnership.validate!`, `CodeOwnership.for_team`
 - `lib/code_ownership/` — mapper plugins (each ownership mechanism is a mapper), `Ownership` value object, configuration loading, and CLI
-- `spec/` — RSpec tests; `spec/fixtures/` has sample application structures with various ownership configurations
+- `spec/` — RSpec tests
