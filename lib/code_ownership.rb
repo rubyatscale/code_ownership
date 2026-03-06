@@ -231,11 +231,6 @@ module CodeOwnership
     else
       ::RustCodeOwners.validate(files)
     end
-  rescue RuntimeError => e
-    raise e.message.gsub(
-      'Run `codeowners generate` to update the CODEOWNERS file',
-      'Run `bin/codeownership validate` to update the CODEOWNERS file'
-    )
   end
 
   # Removes the file annotation (e.g., "# @team TeamName") from a file.
