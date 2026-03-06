@@ -555,4 +555,20 @@ RSpec.describe CodeOwnership do
       end
     end
   end
+
+  describe '.validate!' do
+    context 'when RustCodeOwners raises a codeowners-rs error about the CODEOWNERS file being out of date' do
+      it 'rewrites the error message to reference bin/codeownership validate' do
+        allow(RustCodeOwners).to receive(:validate).and_raise(
+          RuntimeError,
+          "CODEOWNERS out of date. Run `codeowners generate` to update the CODEOWNERS file"
+        )
+
+        expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error(
+          RuntimeError,
+          "CODEOWNERS out of date. Run `bin/codeownership validate` to update the CODEOWNERS file"
+        )
+      end
+    end
+  end
 end
