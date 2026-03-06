@@ -315,5 +315,7 @@ module CodeOwnership
   sig { void }
   def self.bust_caches!
     Private::FilePathTeamCache.bust_cache!
+    Private::FilePathFinder.instance_variable_set(:@pwd, nil)
+    Private::FilePathFinder.instance_variable_set(:@pwd_prefix, nil)
   end
 end

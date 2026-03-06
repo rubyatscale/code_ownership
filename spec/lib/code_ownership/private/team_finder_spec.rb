@@ -20,11 +20,16 @@ RSpec.describe CodeOwnership::Private::TeamFinder do
       expect(CodeOwnership::Private::FilePathTeamCache.cached?(file_path)).to be true
     end
 
-    it 'does not cache when rust returns nil' do
-      allow(RustCodeOwners).to receive(:for_file).with(file_path).and_return(nil)
+    it 'caches nil when rust returns nil' do
+      allow(RustCodeOwners).to receive(:for_file).with(file_path)
+        .and_return(nil, { team_name: 'Bar' })
 
-      expect(described_class.for_file(file_path)).to be_nil
-      expect(CodeOwnership::Private::FilePathTeamCache.cached?(file_path)).to be false
+      first = described_class.for_file(file_path)
+      second = described_class.for_file(file_path)
+
+      expect(first).to be_nil
+      expect(second).to be_nil
+      expect(CodeOwnership::Private::FilePathTeamCache.cached?(file_path)).to be true
     end
 
     it 'caches nil when team_name is nil' do
