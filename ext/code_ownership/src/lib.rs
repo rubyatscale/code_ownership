@@ -116,7 +116,7 @@ fn build_run_config() -> RunConfig {
         codeowners_file_path: None,
         config_path,
         no_cache: false,
-        executable_name: None,
+        executable_name: Some("bin/codeownership validate".to_string()),
     }
 }
 

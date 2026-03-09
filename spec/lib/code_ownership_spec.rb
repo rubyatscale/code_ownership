@@ -555,4 +555,28 @@ RSpec.describe CodeOwnership do
       end
     end
   end
+
+  describe '.validate!' do
+    context 'when the CODEOWNERS file is out of date' do
+      before do
+        create_non_empty_application
+        RustCodeOwners.generate_and_validate(nil, false)
+        # Add a new annotated file to make the CODEOWNERS file out of date
+        write_file('packs/my_pack/new_file.rb', "# @team Bar\nclass NewFile; end\n")
+      end
+
+      it 'raises an error referencing bin/codeownership validate' do
+        expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error(
+          RuntimeError,
+          /Run `bin\/codeownership validate/
+        )
+      end
+
+      it 'does not reference the standalone codeowners CLI' do
+        expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error(RuntimeError) do |error|
+          expect(error.message).not_to include('`codeowners generate`')
+        end
+      end
+    end
+  end
 end
