@@ -13,9 +13,8 @@ module CodeOwnership
         return FilePathTeamCache.get(file_path) if FilePathTeamCache.cached?(file_path)
 
         result = T.let(RustCodeOwners.for_file(file_path), T.nilable(T::Hash[Symbol, String]))
-        return if result.nil?
 
-        if result[:team_name].nil?
+        if result.nil? || result[:team_name].nil?
           FilePathTeamCache.set(file_path, nil)
         else
           FilePathTeamCache.set(file_path, T.let(find_team!(T.must(result[:team_name]), allow_raise: allow_raise), T.nilable(CodeTeams::Team)))
