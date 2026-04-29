@@ -23,10 +23,9 @@
               # `arm-linux`: Cranelift doesn't support 32-bit architectures
               # `x64-mingw32`: `x64-mingw-ucrt` should be used for Ruby 3.1+ (https://github.com/rake-compiler/rake-compiler-dock?tab=readme-ov-file#windows)
               # `x64-mingw-ucrt`: Rust target not available in rake-compiler-dock
-              # `aarch64-linux-musl`: Rust target not available in rake-compiler-dock
               # 3.0 is deprecated as stable ruby version according to:
               #  https://github.com/oxidize-rb/actions/blob/main/fetch-ci-data/evaluate.rb#L54
-              exclude: [arm-linux, x64-mingw32, x64-mingw-ucrt, aarch64-linux-musl]
+              exclude: [arm-linux, x64-mingw32, x64-mingw-ucrt]
             stable-ruby-versions: |
               only: ['3.2', '3.3', '3.4', '4.0']
   
