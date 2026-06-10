@@ -29,7 +29,7 @@ jobs:
         ruby: ${{ fromJSON(needs.ci-data.outputs.result).stable-ruby-versions }}
         rust: ["stable"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -45,10 +45,9 @@ jobs:
     name: "RSpec (ruby-version-file)"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
         with:
-          ruby-version-file: .ruby-version
           rustup-toolchain: stable
           bundler-cache: true
           cargo-cache: false
@@ -60,12 +59,11 @@ jobs:
     name: "Type Check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-          ruby-version-file: .ruby-version
       - name: Run static type checks
         run: bundle exec srb tc
   notify_on_failure:
