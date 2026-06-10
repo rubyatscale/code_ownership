@@ -37,7 +37,7 @@
         matrix:
           ruby-platform: ${{ fromJSON(needs.ci-data.outputs.result).supported-ruby-platforms }}
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6.0.3
   
         - uses: ruby/setup-ruby@v1
           with:
@@ -82,7 +82,7 @@
       permissions:
         contents: write  # Required for creating releases
       steps:
-        - uses: actions/checkout@v5
+        - uses: actions/checkout@v6.0.3
   
         - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
           with:
