@@ -26,7 +26,7 @@
               #  https://github.com/oxidize-rb/actions/blob/main/fetch-ci-data/evaluate.rb#L54
               exclude: [arm-linux, x64-mingw32]
             stable-ruby-versions: |
-              only: ['3.2', '3.3', '3.4', '4.0']
+              only: ['3.3', '3.4', '4.0']
   
     build:
       name: Build native gems
