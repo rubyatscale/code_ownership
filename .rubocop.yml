@@ -14,7 +14,7 @@ AllCops:
     - vendor/bundle/**/**
     - tmp/**/**
     - target/**/**
-  TargetRubyVersion: 3.2
+  TargetRubyVersion: 3.3
 
 Metrics/ParameterLists:
   Enabled: false
