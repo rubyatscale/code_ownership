@@ -2,15 +2,60 @@
   name: CD
   
   on:
-    workflow_call:
+    workflow_run:
+      workflows: [CI]
+      types: [completed]
+      branches: [main]
     workflow_dispatch:
+      inputs:
+        dry_run:
+          type: boolean
+          default: false
+          description: "Build gems but don't publish or release"
   
   concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
     cancel-in-progress: true
   
   jobs:
+    check-release:
+      name: Check if release needed
+      runs-on: ubuntu-latest
+      # Only proceed when the triggering CI run succeeded (auto path) or on manual dispatch.
+      if: >-
+        github.event_name == 'workflow_dispatch' ||
+        github.event.workflow_run.conclusion == 'success'
+      outputs:
+        should_release: ${{ steps.check.outputs.should_release }}
+        version: ${{ steps.check.outputs.version }}
+      steps:
+        - uses: actions/checkout@v6
+          with:
+            sparse-checkout: lib/code_ownership/version.rb
+            sparse-checkout-cone-mode: false
+            fetch-depth: 1
+        - id: check
+          run: |
+            VERSION=$(ruby -r ./lib/code_ownership/version.rb -e "puts CodeOwnership::VERSION")
+            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              # Manual dispatch always proceeds (dry-run testing / forced release);
+              # the publish step still skips versions already on RubyGems.
+              SHOULD_RELEASE=true
+              REASON="manual dispatch (dry_run=${{ inputs.dry_run }})"
+            elif curl -sf -o /dev/null "https://rubygems.org/api/v2/rubygems/code_ownership/versions/${VERSION}.json"; then
+              SHOULD_RELEASE=false
+              REASON="${VERSION} already on RubyGems — skipping release"
+            else
+              SHOULD_RELEASE=true
+              REASON="${VERSION} not published — will release"
+            fi
+            echo "should_release=${SHOULD_RELEASE}" >> "$GITHUB_OUTPUT"
+            echo "::notice::code_ownership ${REASON}."
+
     ci-data:
+      needs: check-release
+      if: needs.check-release.outputs.should_release == 'true'
       runs-on: ubuntu-latest
       outputs:
         result: ${{ steps.fetch.outputs.result }}
@@ -129,6 +174,11 @@
             for i in *.gem; do
               if [ -f "$i" ]; then
                 echo "⏳ Attempting to push $i..."
+                if [ "${{ inputs.dry_run }}" = "true" ]; then
+                  echo "🧪 dry-run: would push $i (skipping)"
+                  SKIPPED_GEMS+=("$i")
+                  continue
+                fi
                 if ! gem push "$i" >push.out 2>&1; then
                   gemerr=$?
                   if grep -q "Repushing of gem" push.out; then
@@ -180,3 +230,18 @@
               --notes "$RELEASE_NOTES" \
               --generate-notes \
               pkg/*.gem
+
+    notify_on_release:
+      runs-on: ubuntu-latest
+      needs: [check-release, release]
+      if: ${{ needs.release.result == 'success' }}
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      steps:
+        - uses: slackapi/slack-github-action@v1.25.0
+          with:
+            payload: |
+              {
+                "text": "🎉 Released ${{ github.repository }} v${{ needs.check-release.outputs.version }}"
+              }
