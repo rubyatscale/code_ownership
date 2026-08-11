@@ -4,13 +4,17 @@ RSpec.describe CodeOwnership::Private::TeamFinder do
   describe '.for_file' do
     let(:file_path) { 'packs/my_pack/owned_file.rb' }
 
+    let(:rust_result) do
+      { team_name: 'Bar', team_config_yml: 'config/teams/bar.yml', reasons: [] }
+    end
+
     before do
       create_non_empty_application
     end
 
     it 'caches positive results' do
       allow(RustCodeOwners).to receive(:for_file).with(file_path)
-        .and_return({ team_name: 'Bar' }, nil)
+        .and_return(rust_result, nil)
 
       first = described_class.for_file(file_path)
       second = described_class.for_file(file_path)
@@ -22,7 +26,7 @@ RSpec.describe CodeOwnership::Private::TeamFinder do
 
     it 'caches nil when rust returns nil' do
       allow(RustCodeOwners).to receive(:for_file).with(file_path)
-        .and_return(nil, { team_name: 'Bar' })
+        .and_return(nil, rust_result)
 
       first = described_class.for_file(file_path)
       second = described_class.for_file(file_path)
@@ -30,14 +34,6 @@ RSpec.describe CodeOwnership::Private::TeamFinder do
       expect(first).to be_nil
       expect(second).to be_nil
       expect(CodeOwnership::Private::FilePathTeamCache.cached?(file_path)).to be true
-    end
-
-    it 'caches nil when team_name is nil' do
-      allow(RustCodeOwners).to receive(:for_file).with(file_path).and_return({ team_name: nil })
-
-      expect(described_class.for_file(file_path)).to be_nil
-      expect(CodeOwnership::Private::FilePathTeamCache.cached?(file_path)).to be true
-      expect(CodeOwnership::Private::FilePathTeamCache.get(file_path)).to be_nil
     end
   end
 

@@ -215,7 +215,8 @@ RSpec.describe CodeOwnership do
         end
 
         it 'raises an error when using single-file path' do
-          allow(RustCodeOwners).to receive(:for_file).and_return({ team_name: 'Made Up Team' })
+          allow(RustCodeOwners).to receive(:for_file)
+            .and_return({ team_name: 'Made Up Team', team_config_yml: 'config/teams/made_up_team.yml', reasons: [] })
           expect { CodeOwnership.for_file(file_path, from_codeowners: false, allow_raise: true) }.to raise_error(StandardError, /Could not find team with name:/)
         end
       end

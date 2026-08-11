@@ -28,6 +28,11 @@ module CodeOwnership
 
   GlobsToOwningTeamMap = T.type_alias { T::Hash[String, CodeTeams::Team] }
 
+  # The `Team` struct that the Rust extension serializes out of `RustCodeOwners.for_file`.
+  FileOwnershipDetails = T.type_alias do
+    { team_name: String, team_config_yml: String, reasons: T::Array[String] }
+  end
+
   # Returns the version of the code_ownership gem and the codeowners-rs gem.
   sig { returns(T::Array[String]) }
   def self.version
@@ -154,7 +159,7 @@ module CodeOwnership
   # @see #for_file for a simpler ownership lookup that returns just the team
   # @see CLI#for_file for the command-line interface that uses this method
   #
-  sig { params(file: String).returns(T.nilable(T::Hash[Symbol, String])) }
+  sig { params(file: String).returns(T.nilable(FileOwnershipDetails)) }
   def self.for_file_verbose(file)
     ::RustCodeOwners.for_file(file)
   end
