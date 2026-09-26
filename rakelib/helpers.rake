@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 REPO_FILES = Rake::FileList.new
 
 def dirglob(pattern)

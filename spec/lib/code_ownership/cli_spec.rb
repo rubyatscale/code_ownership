@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe CodeOwnership::Cli do
   subject { CodeOwnership::Cli.run!(argv) }
 

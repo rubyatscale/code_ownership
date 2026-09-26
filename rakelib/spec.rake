@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 CLEAN.include('.rspec_status')
 
 begin

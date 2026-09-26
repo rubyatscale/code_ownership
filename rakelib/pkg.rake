@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 CLOBBER.include('pkg/**/*.gem')
 CLEAN.include('tmp/pkg')
 CLEAN.include('tmp/pkg')
