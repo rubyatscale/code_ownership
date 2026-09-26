@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 namespace :env do
   desc 'Sets up environment variables "dev" builds'
   task :dev do

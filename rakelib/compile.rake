@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rb_sys/extensiontask'
 
 RbSys::ExtensionTask.new('code_ownership', GEMSPEC) do |ext|
