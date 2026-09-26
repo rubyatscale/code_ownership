@@ -215,6 +215,7 @@
           if: ${{ steps.push-gem.outputs.new_version == 'true' }}
           env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GEM_VERSION: ${{ steps.push-gem.outputs.gem_version }}
           run: |
             # Create release with more detailed information
             RELEASE_NOTES="## CodeOwnership v${{ steps.push-gem.outputs.gem_version }}
@@ -224,7 +225,7 @@
             - Platform gems: Published for all supported platforms
             
             ### 🎯 Supported Platforms
-            $(ls pkg/*.gem | grep -E '\-(x86|arm|aarch)' | sed 's/.*-\([^-]*\)\.gem/- \1/')
+            $(for gem in pkg/code_ownership-"$GEM_VERSION"-*.gem; do [ -e "$gem" ] || continue; platform=${gem#pkg/code_ownership-"$GEM_VERSION"-}; echo "- ${platform%.gem}"; done)
             
             ---
             "
