@@ -317,12 +317,13 @@ module CodeOwnership
   # Namely, the set of files, packages, and directories which are tracked for ownership should not change.
   # The primary reason this is helpful is for clients of CodeOwnership who want to test their code, and each test context
   # has different ownership and tracked files.
+  # It also clears the team files that codeowners-rs caches for `for_file(..., from_codeowners: false)`,
+  # so call it after adding or editing team files in a long-lived process.
   sig { void }
   def self.bust_caches!
     Private::FilePathTeamCache.bust_cache!
     Private::FilePathFinder.instance_variable_set(:@pwd, nil)
     Private::FilePathFinder.instance_variable_set(:@pwd_prefix, nil)
-    # codeowners-rs memoizes parsed team files for the life of the process.
     ::RustCodeOwners.clear_team_cache
   end
 end

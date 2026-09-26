@@ -223,6 +223,34 @@ RSpec.describe CodeOwnership do
     end
   end
 
+  describe '.for_file with from_codeowners: false and package ownership' do
+    subject { CodeOwnership.for_file(file_path, from_codeowners: false) }
+
+    let(:file_path) { 'packs/outer/inner/file.rb' }
+
+    before do
+      create_non_empty_application
+      write_file('packs/outer/package.yml', "owner: Foo\n")
+      write_file(file_path)
+    end
+
+    context 'when the package sets metadata.owner' do
+      before { write_file('packs/outer/inner/package.yml', { 'metadata' => { 'owner' => 'Bar' } }.to_yaml) }
+
+      it 'returns the metadata owner' do
+        expect(subject).to eq CodeTeams.find('Bar')
+      end
+    end
+
+    context 'when the package sets conflicting owners' do
+      before { write_file('packs/outer/inner/package.yml', { 'owner' => 'Foo', 'metadata' => { 'owner' => 'Bar' } }.to_yaml) }
+
+      it 'does not fall through to the enclosing package' do
+        expect(subject).to be_nil
+      end
+    end
+  end
+
   describe '.for_class' do
     subject { described_class.for_class(klass) }
 
@@ -581,8 +609,15 @@ RSpec.describe CodeOwnership do
 
       it 'includes the required CODEOWNERS changes after the headline' do
         expect { CodeOwnership.validate!(autocorrect: false) }.to raise_error(RuntimeError) do |error|
-          expect(error.message).to match(%r{CODEOWNERS out of date.*\n+The following changes are required \(- current, \+ expected\):\n\+/packs/my_pack/new_file\.rb @MyOrg/bar-team}m)
+          expect(error.message).to match(/CODEOWNERS out of date.*The following changes are required \(- current, \+ expected\):/m)
+          expect(error.message).to include("\n+/packs/my_pack/new_file.rb @MyOrg/bar-team")
         end
+      end
+
+      it 'regenerates the CODEOWNERS file when autocorrecting' do
+        expect { CodeOwnership.validate!(stage_changes: false) }.not_to raise_error
+        expect(codeowners_path.read).to include('/packs/my_pack/new_file.rb @MyOrg/bar-team')
+        expect { CodeOwnership.validate!(autocorrect: false) }.not_to raise_error
       end
     end
   end
