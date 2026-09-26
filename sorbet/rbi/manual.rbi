@@ -1,3 +1,5 @@
+# typed: false
+
 class Hash
   def to_json(*_args); end
 end
@@ -20,6 +22,10 @@ module RustCodeOwners
     end
 
     def teams_for_files(files)
+    end
+
+    sig { void }
+    def clear_team_cache
     end
   end
 end
