@@ -69,10 +69,11 @@
             supported-ruby-platforms: |
               # Excluding:
               # `arm-linux`: Cranelift doesn't support 32-bit architectures
+              # `arm-linux-musl`: magnus 0.8 doesn't compile for 32-bit musl, whose `timespec` has padding bitfields
               # `x64-mingw32`: `x64-mingw-ucrt` should be used for Ruby 3.1+ (https://github.com/rake-compiler/rake-compiler-dock?tab=readme-ov-file#windows)
               # 3.0 is deprecated as stable ruby version according to:
               #  https://github.com/oxidize-rb/actions/blob/main/fetch-ci-data/evaluate.rb#L54
-              exclude: [arm-linux, x64-mingw32]
+              exclude: [arm-linux, arm-linux-musl, x64-mingw32]
             stable-ruby-versions: |
               only: ['3.3', '3.4', '4.0']
   
@@ -237,7 +238,8 @@
     notify_on_release:
       runs-on: ubuntu-latest
       needs: [check-release, release]
-      if: ${{ needs.release.result == 'success' }}
+      # A dry run builds without publishing, so there's nothing to announce.
+      if: ${{ needs.release.result == 'success' && !inputs.dry_run }}
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
