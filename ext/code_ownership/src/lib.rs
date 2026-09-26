@@ -74,6 +74,10 @@ fn version() -> String {
    runner::version()
 }
 
+fn clear_team_cache() {
+    runner::clear_team_cache();
+}
+
 fn validate(ruby: &Ruby, files: Option<Vec<String>>) -> Result<Value, Error> {
     let run_config = build_run_config();
     let files_vec = files.unwrap_or_default();
@@ -90,9 +94,16 @@ fn generate_and_validate(ruby: &Ruby, files: Option<Vec<String>>, skip_stage: bo
 
 fn validate_result(ruby: &Ruby, run_result: &runner::RunResult) -> Result<Value, Error> {
     if !run_result.validation_errors.is_empty() {
+        // codeowners-rs reports the stale-CODEOWNERS diff via info_messages; the raise is our only channel for it.
+        let messages: Vec<&str> = run_result
+            .validation_errors
+            .iter()
+            .chain(&run_result.info_messages)
+            .map(String::as_str)
+            .collect();
         Err(Error::new(
             ruby.exception_runtime_error(),
-            run_result.validation_errors.join("\n"),
+            messages.join("\n"),
         ))
     } else if !run_result.io_errors.is_empty() {
         Err(Error::new(
@@ -129,6 +140,7 @@ fn init(ruby: &Ruby) -> Result<(), Error> {
     module.define_singleton_method("for_team", function!(for_team, 1))?;
     module.define_singleton_method("version", function!(version, 0))?;
     module.define_singleton_method("teams_for_files", function!(teams_for_files, 1))?;
+    module.define_singleton_method("clear_team_cache", function!(clear_team_cache, 0))?;
 
     Ok(())
 }

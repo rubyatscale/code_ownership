@@ -322,5 +322,7 @@ module CodeOwnership
     Private::FilePathTeamCache.bust_cache!
     Private::FilePathFinder.instance_variable_set(:@pwd, nil)
     Private::FilePathFinder.instance_variable_set(:@pwd_prefix, nil)
+    # codeowners-rs memoizes parsed team files for the life of the process.
+    ::RustCodeOwners.clear_team_cache
   end
 end
