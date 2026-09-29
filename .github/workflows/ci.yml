@@ -16,7 +16,7 @@ jobs:
       result: ${{ steps.fetch.outputs.result }}
     steps:
       - id: fetch
-        uses: oxidize-rb/actions/fetch-ci-data@v1
+        uses: oxidize-rb/actions/fetch-ci-data@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
         with:
           stable-ruby-versions: |
             # Explicitly include all Ruby versions we want to support
@@ -32,8 +32,10 @@ jobs:
         ruby: ${{ fromJSON(needs.ci-data.outputs.result).stable-ruby-versions }}
         rust: ["stable"]
     steps:
-      - uses: actions/checkout@v6
-      - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
         with:
           ruby-version: ${{ matrix.ruby }}
           rustup-toolchain: ${{ matrix.rust }}
@@ -48,8 +50,10 @@ jobs:
     name: "RSpec (ruby-version-file)"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: oxidize-rb/actions/setup-ruby-and-rust@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
         with:
           rustup-toolchain: stable
           bundler-cache: true
@@ -62,9 +66,11 @@ jobs:
     name: "Type Check"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
         with:
           bundler-cache: true
       - name: Run static type checks
@@ -77,7 +83,7 @@ jobs:
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
     steps:
-      - uses: slackapi/slack-github-action@v1.25.0
+      - uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 # v1.25.0
         with:
           payload: |
             {
