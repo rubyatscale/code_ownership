@@ -1,7 +1,7 @@
 ---
   name: CD
   
-  on:
+  on: # zizmor: ignore[dangerous-triggers] deploy-after-CI-passes is the standard rubyatscale release pattern; this builds and publishes the default branch, never the triggering run's code or artifacts
     workflow_run:
       workflows: [CI]
       types: [completed]
@@ -32,8 +32,9 @@
         should_release: ${{ steps.check.outputs.should_release }}
         version: ${{ steps.check.outputs.version }}
       steps:
-        - uses: actions/checkout@v6
+        - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
           with:
+            persist-credentials: false
             sparse-checkout: lib/code_ownership/version.rb
             sparse-checkout-cone-mode: false
             fetch-depth: 1
@@ -64,7 +65,7 @@
         result: ${{ steps.fetch.outputs.result }}
       steps:
         - id: fetch
-          uses: oxidize-rb/actions/fetch-ci-data@v1
+          uses: oxidize-rb/actions/fetch-ci-data@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
           with:
             supported-ruby-platforms: |
               # Excluding:
@@ -86,13 +87,15 @@
         matrix:
           ruby-platform: ${{ fromJSON(needs.ci-data.outputs.result).supported-ruby-platforms }}
       steps:
-        - uses: actions/checkout@v6
+        - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+          with:
+            persist-credentials: false
   
-        - uses: ruby/setup-ruby@v1
+        - uses: ruby/setup-ruby@14594264cd68ce8a2345dd349bc3d138a4ef85c8 # v1.327.0
           with:
             ruby-version: '4.0'
 
-        - uses: oxidize-rb/actions/cross-gem@v1
+        - uses: oxidize-rb/actions/cross-gem@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
           id: cross-gem
           with:
             platform: ${{ matrix.ruby-platform }}
@@ -103,7 +106,7 @@
             # Add a unique identifier to prevent cache conflicts
             ACTIONS_CACHE_KEY_SUFFIX: "-${{ matrix.ruby-platform }}-${{ github.run_id }}"
   
-        - uses: actions/upload-artifact@v4
+        - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
           with:
             name: cross-gem-${{ matrix.ruby-platform }}
             path: pkg/*-${{ matrix.ruby-platform }}.gem
@@ -112,9 +115,11 @@
   
         - name: Smoke test gem install
           if: matrix.ruby-platform == 'x86_64-linux'  # Enable for Linux x64
-          run: |
+          env:
+            GEM_PLATFORM: ${{ matrix.ruby-platform }}
+          run: | # zizmor: ignore[adhoc-packages] installs the gem this job just built, to smoke-test it
             # Install the platform-specific gem
-            gem install pkg/code_ownership-*-${{ matrix.ruby-platform }}.gem --verbose
+            gem install pkg/code_ownership-*-"${GEM_PLATFORM}".gem --verbose
             
             # Test that it works
             ruby -e "require 'code_ownership'; puts 'Version: ' + CodeOwnership::VERSION"
@@ -122,7 +127,7 @@
             # Run a simple functionality test that exercises the Rust native extension
             ruby -e "require 'code_ownership'; puts CodeOwnership.version"
             
-            echo "✅ Successfully tested ${{ matrix.ruby-platform }} gem"
+            echo "✅ Successfully tested ${GEM_PLATFORM} gem"
   
     release:
       name: Release
@@ -131,14 +136,16 @@
       permissions:
         contents: write  # Required for creating releases
       steps:
-        - uses: actions/checkout@v6
+        - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+          with:
+            persist-credentials: false
   
-        - uses: oxidize-rb/actions/setup-ruby-and-rust@v1
+        - uses: oxidize-rb/actions/setup-ruby-and-rust@ec90b4aa48795518d79be3f5cc478d1d7ccd02a8 # v1.5.0
           with:
             bundler-cache: true
             cargo-cache: false
   
-        - uses: actions/download-artifact@v4
+        - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
           with:
             pattern: cross-gem-*
             merge-multiple: true
@@ -152,7 +159,7 @@
           working-directory: pkg/
           env:
             GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
-          run: |
+          run: | # zizmor: ignore[use-trusted-publishing] moving to trusted publishing needs a publisher configured on rubygems.org first
             set -e  # Exit on error
             
             # Setup credentials
@@ -218,10 +225,10 @@
             GEM_VERSION: ${{ steps.push-gem.outputs.gem_version }}
           run: |
             # Create release with more detailed information
-            RELEASE_NOTES="## CodeOwnership v${{ steps.push-gem.outputs.gem_version }}
+            RELEASE_NOTES="## CodeOwnership v${GEM_VERSION}
 
             ### 📦 Published Gems
-            - Source gem: code_ownership-${{ steps.push-gem.outputs.gem_version }}.gem
+            - Source gem: code_ownership-${GEM_VERSION}.gem
             - Platform gems: Published for all supported platforms
             
             ### 🎯 Supported Platforms
@@ -230,8 +237,8 @@
             ---
             "
             
-            gh release create "v${{ steps.push-gem.outputs.gem_version }}" \
-              --title "v${{ steps.push-gem.outputs.gem_version }}" \
+            gh release create "v${GEM_VERSION}" \
+              --title "v${GEM_VERSION}" \
               --notes "$RELEASE_NOTES" \
               --generate-notes \
               pkg/*.gem
@@ -245,7 +252,7 @@
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       steps:
-        - uses: slackapi/slack-github-action@v1.25.0
+        - uses: slackapi/slack-github-action@6c661ce58804a1a20f6dc5fbee7f0381b469e001 # v1.25.0
           with:
             payload: |
               {
