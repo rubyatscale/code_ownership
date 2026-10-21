@@ -232,7 +232,7 @@ module CodeOwnership
     files: nil
   )
     if autocorrect
-      ::RustCodeOwners.generate_and_validate(files, !stage_changes)
+      ::RustCodeOwners.generate_and_validate(files, stage_changes)
     else
       ::RustCodeOwners.validate(files)
     end

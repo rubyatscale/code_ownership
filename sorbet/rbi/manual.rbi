@@ -9,7 +9,7 @@ module RustCodeOwners
     def for_file(file)
     end
 
-    def generate_and_validate(files, skip_stage)
+    def generate_and_validate(files, git_stage)
     end
 
     def validate(files)
