@@ -85,10 +85,10 @@ fn validate(ruby: &Ruby, files: Option<Vec<String>>) -> Result<Value, Error> {
     validate_result(ruby, &run_result)
 }
 
-fn generate_and_validate(ruby: &Ruby, files: Option<Vec<String>>, skip_stage: bool) -> Result<Value, Error> {
+fn generate_and_validate(ruby: &Ruby, files: Option<Vec<String>>, git_stage: bool) -> Result<Value, Error> {
     let run_config = build_run_config();
     let files_vec = files.unwrap_or_default();
-    let run_result = runner::generate_and_validate(&run_config, files_vec, skip_stage);
+    let run_result = runner::generate_and_validate(&run_config, files_vec, git_stage);
     validate_result(ruby, &run_result)
 }
 

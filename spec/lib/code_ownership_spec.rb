@@ -620,6 +620,53 @@ RSpec.describe CodeOwnership do
         expect { CodeOwnership.validate!(autocorrect: false) }.not_to raise_error
       end
     end
+
+    context 'when the project is a git repository' do
+      let(:staged_files) { `git diff --cached --name-only`.lines(chomp: true) }
+
+      before do
+        create_non_empty_application
+        system('git', 'init', '--quiet', exception: true)
+      end
+
+      it 'stages the CODEOWNERS file by default' do
+        CodeOwnership.validate!
+        expect(staged_files).to eq ['.github/CODEOWNERS']
+      end
+
+      it 'does not stage the CODEOWNERS file when stage_changes is false' do
+        CodeOwnership.validate!(stage_changes: false)
+        expect(codeowners_path).to exist
+        expect(staged_files).to be_empty
+      end
+    end
+
+    ['', "# no keys yet\n", "---\n"].each do |contents|
+      context "when a package.yml is #{contents.inspect}" do
+        before do
+          write_configuration(owned_globs: ['packs/**/*.rb'])
+          write_file('config/teams/bar.yml', <<~CONTENTS)
+            name: Bar
+            github:
+              team: '@MyOrg/bar-team'
+          CONTENTS
+          write_file('packs/empty_pack/package.yml', contents)
+          write_file('packs/empty_pack/owned_file.rb', "# @team Bar\nclass OwnedFile; end\n")
+        end
+
+        it 'passes validation' do
+          expect { CodeOwnership.validate!(stage_changes: false) }.not_to raise_error
+        end
+
+        it 'leaves ownership to the annotation without printing a parse error' do
+          owner = nil
+          # for_file falls back to the annotation when package.yml fails to parse, and only prints the error.
+          expect { owner = CodeOwnership.for_file('packs/empty_pack/owned_file.rb', from_codeowners: false) }
+            .not_to output.to_stderr_from_any_process
+          expect(owner).to eq CodeTeams.find('Bar')
+        end
+      end
+    end
   end
 
   describe '.bust_caches!' do
