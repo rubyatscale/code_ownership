@@ -624,15 +624,6 @@ RSpec.describe CodeOwnership do
     context 'when the project is a git repository' do
       let(:staged_files) { `git diff --cached --name-only`.lines(chomp: true) }
 
-      # Hooks and linked worktrees export variables such as GIT_DIR and GIT_INDEX_FILE, which would aim git,
-      # including the extension's git add, at the repository running the suite instead of the temp project.
-      around do |example|
-        saved = ENV.to_h.slice(*`git rev-parse --local-env-vars`.split)
-        saved.each_key { |key| ENV.delete(key) }
-        example.run
-        ENV.update(saved)
-      end
-
       before do
         create_non_empty_application
         system('git', 'init', '--quiet', exception: true)
@@ -663,12 +654,16 @@ RSpec.describe CodeOwnership do
           write_file('packs/empty_pack/owned_file.rb', "# @team Bar\nclass OwnedFile; end\n")
         end
 
-        it 'reads it as a package with no owner' do
+        it 'passes validation' do
           expect { CodeOwnership.validate!(stage_changes: false) }.not_to raise_error
+        end
+
+        it 'leaves ownership to the annotation without printing a parse error' do
+          owner = nil
           # for_file falls back to the annotation when package.yml fails to parse, and only prints the error.
-          expect do
-            expect(CodeOwnership.for_file('packs/empty_pack/owned_file.rb', from_codeowners: false)).to eq CodeTeams.find('Bar')
-          end.not_to output.to_stderr_from_any_process
+          expect { owner = CodeOwnership.for_file('packs/empty_pack/owned_file.rb', from_codeowners: false) }
+            .not_to output.to_stderr_from_any_process
+          expect(owner).to eq CodeTeams.find('Bar')
         end
       end
     end

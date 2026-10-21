@@ -21,6 +21,12 @@ RSpec.configure do |config|
 
   config.include_context 'application fixtures'
 
+  # Hooks and linked worktrees export variables such as GIT_DIR and GIT_INDEX_FILE, which would aim git, including
+  # the extension's git add in validate!, at the repository running the suite instead of each example's temp project.
+  config.before(:suite) do
+    `git rev-parse --local-env-vars`.split.each { |key| ENV.delete(key) }
+  end
+
   config.before do |c|
     unless c.metadata[:do_not_bust_cache]
       CodeOwnership.bust_caches!
