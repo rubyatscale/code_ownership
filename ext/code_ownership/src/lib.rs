@@ -1,15 +1,24 @@
 use std::{collections::HashMap, env, path::PathBuf};
 
 use codeowners::runner::{self, RunConfig};
-use magnus::{Error, Ruby, Value, function, prelude::*};
-use serde::{Deserialize, Serialize};
-use serde_magnus::serialize;
+use magnus::{Error, IntoValue, Ruby, Value, function, prelude::*};
 
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug)]
 pub struct Team {
     pub team_name: String,
     pub team_config_yml: String,
     pub reasons: Vec<String>,
+}
+
+impl IntoValue for Team {
+    fn into_value_with(self, ruby: &Ruby) -> Value {
+        ruby.hash_from_iter([
+            (ruby.to_symbol("team_name"), self.team_name.into_value_with(ruby)),
+            (ruby.to_symbol("team_config_yml"), self.team_config_yml.into_value_with(ruby)),
+            (ruby.to_symbol("reasons"), self.reasons.into_value_with(ruby)),
+        ])
+        .into_value_with(ruby)
+    }
 }
 
 fn for_team(ruby: &Ruby, team_name: String) -> Result<Value, Error> {
@@ -35,8 +44,7 @@ fn teams_for_files(ruby: &Ruby, file_paths: Vec<String>) -> Result<Value, Error>
                     teams_map.insert(path, None);
                 }
             }
-            let serialized: Value = serialize(ruby, &teams_map)?;
-            Ok(serialized)
+            Ok(ruby.hash_from_iter(teams_map).into_value_with(ruby))
         }
         Err(e) => Err(Error::new(ruby.exception_runtime_error(), e.to_string())),
     }
@@ -57,8 +65,7 @@ fn for_file(ruby: &Ruby, file_path: String) -> Result<Option<Value>, Error> {
                 .map(|source| source.to_string())
                 .collect(),
             };
-            let serialized: Value = serialize(ruby, &team)?;
-            Ok(Some(serialized))
+            Ok(Some(team.into_value_with(ruby)))
             } else {
                 Ok(None)
             }
@@ -111,8 +118,7 @@ fn validate_result(ruby: &Ruby, run_result: &runner::RunResult) -> Result<Value,
             run_result.io_errors.join("\n"),
         ))
     } else {
-        let serialized: Value = serialize(ruby, &run_result.info_messages)?;
-        Ok(serialized)
+        Ok(ruby.ary_from_iter(run_result.info_messages.iter().map(String::as_str)).into_value_with(ruby))
     }
 }
 fn build_run_config() -> RunConfig {
